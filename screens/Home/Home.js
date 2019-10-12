@@ -22,8 +22,6 @@ export default class Home extends React.PureComponent{
       batches: {},
     };
 
-    // this.batches = new Object();
-    // this.setBatches = this.setBatches.bind(this);
   }
   
   componentDidMount(){
@@ -78,8 +76,6 @@ export default class Home extends React.PureComponent{
     if(this.state.batches instanceof Object && this._isMounted){
       for(let i in this.state.batches){
         let batchInformation = this.state.batches[i];
-        // console.log(batchInformation.name)
-        // console.log("batchInformation: " + batchInformation);
         cards.push(
           <Card
             key={batchInformation.name}

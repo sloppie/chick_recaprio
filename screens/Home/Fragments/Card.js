@@ -64,7 +64,7 @@ export default class Card extends Component {
                 flex: 1,
                 justifyContent: "center",
               }}>
-                <Icon name="arrow-forward" style={styles.arrow} />        
+                <Icon name="md-arrow-forward" style={styles.arrow} />        
               </View>
             </TouchableHighlight>
           </View>

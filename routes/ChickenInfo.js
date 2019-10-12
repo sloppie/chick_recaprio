@@ -2,9 +2,9 @@
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 
-import ProduceTab from './../screens/Chicken/Fragments/ProduceTab';
-import FeedsTab from './../screens/Chicken/Fragments/FeedsTab';
-import ChickenTab from './../screens/Chicken/Fragments/CasualtiesTab';
+import ProduceTab from './../screens/Produce';
+import FeedsTab from './../screens/Feeds';
+import ChickenTab from './../screens/Period';
 
 import Theme from '../theme/Theme';
 

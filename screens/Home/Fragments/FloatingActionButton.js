@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { TouchableHighlight, View, StyleSheet, Dimensions } from 'react-native';
-import Icon from 'react-native-ionicons'; 
+import { 
+  TouchableHighlight, 
+  StyleSheet,
+} from 'react-native';
+import Icon from 'react-native-ionicons';
 
-/* Theme colors */
 import Theme from '../../../theme/Theme';
 
 export default class FloatingActionButton extends Component{
@@ -14,7 +16,7 @@ export default class FloatingActionButton extends Component{
           style={styles.container}
           onPress={()=>{this.props.navigation.navigate("NewBatch")}}>
             <Icon 
-              name="add" 
+              name="md-add" 
               style={styles.icon} />
         </TouchableHighlight>
 
