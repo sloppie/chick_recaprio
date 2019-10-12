@@ -1,39 +1,37 @@
 import React, { Component } from 'react';
-import {View, Text, StyleSheet, Dimensions, TouchableHighlight, NativeModules} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  TouchableHighlight,
+  NativeModules,
+} from 'react-native';
 import Icon from 'react-native-ionicons';
 
-// Theme colours
 import Theme from './../../../theme/Theme';
 
-/**
- * BatchName: 
- * Age: 1 year
- * ProductionPercentage: 88.88%
- * LastProduceAmount: 
- * > GOTO:
- */
+
 export default class Card extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
   }
 
   goToBatch = () => {
     requestAnimationFrame(() => {
-      let {name} = this.props.batchInformation;
-      true && NativeModules.Sessions.createSession(name, (state) => {
-        return this.props.navigation.navigate("Chicken");
+      let { name } = this.props.batchInformation;
+      NativeModules.Sessions.createSession(name, (state) => {
+        if (state) {
+          this.props.navigation.push("Chicken");
+        }
       });
     });
   }
 
-  componentDidMount() {
-
-  }
-
-  render(){
+  render() {
     let { batchInformation } = this.props;
     let len = batchInformation.population.length - 1;
-    return(
+    return (
       <TouchableHighlight
         onPress={this.goToBatch}
         activeOpacity={0.6}
@@ -42,7 +40,7 @@ export default class Card extends Component {
         <View>
           <View style={styles.titleHolder}>
             <Text style={styles.name}> {this.props.batchInformation.name}</Text>
-            <Text style={styles.weekTitle}>{`Week 76, from ${new Date(this.props.batchInformation.population[len].date).toLocaleDateString()}`}</Text> 
+            <Text style={styles.weekTitle}>{`Week 76, from ${new Date(this.props.batchInformation.population[len].date).toLocaleDateString()}`}</Text>
           </View>
           <View
             style={{
@@ -57,19 +55,19 @@ export default class Card extends Component {
               }}>{" production"}</Text>
           </View>
           <View style={styles.navigate}>
-              <Text style={styles.lpa}>Population: {this.props.batchInformation.population[0].population}</Text>
-            <TouchableHighlight 
+            <Text style={styles.lpa}>Population: {this.props.batchInformation.population[0].population}</Text>
+            <TouchableHighlight
               onPress={this.goToBatch}>
               <View style={{
                 flex: 1,
                 justifyContent: "center",
               }}>
-                <Icon name="md-arrow-forward" style={styles.arrow} />        
+                <Icon name="arrow-forward" style={styles.arrow} />
               </View>
             </TouchableHighlight>
           </View>
         </View>
-      </TouchableHighlight>   
+      </TouchableHighlight>
     );
   }
 }
@@ -81,7 +79,7 @@ let styles = StyleSheet.create({
     marginBottom: 5,
     borderRadius: 10,
     paddingBottom: 10,
-    width: (Dimensions.get("window").width - 16), 
+    width: (Dimensions.get("window").width - 16),
     alignSelf: "center",
     elevation: 1,
     backgroundColor: Theme.PRIMARY_COLOR,
@@ -94,7 +92,7 @@ let styles = StyleSheet.create({
     color: Theme.HEADER_COLOR,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    width: (Dimensions.get("window").width - 20), 
+    width: (Dimensions.get("window").width - 20),
     alignSelf: "center",
     fontWeight: "500",
   },

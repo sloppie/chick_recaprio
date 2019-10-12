@@ -25,9 +25,7 @@ export default class ProduceTab extends Component {
   }
 
   componentDidMount() {
-    console.log("Produce already mounted");
     let context = NativeModules.Sessions.getCurrentSession();
-    console.log(context);
     true && NativeModules.FileManager.fetchList(context, "eggs", (data) => {
       // console.log(data);
         let parsedData = JSON.parse(data);
@@ -35,11 +33,6 @@ export default class ProduceTab extends Component {
             data: parsedData,
           });
         });
-    // let data = NativeModules.FileManager.fetchList(context, "eggs");
-    // let parsedData = JSON.parse(data);
-    // this.setState({
-    //   data: parsedData
-    // });
   }
 
   componentWillUnmount() {

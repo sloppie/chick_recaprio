@@ -13,6 +13,8 @@ import {
 import Icon from 'react-native-ionicons';
 
 import Theme from '../../theme/Theme';
+
+import FAB from './Fragments/FloatingActionButton';
 // import FileManager from './../../../utilities/FileManager';
 
 
@@ -42,15 +44,19 @@ export default class FeedsTab extends Component {
 
   option = () => {
     return (
-      <FlatList
-        data={this.state.data}
-        renderItem={({item}) => <FeedCard week={item.week} weekNumber={item.weekNumber}/>}
-      />
+      <View>
+        <FlatList
+          data={this.state.data}
+          renderItem={({item}) => <FeedCard week={item.week} weekNumber={item.weekNumber}/>}
+        />
+        {/* <FAB style={styles.FAB} navigation={this.props.navigation}/> */}
+      </View>
     );
   }
 
   renderWeeks = () => {
   }
+
   render() {
     return (
       <View>
@@ -67,6 +73,16 @@ export default class FeedsTab extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  FAB: { 
+    position: "absolute", 
+    alignSelf: "flex-end", 
+    bottom: 100, 
+    right: 16, 
+    zIndex: 2 
+  },
+});
 
 
 /**
@@ -94,6 +110,17 @@ export class FeedCard extends Component {
 
   componentDidMount() {
     this.renderedDays = this.renderDays();
+    let sum = 0;
+    let { week } = this.props;
+    for(let i=0; i<week.length; i++) {
+      sum += week[i][1];
+    }
+
+    this.sum = sum;
+  }
+
+  shouldComponentUpdate() {
+    return this.sum
   }
 
   expand = () => {
@@ -105,10 +132,11 @@ export class FeedCard extends Component {
   renderDays = () => {
     let {week} = this.props;
     let renderedWeek = [];
+    let days = ["SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"];
     for(let i=0; i<week.length; i++) {
       renderedWeek.push(
         <View style={FCStyles.day} key={i}>
-          <Text style={FCStyles.dayText}>{`${new Date(week[i][1]).getDay()}: ${week[i][0]}`}</Text>
+          <Text style={FCStyles.dayText}>{`${days[new Date(week[i][0]).getDay()]}: ${week[i][1]}`}</Text> 
           <Icon style={FCStyles.editIcon} name="create" />
         </View>
       );
@@ -127,7 +155,7 @@ export class FeedCard extends Component {
           <View style={{ flexDirection: "row" }}>
             <View style={FCStyles.cardInfo}>
               <Text style={FCStyles.title}>WEEK {this.props.weekNumber}</Text>
-              <Text style={FCStyles.subtitle}>Total Feeds Consumed: {30}</Text>
+              <Text style={FCStyles.subtitle}>Total Feeds Consumed: {this.sum}</Text>
             </View>
             <Icon name={this.state.expanded ? "arrow-dropup-circle" : "arrow-dropdown-circle"} style={FCStyles.icon} />
           </View>

@@ -17,6 +17,7 @@ import android.widget.Toast;
 public class Sessions extends ReactContextBaseJavaModule {
     private File cacheDir = getReactApplicationContext().getCacheDir();
     File SESSIONS = new File(cacheDir, "SESSIONS"); 
+    File INV = new File(cacheDir, "INV");
     ReactContext context = (ReactContext) getReactApplicationContext();
 
     public Sessions(ReactApplicationContext reactContext) {
@@ -40,22 +41,34 @@ public class Sessions extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createSession(String context, Callback onSuccess) {
         if(!dirExists()) {
-            createCacheFile();
+            createCacheFile("SESSIONS");
         }  
         writeFile(SESSIONS, context);
-        makeToast(context);
         onSuccess.invoke(true);
     }
 
-    public void createCacheFile() {
+    @ReactMethod
+    public void createInventorySession(String context) {
+        if(!INV.exists()) {
+            createCacheFile("INV");
+        }
+
+        writeFile(INV, context);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String getInventorySession() {
+        return readFile(INV);
+    }
+
+    public void createCacheFile(String file) {
         if(!dirExists()) {
             // makeToast("ALREADY\n" + SESSIONS.getAbsolutePath());
             try{
                 // SESSIONS = File.createTempFile("SESSIONS", null, cacheDir);
-                File newCacheFile = new File(cacheDir, "SESSIONS");
+                File newCacheFile = new File(cacheDir, file);
                 newCacheFile.createNewFile();
                 SESSIONS = newCacheFile;
-                makeToast(SESSIONS.getAbsolutePath());
             } catch(Exception ex) {
                 // pass
             }
@@ -94,7 +107,6 @@ public class Sessions extends ReactContextBaseJavaModule {
 
             fileRead.close();
         } catch (IOException e) {
-            makeToast("Unable to read cache file");
             e.printStackTrace();
         }
         return data;
@@ -110,7 +122,6 @@ public class Sessions extends ReactContextBaseJavaModule {
                 fileWrite.flush();
                 fileWrite.close();
             } catch (IOException ioe) {
-                makeToast("Unable to write to file");
                 ioe.printStackTrace();
             }
         } else {

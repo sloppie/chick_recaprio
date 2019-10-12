@@ -30,18 +30,9 @@ import Theme from '../theme/Theme';
         tabBarPosition: 'top',
         swipeEnabled: true,
         animationEnabled: true,
-        lazy: true,
+        // lazy: true,
       }
     );
 
 
-// export default class Chicken extends Component {
-//   static navigationOptions = {
-//     title: NativeModules.Sessions.getCurrentSession(),
-//   };
-
-//   render() {
-//     return createAppContainer(TopTab); 
-//   }
-// } 
 export default createAppContainer(TopTab);
