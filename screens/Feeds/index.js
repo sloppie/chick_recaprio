@@ -29,29 +29,40 @@ export default class FeedsTab extends Component {
 
   componentDidMount() {
     let context = NativeModules.Sessions.getCurrentSession();
-    NativeModules.FileManager.fetchList(context, "feeds", (data) => {
-      let parsedData = JSON.parse(data);
-      this.setState({
-        data: parsedData
-      });
-    });
-    // let data = NativeModules.FileManager.fetchList(context, "eggs");
-    // let parsedData = JSON.parse(data);
-    // this.setState({
-    //   data: parsedData
-    // });
+    true && NativeModules.FileManager.fetchList(context, "feeds", (data) => {
+      // console.log(data);
+      try{
+        let parsedData = JSON.parse(data);
+        this.setState({
+            data: parsedData,
+          });
+        } catch(err) {
+        console.log(err);
+        this.setState({
+          data: {},
+        });
+      }
+      }); 
   }
 
   option = () => {
-    return (
-      <View>
-        <FlatList
-          data={this.state.data}
-          renderItem={({item}) => <FeedCard week={item.week} weekNumber={item.weekNumber}/>}
-        />
-        {/* <FAB style={styles.FAB} navigation={this.props.navigation}/> */}
-      </View>
-    );
+    if(this.state.data) {
+      return (
+        <View>
+          <FlatList
+            data={this.state.data}
+            renderItem={({item}) => <FeedCard week={item.week} weekNumber={item.weekNumber}/>}
+          />
+          {/* <FAB style={styles.FAB} navigation={this.props.navigation}/> */}
+        </View>
+      );
+    } else {
+      return(
+        <View>
+          <Text>Loading List...</Text>
+        </View>
+      );
+    }
   }
 
   renderWeeks = () => {

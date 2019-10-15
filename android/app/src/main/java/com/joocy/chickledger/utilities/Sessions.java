@@ -32,7 +32,9 @@ public class Sessions extends ReactContextBaseJavaModule {
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String getCurrentSession() {
         if(dirExists()) {
-            return readFile(SESSIONS);
+            String sesh = readFile(SESSIONS);
+            makeToast("Current session: " + sesh);
+            return sesh;
         } else {
             return "Cache not available!";
         }

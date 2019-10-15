@@ -6,6 +6,7 @@ import {
     Alert,
     StyleSheet,
     Button,
+    NativeModules,
     TouchableHighlight,
     Dimensions,
 } from 'react-native';
@@ -22,21 +23,31 @@ import Eggs from './Fragments/Eggs';
 // !TODO add an instructional View at the end of the AddInventory Component to help the user fill in data correctly
 
 export default class AddInventory extends Component{
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             exists: false,
+            counterCheck: false,
         };
         this._isMounted = false;
+        this.SESSION = NativeModules.Sessions.getCurrentSession();
+
+        true && NativeModules.FileManager.fetchBrief(this.SESSION, (data) => {
+            this.batchInformation = JSON.parse(data);
+            let context = this.props.navigation.getParam('context', undefined);
+            let confirmation = FileManager.checkForRecords(this.batchInformation, context.toLowerCase());
+            this.setState({
+                exists:confirmation,
+                counterCheck: true,
+            });
+        });
+    }
+
+    UNSAFE_componentWillMount() {
     }
 
     componentDidMount(){
         this._isMounted = true;
-        let context = this.props.navigation.getParam('context', 'eggs');
-        let batchInformation = this.props.navigation.getParam('batchInformation', null)
-        this.setState({
-            exists: this._isMounted && FileManager.checkForRecords(batchInformation, context.toLowerCase()),
-        });
     }
 
     displayForm = () => {
@@ -44,8 +55,9 @@ export default class AddInventory extends Component{
             exists: false,
         });
     }
+
     renderPage = (context, batchInformation, navigation) => {
-        if (this.state.exists) {
+        if (this.state.exists || (this.state.counterCheck && this.state.exists)) {
             return (
                 <View style={styles.lockedPage}>
                     <TouchableHighlight
@@ -81,11 +93,9 @@ export default class AddInventory extends Component{
 
     render(){
         const { navigation } = this.props;
-        const batchInformation = navigation.getParam("batchInformation", {});
         let context = navigation.getParam("context", "Not Founnd");
-        console.log(context);
         return (
-            this.renderPage(context, batchInformation, navigation)
+            this.renderPage(context, this.batchInformation, navigation)
         );
     }
 }

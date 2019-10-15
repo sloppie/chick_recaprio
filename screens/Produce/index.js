@@ -28,11 +28,18 @@ export default class ProduceTab extends Component {
     let context = NativeModules.Sessions.getCurrentSession();
     true && NativeModules.FileManager.fetchList(context, "eggs", (data) => {
       // console.log(data);
+      try{
         let parsedData = JSON.parse(data);
         this.setState({
             data: parsedData,
           });
+        } catch(err) {
+        console.log(err);
+        this.setState({
+          data: {},
         });
+      }
+      }); 
   }
 
   componentWillUnmount() {
@@ -162,7 +169,8 @@ export class WeeklyCard extends Component {
     let copiedStyles = Object.create(WCStyles.expanded);
     let sum = 0;
     this.props.week.forEach((data) => {
-      sum += data[4];
+      if(data != null)
+        sum += data[4];
     });
     copiedStyles.display = this.state.expanded ? "flex" : "none";
     return (

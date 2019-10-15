@@ -11,7 +11,7 @@ const feeds = require('./../../data/feeds.json');
  * This class helps link the FileManager NativeModule to the react-native app
  */
 export default class FileManager {
-    constructor(batchInformation){
+    constructor(batchInformation) {
         this.batchInformation = batchInformation;
         this.context = this.batchInformation.name;
         let length = this.batchInformation.population.length - 1;
@@ -166,14 +166,19 @@ export default class FileManager {
         let weekInfo = batch.calculateWeek();
         let {date, number} = JSON.parse(data);
         let previousData;
-        let newData = [number, date];
+        let newData = [date, number];
 
         NativeModules.FileManager.fetchData(batch.context, "feeds", (oldData) => {
             if(oldData) {
                 previousData = JSON.parse(oldData);
                 if(weekInfo[1]) {
                     if(previousData[weekInfo[0]] instanceof Array) {
-                        previousData[weekInfo[0]].push();
+                        if(FileManager.checkForRecords(batchInformation, "feeds")){
+                            let len = previousData[weekInfo[0]].length - 1;
+                            previousData[weekInfo[0]][len] = newData
+                        } else {
+                            previousData[weekInfo[0]].push(newData);
+                        }
                     } else {
                         previousData[weekInfo[0]] = [];
                         previousData[weekInfo[0]].push(newData);
@@ -181,7 +186,12 @@ export default class FileManager {
                 } else {
                     let pi = (weekInfo[0] - 1);
                     if(previousData[pi] instanceof Array) {
-                        previousData[pi].push(newData);
+                        if(FileManager.checkForRecords(batchInformation, "feeds")) {
+                            let len = previousData[pi].length - 1;
+                            previousData[pi][len] = newData;
+                        } else {
+                            previousData[pi].push(newData);
+                        }
                     } else {
                         previousData[pi] = [];
                         previousData[pi].push(newData);
@@ -259,8 +269,48 @@ export default class FileManager {
         });
     }
 
-    static checkForRecords(batchInformation, type){
-        
+    static checkForRecords(batchInformation, type) {
+        let batch = new FileManager(batchInformation);
+        let weeks = batch.calculateWeek();
+        let exists = false;
+        try {
+            if (weeks[1]) {
+                let data = NativeModules.FileManager.fetchForCheck(batch.context, type);
+                let oldData = JSON.parse(data);
+                let week = weeks[0];
+                let day = weeks[1] - 1;
+                if (type == "eggs") {
+                    console.log(JSON.stringify(oldData[week][day]))
+                    exists = oldData[week][day] instanceof Array;
+                } else {
+                    let lastWeek = oldData[week];
+                    let today = new Date().toLocaleDateString().split("/");
+                    let i = lastWeek.length - 1;
+                    let interrim = lastWeek[i][0].split("/");
+                    exists = (today[0] == interrim[0]) && (today[1] == interrim[1]);
+                }
+                return exists;
+            } else {
+                let data = NativeModules.FileManager.fetchForCheck(batch.context, type);
+                let oldData = JSON.parse(data);
+                let week = weeks[0] - 1;
+                let day = 6;
+                if (type == "eggs") {
+                    console.log(JSON.stringify(oldData[week][day]))
+                    exists = oldData[week][day] instanceof Array;
+                } else {
+                    let lastWeek = oldData[week];
+                    let today = new Date().toLocaleDateString().split("/");
+                    let i = lastWeek.length - 1;
+                    let interrim = lastWeek[i][0].split("/");
+                    exists = (today[0] == interrim[0]) && (today[1] == interrim[1]);
+                }
+            }
+        } catch (err) {
+
+        }
+        return exists;
+
     }
 
     static batchExists(name) {

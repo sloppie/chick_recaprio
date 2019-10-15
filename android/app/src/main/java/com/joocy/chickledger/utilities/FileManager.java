@@ -114,6 +114,11 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
     data.invoke(readFile(getDir(context, key)));
   }
 
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public String fetchForCheck(String context, String key) {
+    return readFile(getDir(context, key));
+  }
+
   // get write directory
   private File getDir(String context, String key) {
     File dataFile = new File(filesDir, "data/" + context + "/" + key);
