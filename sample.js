@@ -229,7 +229,7 @@ for(let i=1; i<=(weeks[0] + 1); i++) {
 
             week.eggs[days[d]] = eggs;
             checker++;
-            if(dts.length == 0) break;
+            if(dts.length == 0) {break;}
         }
 
         casArr.push(weeklyCas);
