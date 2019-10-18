@@ -23,6 +23,7 @@ import Theme from '../theme/Theme';
       {
         initialRouteName: "Produce",
         tabBarOptions: {
+					swipeEnabled: true,
           style: {
             backgroundColor: Theme.PRIMARY_COLOR_DARK,
           },

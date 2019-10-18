@@ -124,11 +124,19 @@ export default class FileManager {
             if(weekInfo[1]) {
                 let cd = (weekInfo[1] - 1);
                 // adds to the current day offset to the newly incomplete week
-                previousData[weekInfo[0]][cd] = newDay;
+                if(previousData[weekInfo[0]] instanceof Array) {
+                    if(FileManager.checkForRecords(batchInformation, "eggs")) {
+                        previousData[weekInfo[0]][0] = newDay;
+                    } else {
+                        previousData[weekInfo[0]].unshift(newDay);
+                    }
+                } else {
+                    previousData[weekInfo[0]] = [newDay];
+                }
             } else {
                 let pi = (weekInfo[0] - 1);
                 // adds to the last day of the unfinished week
-                previousData[pi][6] = newDay;
+                previousData[pi].unshift(newDay);
             }
 
             NativeModules.FileManager.addData(batch.context, "eggs", JSON.stringify(previousData));
@@ -175,9 +183,9 @@ export default class FileManager {
                     if(previousData[weekInfo[0]] instanceof Array) {
                         if(FileManager.checkForRecords(batchInformation, "feeds")){
                             let len = previousData[weekInfo[0]].length - 1;
-                            previousData[weekInfo[0]][len] = newData
+                            previousData[weekInfo[0]][0] = newData
                         } else {
-                            previousData[weekInfo[0]].push(newData);
+                            previousData[weekInfo[0]].unshift(newData);
                         }
                     } else {
                         previousData[weekInfo[0]] = [];
@@ -187,10 +195,11 @@ export default class FileManager {
                     let pi = (weekInfo[0] - 1);
                     if(previousData[pi] instanceof Array) {
                         if(FileManager.checkForRecords(batchInformation, "feeds")) {
-                            let len = previousData[pi].length - 1;
-                            previousData[pi][len] = newData;
+                            // let len = previousData[pi].length - 1;
+                            // data is replaced at first position
+                            previousData[pi][0] = newData;
                         } else {
-                            previousData[pi].push(newData);
+                            previousData[pi].unshift(newData);
                         }
                     } else {
                         previousData[pi] = [];
@@ -246,15 +255,15 @@ export default class FileManager {
                 previousData = JSON.parse(oldData);
                 if (weekInfo[1]) {
                     if (previousData[weekInfo[0]] instanceof Array) {
-                        previousData[weekInfo[0]].push(newData);
+                        previousData[weekInfo[0]].unshift(newData);
                     } else {
                         previousData[weekInfo[0]] = [];
-                        previousData[weekInfo[0]].push(newData);
+                        previousData[weekInfo[0]].unshift(newData);
                     }
                 } else {
                     let pi = (weekInfo[0] - 1);
                     if (previousData[pi] instanceof Array) {
-                        previousData[pi].push(newData);
+                        previousData[pi].unshift(newData);
                     } else {
                         previousData[pi] = [];
                         previousData[pi].push(newData);
@@ -280,13 +289,14 @@ export default class FileManager {
                 let week = weeks[0];
                 let day = weeks[1] - 1;
                 if (type == "eggs") {
-                    console.log(JSON.stringify(oldData[week][day]))
-                    exists = oldData[week][day] instanceof Array;
+                    console.log(JSON.stringify(oldData[week][0]))
+                    // exists = oldData[week][day] instanceof Array;
+                    exists = oldData[week].length == weeks[1];
                 } else {
                     let lastWeek = oldData[week];
                     let today = new Date().toLocaleDateString().split("/");
                     let i = lastWeek.length - 1;
-                    let interrim = lastWeek[i][0].split("/");
+                    let interrim = lastWeek[0][0].split("/");
                     exists = (today[0] == interrim[0]) && (today[1] == interrim[1]);
                 }
                 return exists;
@@ -297,12 +307,13 @@ export default class FileManager {
                 let day = 6;
                 if (type == "eggs") {
                     console.log(JSON.stringify(oldData[week][day]))
-                    exists = oldData[week][day] instanceof Array;
+                    // exists = oldData[week][day] instanceof Array;
+                    exists = oldData[week].length == 6;
                 } else {
                     let lastWeek = oldData[week];
                     let today = new Date().toLocaleDateString().split("/");
                     let i = lastWeek.length - 1;
-                    let interrim = lastWeek[i][0].split("/");
+                    let interrim = lastWeek[0][0].split("/");
                     exists = (today[0] == interrim[0]) && (today[1] == interrim[1]);
                 }
             }

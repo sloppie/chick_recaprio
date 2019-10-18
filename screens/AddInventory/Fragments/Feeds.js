@@ -43,7 +43,7 @@ export default class Feeds extends Component{
     sendData = (data) => {
         let { batchInformation } = this.props;
         FileManager.addFeeds(batchInformation, data);
-        this.props.navigation.goBack();
+        this.props.navigation.popToTop();
     }
 
     alert = () => {

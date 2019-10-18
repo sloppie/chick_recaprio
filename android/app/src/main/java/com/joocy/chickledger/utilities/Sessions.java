@@ -33,7 +33,6 @@ public class Sessions extends ReactContextBaseJavaModule {
     public String getCurrentSession() {
         if(dirExists()) {
             String sesh = readFile(SESSIONS);
-            makeToast("Current session: " + sesh);
             return sesh;
         } else {
             return "Cache not available!";
@@ -57,6 +56,12 @@ public class Sessions extends ReactContextBaseJavaModule {
 
         writeFile(INV, context);
     }
+
+	@ReactMethod
+	public void resetSession() {
+		// This is to mimmick a hard reset on the Session incase the user presses back button at the top
+		writeFile(INV, "");
+	}
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String getInventorySession() {

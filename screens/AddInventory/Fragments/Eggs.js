@@ -130,7 +130,7 @@ export default class Eggs extends Component{
     sendData(data){
         let { batchInformation } = this.props;
         FileManager.addEggs(batchInformation, data);
-        this.props.navigation.goBack();
+        this.props.navigation.popToTop();
     }
 
     alert = () => {

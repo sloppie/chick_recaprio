@@ -61,7 +61,7 @@ export default class Casualties extends Component {
                     text: "Confirm",
                     onPress: () => {
                         console.log(JSON.stringify(finalData, null, 2));
-                        this.props.navigation.goBack();
+                        this.props.navigation.popToTop();
                     },
                     style: "default"
                 }

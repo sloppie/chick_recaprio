@@ -6,9 +6,9 @@ import FileManager from './utilities/FileManager';
 
  if(!NativeModules.FileManager.batchExists("Batch II")){
    FileManager.write();
- }
+}
 
-export default class App extends Component{
+export default class App extends Component {
   render(){
     return <HomeRoute />;
   }

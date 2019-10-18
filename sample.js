@@ -158,7 +158,7 @@ for(let i=1; i<=(weeks[0] + 1); i++) {
                         population: (batchInformation.population[0].population - number)
                     };
 
-                    weeklyCas.push([daysDate, number, "died mysteriously"]);
+                    weeklyCas.unshift([daysDate, number, "died mysteriously"]);
 
                     batchInformation.population.unshift(population);
                 }
@@ -169,7 +169,7 @@ for(let i=1; i<=(weeks[0] + 1); i++) {
                     number: fn
                 };
                 
-                fdArr.push([daysDate, fn]);
+                fdArr.unshift([daysDate, fn]);
 
             }
             dts.shift();
@@ -215,7 +215,7 @@ for(let i=1; i<=(weeks[0] + 1); i++) {
             });
 
             dayArr.push(ttl);
-            weekArray.push(dayArr);
+            weekArray.unshift(dayArr);
 
             if(!(checker & 1)) {
                 let fn = (7 + Math.round(Math.random()));
@@ -223,7 +223,7 @@ for(let i=1; i<=(weeks[0] + 1); i++) {
                     date: daysDate,
                     number: fn
                 };
-                fdArr.push([daysDate, fn]);
+                fdArr.unshift([daysDate, fn]);
             }
             dts.shift();
 
