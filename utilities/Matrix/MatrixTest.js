@@ -1,32 +1,40 @@
-const Matrix = require('./Matrix.js').Matrix;
+const Matrix = require('./index.js').Matrix;
+const eggs = require('../../data/eggs.json');
 
-// Tests
-let testArray = [
-  // 1d
-  [2, 3, 4],
-  // 2d
-  [
-    [2, 3],
-    [4, 5],
-  ],
-  //3d
-  [
-    [
-      [2, 3, 4],
-      [3, 4, 5]
-    ]
-  ]
-];
+// [nE, bE, sE, lE]
+let findTotals = (eggs, prices) => {
+  let total = null;
+  let weekNormaliser = new Matrix([
+    [1],
+    [1],
+    [1],
+    [1],
+    [1],
+    [1],
+    [1]
+  ]);
 
+  let price = Matrix.transpose(new Matrix([prices]));
+  
+  for(let i=0; i<eggs.length; i++) {
+    if (eggs[i]) {
+      if (total) {
+        let day = new Matrix(eggs[i], 4);
+        total.add(day);
+      } else {
+        total = new Matrix(eggs[i], 4);
+      }
+    }
+  }
 
-// testArray.forEach((val)=>{
-//   let test = new Matrix(val);
-//   test.multiply(test);
-//   test.toString();
-//   Matrix.repack(test);
-// });
-let test = new Matrix(testArray[0]);
+  // show totals
+  total = Matrix.transpose(total);
+  total = total.multiply(weekNormaliser);
+  total.scalarMultiply(1/30);
+  let finance = total.multiply(price);
+  finance = Matrix.transpose(finance).multiply(new Matrix([[1], [1], [1], [1]]));
 
-// test.multiply(test);
+  return finance;
+}
 
-Matrix.toString(new Matrix(testArray[0]));
+findTotals(eggs, [270, 200, 240, 300]);

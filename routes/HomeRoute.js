@@ -71,10 +71,10 @@ let stackNavigator = createStackNavigator(
   },
   {
     defaultNavigationOptions: {
-    headerStyle: {
-      backgroundColor: Theme.PRIMARY_COLOR_DARK,
-      color: "white",
-    },
+      headerStyle: {
+        backgroundColor: Theme.PRIMARY_COLOR_DARK,
+        color: "white",
+      },
       headerTintColor: "#fff",
       headerTitleStyle: {
         color: "white",

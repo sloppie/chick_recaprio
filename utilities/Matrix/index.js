@@ -1,24 +1,23 @@
-const IncompatibleMatrixError = require('./IncompatibleMatrixError.js').IncompatibleMatrixError;
+const IncompatibleMatrixError = require('../Errors/IncompatibleMatrixError').IncompatibleMatrixError;
 
 class Matrix{
   /**
    * This constuctor takes in an array to repack it into a matrix stored in the object
    * @param {Array} arr  passed in as the array to be used as a Matrix during calculation
+   * @param {Number} limit is the limit to the nuber of columns the user wants to be stored in the matrix
    */
-  constructor(arr){
-    if(arr instanceof Array){
-        this.matrix = Matrix.unwind(arr);
-        this.dimensions = [];
-        let currentObject = arr;
-
-        while(currentObject instanceof Array){
-          this.dimensions.push(currentObject.length);
-          currentObject = (currentObject[0] instanceof Array)? currentObject[0]: null;
-        }
-    }else if(arr instanceof Object){
-      // Helps parse a string Matrix stored as a file... Used with the ```static Matrix.parse``` method
-      this.matrix = arr.matrix;
-      this.dimensions = arr.dimensions;
+  constructor(arr, limit=null){
+    if(!limit) {
+      this.matrix = arr;
+      this.rows = this.matrix.length;
+      this.columns = this.matrix[0].length;
+    } else {
+      this.matrix = new Array(arr.length);
+      this.rows = arr.length;
+      this.columns = limit;
+      for(let i=0; i<arr.length; i++) {
+        this.matrix[i] = arr[i].slice(0, limit);
+      }
     }
   }
 
@@ -26,18 +25,13 @@ class Matrix{
    * This static function compares two matrices and returns a Boolean corresponding to the answer
    * This may be used for matrix operations such as: Addition ```Matrix.add```and Subtraction ```Matrix.subtract```
    * 
-   * @param matrix1 is the first of the two matrices being compared
-   * @param matrix2 is the second of the two matrices being compared
+   * @param { Matrix } matrix1 is the first of the two matrices being compared
+   * @param { Matrix } matrix2 is the second of the two matrices being compared
    * 
    * @return ```Boolean``` true or false after comparing
    */
   static equals(matrix1, matrix2){
-    if(matrix1 instanceof Matrix && matrix2 instanceof Matrix){
-      if(matrix1.dimensions === matrix2.dimensions){
-        return true;
-      }
-    }
-    return false;
+    return (matrix1.rows === matrix2.rows && matrix1.columns === matrix2.columns);
   }
 
   /**
@@ -46,13 +40,6 @@ class Matrix{
    * @param {Array} stack this is the stack that will contain the unwoundArray
    */
   static recurse(array, stack){
-    array.forEach((value)=>{
-      if(value instanceof Array && value[0] instanceof Array){
-        Matrix._recurse(value, stack);
-      }else{
-        stack[stack.length] = value;
-      }
-    });
   }
 
   /**
@@ -69,36 +56,9 @@ class Matrix{
    * @return 2d array representing the Matrix in question irrespective of the number of dimensions
    */
   static unwind(matrixArray){
-    let stack;
-
-    /**
-     * This method unwinds the array into a single dimensional Matrix
-     * @param {Array} array is the array representation of the Matrix in question
-     * @param {Array} stack stack which stores each most inner level array individually
-     */
-    function recurse(array, stack){
-      if(array.every(member => member instanceof Array)){
-        array.forEach(child => {
-          recurse(child, stack);
-        });
-      }else{
-        stack.push(array);
-      }
-    }
-
-    stack  = new Array();
-
-    recurse(matrixArray, stack);
-
-    return stack;
   }
 
   static repack(matrix){
-    let dimensions = [...matrix.dimensions];
-
-    for(let i of dimensions){
-      // console.log(i);
-    }
   }
 
   /**
@@ -108,17 +68,18 @@ class Matrix{
    * @returns {Matrix} transposedMatrix that is the transposed form of the parameter passed in 
    */
   static transpose(matrix){
-    let transposedMatrix = [];
+    let newMatrix = new Array(matrix.columns);
+    for(let i=0; i<newMatrix.length; i++) {
+      newMatrix[i] = new Array(matrix.rows);
+    }
 
-    for(let i=0; i<matrix.matrix[0].length; i++){
-      transposedMatrix[i] = [];
-      for(let x=0; x<matrix.matrix.length; x++){
-        transposedMatrix[i][x] = matrix.matrix[x][i];
+    for(let i=0; i<matrix.rows; i++) {
+      for(let j=0; j<matrix.columns; j++) {
+          newMatrix[j][i] = matrix.matrix[i][j];
       }
     }
 
-    // console.log(transposedMatrix);
-    return new Matrix(transposedMatrix);
+    return new Matrix(newMatrix);
   }
 
   /**
@@ -128,12 +89,6 @@ class Matrix{
    * @returns a string representing the Matrix in question 
    */
   static toString(matrix){
-    let stringMatrix = {};
-
-    stringMatrix.matrix = [...matrix.matrix];
-    stringMatrix.dimensions = [...matrix.dimensions];
-
-    return JSON.stringify(stringMatrix);
   }
 
   /**
@@ -147,12 +102,11 @@ class Matrix{
 
     return new Matrix(matrixObj);
   }
-  // Matrix Operatons
-  add(matrix2){
-    // this._forEach(2, 3, 4);
-    if(Matrix.equals(this, matrix2)){
-      for(let i=0; i<this.matrix.length; i++){
-        for(let j=0; j<this.matrix[i].length; j++){
+
+  add(matrix2) {
+    if(Matrix.equals(this, matrix2)) {
+      for(let i=0; i<this.rows; i++) {
+        for(let j=0; j<this.columns; j++) {
           this.matrix[i][j] += matrix2.matrix[i][j];
         }
       }
@@ -160,9 +114,9 @@ class Matrix{
   }
 
   subtract(matrix2){
-    if(Matrix.equals(this, matrix2)){
-      for(let i=0; i<this.matrix.length; i++){
-        for(let j=0; j<this.matrix[i].length; j++){
+    if(Matrix.equals(this, matrix2)) {
+      for(let i=0; i<this.rows; i++) {
+        for(let j=0; j<this.columns; j++) {
           this.matrix[i][j] -= matrix2.matrix[i][j];
         }
       }
@@ -170,54 +124,44 @@ class Matrix{
   }
   
   hadamardProduct(matrix2){
-    if(Matrix.equals(this, matrix2)){
-      for(let i=0; i<this.matrix.length; i++){
-        for(let j=0; j<this.matrix[i].length; j++){
+    if(Matrix.equals(this, matrix2)) {
+      for(let i=0; i<this.rows; i++) {
+        for(let j=0; j<this.columns; j++) {
           this.matrix[i][j] *= matrix2.matrix[i][j];
         }
       }
     }
   }
 
-  multiply(matrix2){
-    if(this.matrix[0].length == matrix2.matrix.length){
-      let results = [];
-      for(let i=0; i<matrix2.matrix[0].length; i++){
-        for(let x=0; x<this.matrix.length; x++){
-          if(!(results[x] instanceof Array)){
-            results[x] = new Array(matrix2.matrix[0].length);
-          }
-          let sumProduct = 0;
-          for(let y=0; y<this.matrix[0].length; y++){
-            sumProduct += this.matrix[x][y] * matrix2.matrix[y][i];
-          }
-
-          results[x][i] = sumProduct;
-        }
+  multiply(matrix2) {
+    let newMatrix = new Array(this.rows);
+    for(let i=0; i<newMatrix.length; i++) {
+      newMatrix[i] = new Array(matrix2.columns);
+      for(let j=0; j<matrix2.columns; j++) {
+        newMatrix[i][j] = 0;
       }
-
-      console.log(results);
-    }else{
-      throw new IncompatibleMatrixError();
     }
 
+    for(let i=0; i<this.rows; i++) {
+      for(let j=0; j<matrix2.columns; j++) {
+        for(let e=0; e<this.columns; e++) {
+          newMatrix[i][j] += this.matrix[i][e] * matrix2.matrix[e][j];
+        }
+      }
+    }
+
+    return new Matrix(newMatrix);
   }
 
   scalarMultiply(scalar){
-    if(Matrix.equals(this, matrix2)){
-      for(let i=0; i<this.matrix.length; i++){
-        for(let j=0; j<this.matrix[i].length; j++){
-          this.matrix[i][j] *= scalar;
-        }
+    for(let i=0; i<this.rows; i++) {
+      for(let j=0; j<this.columns; j++) {
+        this.matrix[i][j] *= scalar;
       }
     }
   }
 
   _forEach(...args){
-    let dimensions = [...this.dimensions];
-    for(let i=0; i<this.matrix.length; i++){
-
-    }
   }
 }
 
