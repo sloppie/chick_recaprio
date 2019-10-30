@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import InventoryManager from '../InventoryManager/index.js';
 
 const brief = require('./../../data/brief.json');
 const casualties = require('./../../data/casualties.json');
@@ -57,18 +58,18 @@ export default class FileManager {
     /**
      * @returns Array holding the values of `CompleteNumberOfWeeks` and `NumberOfDaysPassedInTheIncompleteWeek`
      */
-    calculateWeek(){
+    calculateWeek() {
         let day = this.dateObj.getDay();
         let currentDay = this.initialDay;
         let offset = 0;
         let weekNumber = 0;
-        for(let y=this.initialYear; y<=this.currentYear; y++){
+        for(let y=this.initialYear; y<=this.currentYear; y++) {
             let initialMonths = (y == this.initialYear)?this.initialMonth: 0;
             let lastMonth = (y == this.currentYear)? this.currentMonth: 11;
-            for(let m=initialMonths; m<=lastMonth; m++){
+            for(let m=initialMonths; m<=lastMonth; m++) {
                 let days = (((y == this.currentYear && m==this.currentMonth))? this.currentDate: this.months[m][1]);
                 let initial = (y== this.initialYear && m==this.initialMonth)? this.initialDate: 1;
-                for(let d=initial; d<=days; d++){
+                for(let d=initial; d<=days; d++) {
                     offset++;
 
                     if(!(offset % 7)){
@@ -140,6 +141,7 @@ export default class FileManager {
             }
 
             NativeModules.FileManager.addData(batch.context, "eggs", JSON.stringify(previousData));
+            InventoryManager.addEggs(newDay);
             if(NativeModules.FileManager.listViewExists(batch.context, "eggs")) {
                 NativeModules.FileManager.updateList(batch.context, "eggs", eggsToList(previousData));
             } else {
@@ -163,16 +165,17 @@ export default class FileManager {
      * ```
      * the resultant stored matrix is in the form:
      * ```js 
-     * [number:Number, date:Date]
+     * [ date:Date, number:Number]
      * ```
      */
-    static addFeeds(batchInformation, data){
+    static addFeeds(batchInformation, data) {
         const key = FileManager.choices.feeds;
         let batch = new FileManager(batchInformation);
         let days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
         let currentDay = days[new Date().getDay()];
         let weekInfo = batch.calculateWeek();
-        let {date, number} = JSON.parse(data);
+        let {date, number, type} = JSON.parse(data);
+        type = InventoryManager.normaliseFeedsName(type);
         let previousData;
         let newData = [date, number];
 
@@ -212,6 +215,7 @@ export default class FileManager {
             }
 
             NativeModules.FileManager.addData(batch.context, "feeds", JSON.stringify(previousData));
+            InventoryManager.restockFeeds(JSON.parse(data));
             if(NativeModules.FileManager.listViewExists(batch.context, "feeds")) {
                 NativeModules.FileManager.updateList(batch.context, "feeds", feedsToList(previousData));
             } else {
@@ -239,7 +243,7 @@ export default class FileManager {
      *  [date:String, number:Number, description:String]
      * ```
      */
-    static addCasualties(batchInformation, data){
+    static addCasualties(batchInformation, data) {
         const key = FileManager.choices.casualties;
         let batch = new FileManager(batchInformation);
         let days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];

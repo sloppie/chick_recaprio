@@ -2,6 +2,8 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
 import Inventory from '../screens/Inventory';
+import Restock from '../screens/Restock';
+
 import Theme from '../theme/Theme';
 
 const StackNavigator = createStackNavigator(
@@ -12,6 +14,12 @@ const StackNavigator = createStackNavigator(
                 headerTitle: "Inventory",
             },
         },
+        Restock: {
+            screen: Restock,
+            navigationOptions: {
+                headerTitle: "Restock",
+            }
+        }
     },
     {
         defaultNavigationOptions: {

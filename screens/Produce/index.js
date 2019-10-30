@@ -4,7 +4,7 @@ import {
     StyleSheet,
     Text,
     TouchableHighlight,
-    // ScrollView,
+    ScrollView,
     FlatList,
     Dimensions,
     // DeviceEventEmitter,
@@ -49,6 +49,7 @@ export default class ProduceTab extends Component {
     if(this.state.data) {
       return (
         <FlatList
+            legacyImplementation={true}
             data={this.state.data}
             renderItem={({item}) => <WeeklyCard week={item.eggs} weekNumber={item.weekNumber}/>}/>
       );

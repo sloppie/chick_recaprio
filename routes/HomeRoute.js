@@ -9,6 +9,7 @@ import Home from '../screens/Home/Home';
 import Chicken from './ChickenInfo';
 import NewBatch from '../screens/NewBatch/NewBatch';
 import AddInventory from '../screens/AddInventory';
+import Modal from './InModal';
 
 import Theme from '../theme/Theme';
 import Icon from 'react-native-ionicons';
@@ -62,10 +63,10 @@ let stackNavigator = createStackNavigator(
       },
     },
     AddInventory: {
-      screen: AddInventory,
+      screen: Modal,
       navigationOptions: {
         title: "Add To Batch",
-				headerLeft: <TouchableHighlight style={{margin: 16}} onPress={popToTop}><Icon name="close" style={{color: "white"}}/></TouchableHighlight>
+        headerLeft: <TouchableHighlight style={{margin: 16}} onPress={popToTop}><Icon name="close" style={{color: "white"}}/></TouchableHighlight>,
       },
     },
   },

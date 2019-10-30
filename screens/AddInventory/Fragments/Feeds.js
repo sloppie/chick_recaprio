@@ -30,11 +30,25 @@ export default class Feeds extends Component{
         });
     }
 
+    feedsType = (value) => {
+        this.setState({
+            type: value
+        });
+    }
+
+    feedsPrice = (value) => {
+        this.setState({
+            price: Number(value)
+        });
+    }
+
     formatData = () => {
-        let {number, date} = this.state
+        let {number, date, type, price} = this.state
         let data = {
             date,
             number,
+            type, 
+            price
         };
 
         return JSON.stringify(data, null, 2);
@@ -50,7 +64,7 @@ export default class Feeds extends Component{
         let data = this.formatData();
         Alert.alert(
             "Confirm Submission",
-            `Date: ${this.state.date}\nFeeds Consumed: ${this.state.number}`,
+            `Date: ${this.state.date}\nFeeds Consumed: ${this.state.number}\nType: ${this.state.type}`,
             [
                 {
                     text: "Cancel",
@@ -75,9 +89,18 @@ export default class Feeds extends Component{
             <View>
                 <Text>Date: {this.state.date}</Text>
                 <TextInput
-                    style={styles.number}
+                    style={styles.textInput}
                     onChangeText={this.onInput}
                     keyboardType="numeric"/>
+                <TextInput
+                    style={styles.textInput}
+                    onChangeText={this.feedsType}
+                    keyboardType="default"/>
+                <TextInput
+                    style={styles.textInput}
+                    onChangeText={this.feedsPrice}
+                    keyboardType="numeric"
+                    />
                 <Button 
                     style={styles.button}
                     title="Submit"
