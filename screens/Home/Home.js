@@ -60,13 +60,13 @@ export default class Home extends React.PureComponent{
 
   static navigationOptions = {
     title: "Chick Ledger",
-    headerStyle: {
-      backgroundColor: Theme.PRIMARY_COLOR,
-      color: "white",
-    },
-      headerTintColor: "#fff",
+    // headerStyle: {
+    //   color: "white",
+    //   elevation: 0
+    // },
+      // headerTintColor: "#fff",
       headerTitleStyle: {
-        color: "white",
+        color: "#444",
       },
   }
 
@@ -106,7 +106,7 @@ export default class Home extends React.PureComponent{
 const styles = StyleSheet.create({
   home: {
     height: Dimensions.get("window").height,
-    backgroundColor: Theme.PRIMARY_COLOR_DARK,
+    // backgroundColor: Theme.PRIMARY_COLOR_DARK,
   },
   FAB: {
     position: "absolute",

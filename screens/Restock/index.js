@@ -4,25 +4,120 @@ import {
     Text,
     TextInput,
     Button,
+    Alert,
     StyleSheet,
     SafeAreaView,
+    NativeModules,
 } from 'react-native';
 
+import InventoryManager from '../../utilities/InventoryManager';
+
+
 export default class Restock extends Component {
+
     constructor(props) {
         super(props);
+        this.state = {
+            type: null,
+            number: null,
+            price: null,
+        };
+    }
+
+
+    getName = (name) => {
+        this.setState({
+            type: name,
+        });
+    }
+
+    getQuantity = (quantity) => {
+        this.setState({
+            number: Number(quantity)
+        });
+    }
+
+    getPrice = (price) => {
+        this.setState({
+            price: Number(price),
+        });
     }
 
     restock = () => {
-        console.log("Pressed");
+        let { type, number, price } = this.state;
+        let formattedTypeName = InventoryManager.normaliseFeedsName(type);
+        if(NativeModules.InventoryManager.typeExists(formattedTypeName)) {
+            let currInv = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
+            let inventoryNumber = currInv[1][formattedTypeName].number;
+            let feedsObject = {
+                type,
+                number,
+                price
+            };
+            Alert.alert(
+                "Confirm adding new feed type",
+                `Confirm adding new feed type: ${feedsObject.type}\nPrice: Kshs ${feedsObject.price}\nQuatity: ${feedsObject.number} sacks`,
+                [
+                    {
+                        text: "Revoke",
+                        onPress: () => {/* pass  */}
+                    },
+                    {
+                        text: "Confirm",
+                        onPress: () => this.confirm(feedsObject)
+                    },
+                ],
+                {
+                    cancelable: true
+                }
+            );
+        } else {
+            let { type, number, price } = this.state;
+            let feedsObject = {
+                type,
+                number,
+                price
+            };
+            Alert.alert(
+                "Add new feeds",
+                `${this.state.type} do not exist in the inventory.`,
+                [
+                    {
+                        text: "Ok",
+                        onPress: () => {
+                            this.setState({
+                                type: ""
+                            });
+                            InventoryManager.addFeeds(feedsObject);
+                            this.props.navigation.pop();
+                        }
+                    }
+                ]
+            );
+        }
+    }
+
+    confirm = (feedsObject) => {
+        InventoryManager.addFeeds(feedsObject);
+        this.props.navigation.pop();
     }
 
     render() {
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.view}>
+                    <Text>Feeds Name:</Text>
                     <TextInput 
-                        onChangeText={}/>
+                        onChangeText={this.getName}
+                        />
+                    <Text>Quantity: </Text>
+                    <TextInput 
+                        keyboardType="numeric"
+                        onChangeText={this.getQuantity}/>
+                    <Text>Price: </Text>
+                    <TextInput 
+                        keyboardType="numeric"
+                        onChangeText={this.getPrice}/>
                 </View>
                 <Button 
                     title="Restock"

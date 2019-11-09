@@ -13,6 +13,11 @@ const TopTab = createMaterialTopTabNavigator(
   {
     Produce: {
       screen: ProduceTab,
+      navigationOptions: {
+        headerTitleStyle: {
+          color: "#444"
+        }
+      }
     },
     Feeds: {
       screen: FeedsTab,
@@ -26,7 +31,9 @@ const TopTab = createMaterialTopTabNavigator(
     tabBarOptions: {
       swipeEnabled: true,
       style: {
-        backgroundColor: Theme.PRIMARY_COLOR_DARK,
+        // backgroundColor: Theme.PRIMARY_COLOR_DARK,
+        // backgroundColor: "white",
+        color: "#444"
       },
     },
     tabBarPosition: 'top',
@@ -36,20 +43,5 @@ const TopTab = createMaterialTopTabNavigator(
   }
 );
 
-
-// const TopTab = createDrawerNavigator(
-//   {
-//     Produce: {
-//       screen: ProduceTab
-//     },
-//     Feeds: {
-//       screen: FeedsTab,
-//     },
-//     Casualties: {
-//       screen: ChickenTab,
-//     },
-//   },
-//   {}
-// );
 
 export default createAppContainer(TopTab);

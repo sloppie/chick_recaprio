@@ -7,6 +7,7 @@ import {
     StyleSheet,
     Button,
     Dimensions,
+    NativeModules,
 } from 'react-native';
 
 import Theme from '../../../theme/Theme';
@@ -14,6 +15,7 @@ import Theme from '../../../theme/Theme';
 import FileManager from '../../../utilities/FileManager';
 
 export default class Eggs extends Component{
+
     constructor(props){
         super(props);
 
@@ -22,7 +24,29 @@ export default class Eggs extends Component{
             brokenEggs: "0.0",
             smallerEggs: "0.0",
             largerEggs: "0.0",
+            todaysCollect: null,
         };
+    }
+
+    componentDidMount() {
+        if(this.props.batchInformation != null) {
+            let { batchInformation } = this.props;
+            // console.log(batchInformation.name, "from Eggs  Component");
+            let exists = FileManager.checkForRecords(batchInformation, "eggs");
+            if(exists) {
+                let context = NativeModules.Sessions.getCurrentSession();
+                let todaysCollect;
+                NativeModules.FileManager.fetchData(context, "eggs", (data) => {
+                    todaysCollect = JSON.parse(data);
+                    let len = todaysCollect.length - 1;
+                    todaysCollect = todaysCollect[len][0];
+    
+                    this.setState({
+                        todaysCollect,
+                    });
+                });
+            }
+        }
     }
 
     NEChange = (value) => {
@@ -53,7 +77,10 @@ export default class Eggs extends Component{
         let data = this.state;
         let validatedData = {};
         let globalSum = 0;
-        for(let key in data){
+        for(let key in data) {
+            if(key == "todaysCollect") {
+                continue;
+            }
             let inputData = data[key];
             let splitData = inputData.split(".");
             inputData = splitData;
@@ -76,9 +103,7 @@ export default class Eggs extends Component{
         let { batchInformation } = this.props;
         console.log(`This is batch information from AI:\n${batchInformation}`)
         let { population } = batchInformation.population[0];
-        if (this.formValidation()){
-            console.log(this.formValidation());
-    
+        if (this.formValidation()) {    
             let {
                 normalEggs,
                 brokenEggs,
@@ -127,9 +152,9 @@ export default class Eggs extends Component{
         );
     }
 
-    sendData(data){
+    sendData(data, todaysCollect){
         let { batchInformation } = this.props;
-        FileManager.addEggs(batchInformation, data);
+        FileManager.addEggs(batchInformation, data, todaysCollect);
         this.props.navigation.popToTop();
     }
 
@@ -151,7 +176,8 @@ export default class Eggs extends Component{
                     {
                         text: "Confirm",
                         onPress: () => {
-                            this.sendData(finalData);
+                            console.log("This is todaysColect ", this.state.todaysCollect);
+                            this.sendData(finalData, this.state.todaysCollect);
                         },
                         style: "default",
                     },
@@ -196,6 +222,7 @@ export default class Eggs extends Component{
             </View>
         );
     }
+
 }
 
 const styles = StyleSheet.create({

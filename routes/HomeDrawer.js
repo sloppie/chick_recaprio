@@ -18,14 +18,14 @@ const Drawer = createDrawerNavigator(
             navigationOptions: {
                 headerTitle: "Inventory",
                 drawerLabel: "Inventory",
-                title: "Inventory"
+                title: "Inventory",
             },
         }
     },
     {
         minSwipeDistance: 30,
-        overlayColor: Theme.PRIMARY_COLOR_LIGHT,
-        drawerBackgroundColor: Theme.PRIMARY_COLOR,
+        // overlayColor: Theme.PRIMARY_COLOR_LIGHT,
+        // drawerBackgroundColor: Theme.PRIMARY_COLOR,
     }
 );
 

@@ -145,9 +145,12 @@ export class FeedCard extends Component {
     let renderedWeek = [];
     let days = ["SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"];
     for(let i=0; i<week.length; i++) {
+      let int = week[i][0];
+      let date = new Date(int);
+      console.log(int, "date in question");
       renderedWeek.push(
         <View style={FCStyles.day} key={i}>
-          <Text style={FCStyles.dayText}>{`${days[new Date(week[i][0]).getDay()]}: ${week[i][1]}`}</Text> 
+          <Text style={FCStyles.dayText}>{`${int}: ${week[i][1]}`}</Text> 
           <Icon style={FCStyles.editIcon} name="create" />
         </View>
       );

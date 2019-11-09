@@ -93,7 +93,7 @@ export default class AddInventory extends Component{
 
     render(){
         const { navigation } = this.props;
-        let context = navigation.getParam("context", "Not Founnd");
+        let context = navigation.getParam("context", "Not Found");
         return (
             this.renderPage(context, this.batchInformation, navigation)
         );

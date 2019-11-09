@@ -2,18 +2,26 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
 import React from 'react';
-import { NativeModules , TouchableHighlight } from 'react-native';
+
+import { 
+  NativeModules, 
+  TouchableHighlight,
+} from 'react-native';
+
 import OptionsMenu from 'react-native-options-menu';
 
 import Home from '../screens/Home/Home';
 import Chicken from './ChickenInfo';
 import NewBatch from '../screens/NewBatch/NewBatch';
 import AddInventory from '../screens/AddInventory';
-import Modal from './InModal';
+import Restock from '../screens/Restock';
 
 import Theme from '../theme/Theme';
 import Icon from 'react-native-ionicons';
 
+/**
+ * Grabs the props from the initial Home component and helps to manipulate oustide the main Component
+ */
 let propGrabber = null;
 let navGrabber = null;
 
@@ -30,7 +38,7 @@ function switchToFeeds() {
 }
 
 /**
- *
+ * Resets the Session, and then goes back to top
  */
 function popToTop() {
 	NativeModules.Sessions.resetSession();
@@ -39,7 +47,9 @@ function popToTop() {
 
 let stackNavigator = createStackNavigator(
   {
-    Home,
+    Home: {
+      screen: Home,
+    },
     Chicken: {
       screen: (props) => {
         propGrabber = props;
@@ -49,8 +59,7 @@ let stackNavigator = createStackNavigator(
         title: "Batch Data",
         headerRight: ( 
           <OptionsMenu
-            customButton={<Icon name="add" style={{marginEnd: 16, color: "white"}}/>}
-            // destructiveIndex={2}
+            customButton={<Icon name="add" style={{marginEnd: 16, color: "#444"}}/>}
             options={["Add Eggs", "Add Feeds"]}
             actions={[switchToEggs, switchToFeeds]} />
         ),
@@ -63,22 +72,30 @@ let stackNavigator = createStackNavigator(
       },
     },
     AddInventory: {
-      screen: Modal,
+      screen: AddInventory,
       navigationOptions: {
         title: "Add To Batch",
-        headerLeft: <TouchableHighlight style={{margin: 16}} onPress={popToTop}><Icon name="close" style={{color: "white"}}/></TouchableHighlight>,
+        headerLeft: <TouchableHighlight style={{margin: 16}} onPress={popToTop}>
+                        <Icon name="close" style={{color: "#444"}}/>
+                    </TouchableHighlight>,
+      },
+    },
+    Restock: {
+      screen: Restock,
+      navigationOptions: {
+        title: "Restock",
       },
     },
   },
   {
     defaultNavigationOptions: {
       headerStyle: {
-        backgroundColor: Theme.PRIMARY_COLOR_DARK,
-        color: "white",
+        color: "#444",
+        elevation: 0
       },
-      headerTintColor: "#fff",
+      headerTintColor: "#444",
       headerTitleStyle: {
-        color: "white",
+        color: "#444",
       },
     },
   },

@@ -31,7 +31,7 @@ public class InventoryManager extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "Inventory";
+        return "InventoryManager";
     }
 
     private void createInventory() {
@@ -41,7 +41,8 @@ public class InventoryManager extends ReactContextBaseJavaModule {
 				feedsDirectory.mkdirs();
 				writeFile(currentInventory, "[]");
 				writeFile(history, "[]");
-				writeFile(pickUp, "[]");
+                writeFile(pickUp, "[]");
+                makeToast(pickUp.getAbsolutePath());
 			} catch (Exception e) {
 
 			}
@@ -64,6 +65,14 @@ public class InventoryManager extends ReactContextBaseJavaModule {
         File feeds = new File(feedsDirectory, type + ".json");
 
         return feeds.exists();
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String fetchFeeds(String feedsName) {
+        File feeds = new File(feedsDirectory, feedsName + ".json");
+        String data = readFile(feeds);
+
+        return data;
     }
 
 	@ReactMethod

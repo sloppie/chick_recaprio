@@ -9,12 +9,25 @@ import {
 } from 'react-native';
 import Icon from 'react-native-ionicons';
 
+import FileManager from '../../../utilities/FileManager';
 import Theme from './../../../theme/Theme';
 
 
 export default class Card extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      age: null
+    };
+  }
+
+  componentDidMount() {
+    let weeks = new FileManager(this.props.batchInformation).calculateWeek();
+    let age = (weeks[1])? weeks[0] + 1 : weeks[0];
+    this.setState({
+      age
+    });
   }
 
   goToBatch = () => {
@@ -39,8 +52,8 @@ export default class Card extends Component {
         underlayColor={Theme.PRIMARY_COLOR_DARK}>
         <View>
           <View style={styles.titleHolder}>
-            <Text style={styles.name}> {this.props.batchInformation.name}</Text>
-            <Text style={styles.weekTitle}>{`Week 76, from ${new Date(this.props.batchInformation.population[len].date).toLocaleDateString()}`}</Text>
+            <Text style={styles.name}> {batchInformation.name}</Text>
+            <Text style={styles.weekTitle}>{`Week ${this.state.age}, from ${new Date(this.props.batchInformation.population[len].date).toLocaleDateString()}`}</Text>
           </View>
           <View
             style={{
@@ -51,7 +64,7 @@ export default class Card extends Component {
               style={{
                 fontFamily: "serif",
                 textAlignVertical: "center",
-                color: Theme.PARAGRAPH_COLOR,
+                color: "#444",
               }}>{" production"}</Text>
           </View>
           <View style={styles.navigate}>
@@ -82,7 +95,8 @@ let styles = StyleSheet.create({
     width: (Dimensions.get("window").width - 16),
     alignSelf: "center",
     elevation: 1,
-    backgroundColor: Theme.PRIMARY_COLOR,
+    // backgroundColor: Theme.PRIMARY_COLOR,
+    backgroundColor: "#f3f3f3"
   },
   titleHolder: {
     marginBottom: 24,
@@ -104,7 +118,7 @@ let styles = StyleSheet.create({
   pp: {
     fontFamily: "serif",
     fontWeight: "700",
-    color: "#fff",
+    color: "#444",
     fontSize: 30,
   },
   navigate: {

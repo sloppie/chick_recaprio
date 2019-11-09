@@ -107,7 +107,7 @@ export default class FileManager {
      *  [normalEggs, brokenEggs, smallerEggs, largerEggs, sum] 
      * ```
      */
-    static addEggs(batchInformation, data) {
+    static addEggs(batchInformation, data, todaysCollect=null) {
         const key = FileManager.choices.eggs;
         let batch = new FileManager(batchInformation);
         let days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
@@ -115,33 +115,66 @@ export default class FileManager {
         let weekInfo = batch.calculateWeek();
         let parsedData = JSON.parse(data);
         let previousData;
+        let newDay;
         NativeModules.FileManager.fetchData(batch.context, "eggs", (oldData) => {
             let {normalEggs, smallerEggs, largerEggs, brokenEggs} = parsedData;
-            previousData = JSON.parse(oldData);
-            let newDay = [normalEggs, brokenEggs, smallerEggs, largerEggs];
-            let sum = newDay[0] + newDay[1] + newDay[2] + newDay[3];
-            newDay.push(sum);
-
-            if(weekInfo[1]) {
-                let cd = (weekInfo[1] - 1);
-                // adds to the current day offset to the newly incomplete week
-                if(previousData[weekInfo[0]] instanceof Array) {
-                    if(FileManager.checkForRecords(batchInformation, "eggs")) {
-                        previousData[weekInfo[0]][0] = newDay;
+				// !TODO use a try-catch block to account for first time data insert
+                // !TODO make sure there is a null for ech empty week before the egggs starrt getting inserted
+            try{
+                previousData = JSON.parse(oldData);
+                newDay = [normalEggs, brokenEggs, smallerEggs, largerEggs];
+                let sum = newDay[0] + newDay[1] + newDay[2] + newDay[3];
+                newDay.push(sum);
+    
+                if(weekInfo[1]) {
+                    let cd = (weekInfo[1] - 1);
+                    // adds to the current day offset to the newly incomplete week
+                    if(previousData[weekInfo[0]] instanceof Array) {
+                        let recordCheck = FileManager.checkForRecords(batchInformation, "eggs");
+                        if(recordCheck) {
+                            previousData[weekInfo[0]][0] = newDay;
+                        } else {
+                            previousData[weekInfo[0]].unshift(newDay);
+                        }
                     } else {
-                        previousData[weekInfo[0]].unshift(newDay);
+                        previousData[weekInfo[0]] = [newDay];
                     }
                 } else {
-                    previousData[weekInfo[0]] = [newDay];
+                    let pi = (weekInfo[0] - 1);
+                    // adds to the last day of the unfinished week
+                    previousData[pi].unshift(newDay);
                 }
-            } else {
-                let pi = (weekInfo[0] - 1);
-                // adds to the last day of the unfinished week
-                previousData[pi].unshift(newDay);
+            } catch (err) {
+                // if a JSON parse error is caught it is to mean that the file is empty hence need to initialise it properly
+                previousData = [];
+                for(let i=0; i<=weekInfo[0]; i++) {
+                    previousData.push(null);
+                }
+
+                newDay = [normalEggs, brokenEggs, smallerEggs, largerEggs]
+                let sum = newDay[0] + newDay[1] + newDay[2] + newDay[3];
+                newDay.push(sum);
+
+                if(weekInfo[1]) {
+                    let week = [];
+                    for(let i=0; i<weekInfo[1]; i++) {
+                        week.push(null);
+                    }
+                    week[0] = newDay;
+                    previousData[weekInfo[0]] = week;
+                } else {
+                    let week = [];
+                    let day = weekInfo[0] - 1;
+                    for(let i=0; i<7; i++) {
+                        week.push(null);
+                    }
+                    week[0] = newDay;
+                    previousData[day] = week;
+                }
             }
 
             NativeModules.FileManager.addData(batch.context, "eggs", JSON.stringify(previousData));
-            InventoryManager.addEggs(newDay);
+            InventoryManager.addEggs(newDay, todaysCollect);
             if(NativeModules.FileManager.listViewExists(batch.context, "eggs")) {
                 NativeModules.FileManager.updateList(batch.context, "eggs", eggsToList(previousData));
             } else {
@@ -286,6 +319,7 @@ export default class FileManager {
         let batch = new FileManager(batchInformation);
         let weeks = batch.calculateWeek();
         let exists = false;
+
         try {
             if (weeks[1]) {
                 let data = NativeModules.FileManager.fetchForCheck(batch.context, type);
@@ -294,14 +328,13 @@ export default class FileManager {
                 let day = weeks[1] - 1;
                 if (type == "eggs") {
                     console.log(JSON.stringify(oldData[week][0]))
-                    // exists = oldData[week][day] instanceof Array;
                     exists = oldData[week].length == weeks[1];
                 } else {
                     let lastWeek = oldData[week];
-                    let today = new Date().toLocaleDateString().split("/");
+                    let today = new Date().toDateString();
                     let i = lastWeek.length - 1;
-                    let interrim = lastWeek[0][0].split("/");
-                    exists = (today[0] == interrim[0]) && (today[1] == interrim[1]);
+                    let interrim = lastWeek[0][0];
+                    exists = today == interrim;
                 }
                 return exists;
             } else {
@@ -315,17 +348,17 @@ export default class FileManager {
                     exists = oldData[week].length == 6;
                 } else {
                     let lastWeek = oldData[week];
-                    let today = new Date().toLocaleDateString().split("/");
+                    let today = new Date().toDateString();
                     let i = lastWeek.length - 1;
-                    let interrim = lastWeek[0][0].split("/");
-                    exists = (today[0] == interrim[0]) && (today[1] == interrim[1]);
+                    let interrim = lastWeek[0][0];
+                    exists = (interrim == today);
                 }
             }
         } catch (err) {
-
+            // pass
         }
-        return exists;
 
+        return exists;
     }
 
     static batchExists(name) {
