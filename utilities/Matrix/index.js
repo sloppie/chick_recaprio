@@ -3,10 +3,11 @@ const IncompatibleMatrixError = require('../Errors/IncompatibleMatrixError').Inc
 class Matrix{
   /**
    * This constuctor takes in an array to repack it into a matrix stored in the object
-   * @param {Array} arr  passed in as the array to be used as a Matrix during calculation
+   * @param {Array<Number>} arr  passed in as the array to be used as a Matrix during calculation
    * @param {Number} limit is the limit to the nuber of columns the user wants to be stored in the matrix
    */
-  constructor(arr, limit=null){
+  constructor(array, limit=null) {
+    let arr = Matrix._matrixConverter(array);
     if(!limit) {
       this.matrix = arr;
       this.rows = this.matrix.length;
@@ -21,6 +22,20 @@ class Matrix{
     }
   }
 
+  static _matrixConverter(arr) {
+    let newArr = [];
+    if(typeof arr[0] == "number") {
+      for(let i=0; i<arr.length; i++) {
+        newArr.push([arr[i]]);
+      }
+    } else {
+      newArr = arr;
+    }
+
+    console.log(JSON.stringify(newArr));
+    return newArr;
+  }
+
   /**
    * This static function compares two matrices and returns a Boolean corresponding to the answer
    * This may be used for matrix operations such as: Addition ```Matrix.add```and Subtraction ```Matrix.subtract```
@@ -30,8 +45,15 @@ class Matrix{
    * 
    * @return ```Boolean``` true or false after comparing
    */
-  static equals(matrix1, matrix2){
-    return (matrix1.rows === matrix2.rows && matrix1.columns === matrix2.columns);
+  static equals(matrix1, matrix2) {
+    let equals = (matrix1.rows === matrix2.rows && matrix1.columns === matrix2.columns);
+    if(equals) {
+      console.log("Matrix are equal");
+    } else {
+      console.log("Not equal");
+    }
+
+    return equals;
   }
 
   /**

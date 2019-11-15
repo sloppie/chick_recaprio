@@ -64,7 +64,7 @@ export default class Restock extends Component {
                     },
                     {
                         text: "Confirm",
-                        onPress: () => this.confirm(feedsObject)
+                        onPress: () => InventoryManager.addFeeds(feedsObject)
                     },
                 ],
                 {
@@ -80,16 +80,12 @@ export default class Restock extends Component {
             };
             Alert.alert(
                 "Add new feeds",
-                `${this.state.type} do not exist in the inventory.`,
+                `${this.state.type} do not exist in the inventory. Confirm adding it to inventory.`,
                 [
                     {
-                        text: "Ok",
+                        text: "Confirm",
                         onPress: () => {
-                            this.setState({
-                                type: ""
-                            });
-                            InventoryManager.addFeeds(feedsObject);
-                            this.props.navigation.pop();
+                            this.confirm(feedsObject);
                         }
                     }
                 ]
@@ -99,7 +95,7 @@ export default class Restock extends Component {
 
     confirm = (feedsObject) => {
         InventoryManager.addFeeds(feedsObject);
-        this.props.navigation.pop();
+        this.props.navigation.goBack();
     }
 
     render() {

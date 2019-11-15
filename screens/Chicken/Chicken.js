@@ -91,13 +91,13 @@ export default class Chicken extends React.Component {
   componentDidMount(){
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
   }
 
   componentWillUnmount() {
   }
 
-  componentWillUpdate() {
+  UNSAFE_componentWillUpdate() {
   }
 
   renderTab() {

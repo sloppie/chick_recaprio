@@ -7,12 +7,11 @@ import {
     Dimensions,
     StyleSheet,
     NativeModules,
+    DeviceEventEmitter,
 } from 'react-native';
 
-import { createAppContainer } from 'react-navigation';
-
+// utilities
 import InventoryManager from '../../utilities/InventoryManager';
-import Produce from '../Produce';
 
 
 export default class Inventory extends Component {
@@ -21,8 +20,14 @@ export default class Inventory extends Component {
         super(props);
 
         this.state = {
-            rendered: false
+            rendered: false,
+            normalEggs: "0.0",
+            brokenEggs: "0.0",
+            smallerEggs: "0.0",
+            largerEggs: "0.0"
         };
+
+        this.subscription = DeviceEventEmitter.addListener("update", this.listen);
     }
 
     static navigationOptions = {
@@ -33,29 +38,53 @@ export default class Inventory extends Component {
         return nextState.rendered;
     }
 
+    
     componentDidMount() {
-        this.currentInventory = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
-        this.feeds = [];
-        for(let feedName in this.currentInventory[1]) {
-            let feed = [];
-            let name = InventoryManager.redoFeedsName(feedName);
-            feed.push(name, this.currentInventory[1][feedName].number); 
-            this.feeds.push(feed);
-        }
-        this.renderFeedsInventory();
+        this.forceUpdate();
+    }
 
-        this.setState({
-            normalEggs: InventoryManager.findTrays(this.currentInventory[0][0]),
-            brokenEggs: InventoryManager.findTrays(this.currentInventory[0][1]),
-            smallerEggs: InventoryManager.findTrays(this.currentInventory[0][2]),
-            largerEggs: InventoryManager.findTrays(this.currentInventory[0][3]),
-        });
+    componentWillUnmount() {
+        this.subscription.remove();
+    }
+
+    listen = (event) => {
+        if (event.done) {
+            this.forceUpdate();
+        }
+    }
+
+    forceUpdate = () => {
+        try {
+            this.currentInventory = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
+            this.feeds = [];
+            for(let feedName in this.currentInventory[1]) {
+                let feed = [];
+                let name = InventoryManager.redoFeedsName(feedName);
+                feed.push(name, this.currentInventory[1][feedName].number); 
+                this.feeds.push(feed);
+            }
+            this.renderFeedsInventory();
+            
+            if(!isNaN(this.currentInventory[0][0])) {
+                this.setState({
+                    normalEggs: InventoryManager.findTrays(this.currentInventory[0][0]),
+                    brokenEggs: InventoryManager.findTrays(this.currentInventory[0][1]),
+                    smallerEggs: InventoryManager.findTrays(this.currentInventory[0][2]),
+                    largerEggs: InventoryManager.findTrays(this.currentInventory[0][3]),
+                });
+            }
+        } catch (err) {
+            // pass
+        }
+
     }
 
     renderFeedsInventory = () => {
         let feed = [];
         for(let i=0; i<this.feeds.length; i++) {
-            feed.push(<Text key={this.feeds[i][0]} style={styles.eggCategories}>{this.feeds[i][0]}: <Text style={styles.number}>{this.feeds[i][1]}</Text></Text>);
+            feed.push(
+                <Text key={this.feeds[i][0]} style={styles.eggCategories}>{this.feeds[i][0]}: <Text style={styles.number}>{this.feeds[i][1]}</Text></Text>
+            );
         }
         this.fd = feed;
         this.setState({
@@ -81,7 +110,6 @@ export default class Inventory extends Component {
                     text: "Confirm",
                     onPress: () => {
                         console.log("Agreed to pick up")
-                        // InventoryManager.addPickUp();
                     }
                 }
             ],

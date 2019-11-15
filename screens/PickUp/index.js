@@ -9,7 +9,7 @@ import {
     Dimensions,
 } from 'react-native';
 
-import Select from './Fragments/PickUp';
+import EmptyInventory from './Fragments/PickUp';
 import InventoryManager from '../../utilities/InventoryManager';
 
 export default class PickUp extends Component {
@@ -42,14 +42,15 @@ export default class PickUp extends Component {
     }
 
     confirm = () => {
-        let regEx = /d+.d{1,1}/gi;
-        if(regEx.test(this.state.number)) {
-            console.log(this.state.number);
+        // let regEx = /d+.d{1,1}/gi;
+        // if(regEx.test(this.state.number)) {
+        //     console.log(this.state.number);
 
-        }
+        // }
+        InventoryManager.addPickUp();
     }
 
-    renderScreen() {
+    renderScreen = () => {
         if(this.state.currentInventory == [] || this.state.currentInventory == "") {
             return (
                 <View style={styles.errorScreen}>
@@ -60,23 +61,25 @@ export default class PickUp extends Component {
         } else {
             return (
                 <View>
-                    <Text>Existing Inventory</Text>
-                    <Text>{`Normal Eggs: ${this.state.currentInventory[0]}`}</Text>
-                    <Text>{`Broken Eggs: ${this.state.currentInventory[1]}`}</Text>
-                    <Text>{`Smaller Eggs ${this.state.currentInventory[2]}`}</Text>
-                    <Text>{`Larger Eggs: ${this.state.currentInventory[3]}`}</Text>
-                    <Text>{`Total: ${this.state.currentInventory[4]}`}</Text>
+                    <Text style={styles.title}>Existing Inventory</Text>
+                    <View style={styles.existingInventory}>
+                        <Text style={styles.eggs}>{`Normal Eggs: ${this.state.currentInventory[0]}`}</Text>
+                        <Text style={styles.eggs}>{`Broken Eggs: ${this.state.currentInventory[1]}`}</Text>
+                        <Text style={styles.eggs}>{`Smaller Eggs ${this.state.currentInventory[2]}`}</Text>
+                        <Text style={styles.eggs}>{`Larger Eggs: ${this.state.currentInventory[3]}`}</Text>
+                        <Text style={styles.eggs}>{`Total: ${this.state.currentInventory[4]}`}</Text>
+                    </View>
                     <TextInput 
                         keyboardType="numeric"
                         onChangeText={this.getNumber}/>
-                    <Select style={styles.pickUp} label="Empty Inventory" />
+                    <EmptyInventory style={styles.pickUp} label="Empty Inventory" onClick={this.confirm}/>
                 </View>
             );
         }
     }
 
     render() {
-            return this.renderScreen();
+        return this.renderScreen();
     }
 
 }
@@ -97,5 +100,19 @@ const styles = StyleSheet.create({
     },
     errorBody: {
         marginTop: 16,
+    },
+    title: {
+        fontSize: 20,
+        textAlign: "center",
+        textAlignVertical: "center",
+        fontWeight: "600",
+    },
+    existingInventory: {
+        maxWidth: (Dimensions.get("window").width - 16),
+        alignSelf: "center",
+        backgroundColor: "#999",
+    },
+    eggs: {
+        textAlignVertical: "center",
     },
 });

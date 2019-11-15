@@ -345,7 +345,7 @@ export default class FileManager {
                 if (type == "eggs") {
                     console.log(JSON.stringify(oldData[week][day]))
                     // exists = oldData[week][day] instanceof Array;
-                    exists = oldData[week].length == 6;
+                    exists = oldData[week].length == 7;
                 } else {
                     let lastWeek = oldData[week];
                     let today = new Date().toDateString();

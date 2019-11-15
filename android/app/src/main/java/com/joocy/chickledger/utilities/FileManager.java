@@ -28,6 +28,7 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
   private static final String DURATION_SHORT_KEY = "SHORT";
   private static final String DURATION_LONG_KEY = "LONG";
   private final File filesDir = getReactApplicationContext().getFilesDir();
+  private ReactContext reactContext = (ReactContext) getReactApplicationContext(); 
 
   public FileManager(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -54,6 +55,9 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
     } else {
       state.invoke(false, true);
     }
+
+    Thread forceUpdate = new Thread(new ForceUpdate(reactContext));
+    forceUpdate.start();
   } 
 
   private void createBrief(String context, String data) {

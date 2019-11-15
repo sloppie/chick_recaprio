@@ -149,17 +149,18 @@ export class WeeklyCard extends Component {
     let days = [];
     if(week) {
       for(let i=0; i<week.length; i++) {
-        /**
-         *  [normalEggs, brokenEggs, smallerEggs, largerEggs] 
-         */
-        days.push(
-          <View style={WCStyles.day} key={i}>
-            <Text style={WCStyles.dayText}>{week[i][4]}</Text>
-            <TouchableHighlight onPress={() => { console.log("Hello") }}>
-              <Icon name="create" style={WCStyles.editIcon} />
-            </TouchableHighlight>
-          </View>
-        );
+        // [normalEggs, brokenEggs, smallerEggs, largerEggs] 
+        // the `if block` statement makes sure the data trying to be converted to an `Object` is not `null`
+        if(week[i]) {
+          days.push(
+            <View style={WCStyles.day} key={i}>
+              <Text style={WCStyles.dayText}>{week[i][4]}</Text>
+              <TouchableHighlight onPress={() => { console.log("Hello") }}>
+                <Icon name="create" style={WCStyles.editIcon} />
+              </TouchableHighlight>
+            </View>
+          );
+        }
       }
     }
 

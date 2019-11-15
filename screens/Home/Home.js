@@ -4,6 +4,7 @@ import {
   StyleSheet, 
   Dimensions,
   NativeModules,
+  DeviceEventEmitter,
 } from 'react-native';
 
 /* Fragments */
@@ -15,46 +16,56 @@ import Theme from './../../theme/Theme';
 
 
 export default class Home extends React.PureComponent{
-  constructor(props){
+
+  constructor(props) {
     super(props);
     this._isMounted = false;
+
     this.state = {
       batches: {},
     };
 
+    this.subscription = DeviceEventEmitter.addListener("update", this.listen);
   }
   
-  componentDidMount(){
-    console.log("Current session --> ", NativeModules.Sessions.getCurrentSession());
+  componentDidMount() {
+    this.forceUpdate();
+  }
+  
+  componentWillUnmount() {
+    this.subscription.remove();
+    this._isMounted = false;
+  }
+  
+  listen = (event) => {
+    if(event.done) {
+      this.forceUpdate();
+    }
+  }
+  
+  forceUpdate = () => {
     this._isMounted = true;
-    this._isMounted && NativeModules.FileManager.fetchBatches((data)=>{
-      // console.log(data);
+    this._isMounted && NativeModules.FileManager.fetchBatches((data) => {
       this.setState({
         batches: JSON.parse(data),
       });
     
     });
-    
-    // console.log(Object.keys(this.batches));
   }
 
-  setBatches(name, data){
+  setBatches(name, data) {
     this.batches[name] = data;
   }
 
-  _parseKey(name){
+  _parseKey(name) {
     return name.toLowerCase().replace(" ", "_");
-  }
-
-  componentWillUnmount(){
-    this._isMounted = false;
   }
 
   /**
    * 
    * @param {Component} batchName is the react screenn to be navigated to 
    */
-  goToBatch(batchName){
+  goToBatch(batchName) {
     this.props.navigation.push(batchName);
   }
 
@@ -101,7 +112,8 @@ export default class Home extends React.PureComponent{
       </View>
       );
     }
-  }
+
+}
 
 const styles = StyleSheet.create({
   home: {

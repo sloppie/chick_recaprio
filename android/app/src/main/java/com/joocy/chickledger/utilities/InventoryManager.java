@@ -17,6 +17,7 @@ import android.widget.Toast;
 public class InventoryManager extends ReactContextBaseJavaModule {
     private File cacheDir = getReactApplicationContext().getCacheDir();
     private File filesDir = getReactApplicationContext().getFilesDir();
+    private ReactContext reactContext = (ReactContext) getReactApplicationContext();
     File inventory = new File(filesDir, "inventory");
 	File currentInventory = new File(inventory, "currentInventory.json");
 	File history = new File(inventory, "history.json");
@@ -39,7 +40,7 @@ public class InventoryManager extends ReactContextBaseJavaModule {
 			try {
 				inventory.mkdirs();
 				feedsDirectory.mkdirs();
-				writeFile(currentInventory, "[]");
+				writeFile(currentInventory, "[[], {}]");
 				writeFile(history, "[]");
                 writeFile(pickUp, "[]");
                 makeToast(pickUp.getAbsolutePath());
@@ -57,7 +58,9 @@ public class InventoryManager extends ReactContextBaseJavaModule {
 	@ReactMethod
 	public void addFeeds(String type, String data) {
 		File feeds = new File(feedsDirectory, type + ".json");
-		writeFile(feeds, data);
+        writeFile(feeds, data);
+        Thread forceUpdate = new Thread(new ForceUpdate(reactContext));
+        forceUpdate.start();
     }
     
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -89,6 +92,8 @@ public class InventoryManager extends ReactContextBaseJavaModule {
 	@ReactMethod
 	public void addCurrentInventory(String data) {
 		writeFile(currentInventory, data);
+        Thread forceUpdate = new Thread(new ForceUpdate(reactContext));
+        forceUpdate.start();
 	}
 
 	@ReactMethod(isBlockingSynchronousMethod = true)
@@ -157,4 +162,5 @@ public class InventoryManager extends ReactContextBaseJavaModule {
             }
         }
     }
+
 }
