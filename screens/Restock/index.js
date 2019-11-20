@@ -4,13 +4,21 @@ import {
     Text,
     TextInput,
     Button,
+    TouchableHighlight,
     Alert,
     StyleSheet,
     SafeAreaView,
     NativeModules,
+    Dimensions,
+    DeviceEventEmitter,
 } from 'react-native';
 
+// utilities
 import InventoryManager from '../../utilities/InventoryManager';
+
+// fragments
+import FeedCard from './Fragments/FeedCard';
+import { FAB } from 'react-native-paper';
 
 
 export default class Restock extends Component {
@@ -21,9 +29,56 @@ export default class Restock extends Component {
             type: null,
             number: null,
             price: null,
+            counter: 0,
         };
+
+        this.subscription = DeviceEventEmitter.addListener("update", this.listen);
     }
 
+    componentWillUnmount() {
+        this.subscription.remove();
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (nextState.counter > this.state.counter) {
+            return true;
+        }
+    }
+
+    listen = (event) => {
+        if (event.done) {
+            this.counter();
+        }
+    }
+
+    counter = () => {
+        this.setState({
+            counter: (this.state.counter + 1)
+        });
+    }
+
+    renderCards() {
+        let current = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
+        console.log(current)
+        let feedsInventory = current[1];
+        let cards = [];
+
+        for (let i in feedsInventory) {
+            let type = feedsInventory[i];
+            type = [type.date, type.number];
+            // new `type` Array = [date, Number, normalisedFeedsName]
+            type.push(i);
+
+            cards.push(<FeedCard
+                type={type}
+                key={i}
+                toggleState={this.toggleState}
+                navigation={this.props.navigation} />);
+        }
+
+
+        return cards;
+    }
 
     getName = (name) => {
         this.setState({
@@ -46,7 +101,7 @@ export default class Restock extends Component {
     restock = () => {
         let { type, number, price } = this.state;
         let formattedTypeName = InventoryManager.normaliseFeedsName(type);
-        if(NativeModules.InventoryManager.typeExists(formattedTypeName)) {
+        if (NativeModules.InventoryManager.typeExists(formattedTypeName)) {
             let currInv = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
             let inventoryNumber = currInv[1][formattedTypeName].number;
             let feedsObject = {
@@ -60,7 +115,7 @@ export default class Restock extends Component {
                 [
                     {
                         text: "Revoke",
-                        onPress: () => {/* pass  */}
+                        onPress: () => {/* pass  */ }
                     },
                     {
                         text: "Confirm",
@@ -98,27 +153,19 @@ export default class Restock extends Component {
         this.props.navigation.goBack();
     }
 
+    newFeeds = () => {
+        this.props.navigation.navigate("NewFeeds");
+    }
+
     render() {
+        let renderedCards = this.renderCards();
         return (
             <SafeAreaView style={styles.container}>
-                <View style={styles.view}>
-                    <Text>Feeds Name:</Text>
-                    <TextInput 
-                        onChangeText={this.getName}
-                        />
-                    <Text>Quantity: </Text>
-                    <TextInput 
-                        keyboardType="numeric"
-                        onChangeText={this.getQuantity}/>
-                    <Text>Price: </Text>
-                    <TextInput 
-                        keyboardType="numeric"
-                        onChangeText={this.getPrice}/>
-                </View>
-                <Button 
-                    title="Restock"
-                    onPress={this.restock}
-                    style={styles.fab}/>
+                {renderedCards}
+            <FAB 
+                onPress={this.newFeeds}
+                style={styles.fab1}
+                label="New Feeds"/>
             </SafeAreaView>
         );
     }
@@ -126,7 +173,8 @@ export default class Restock extends Component {
 
 const styles = StyleSheet.create({
     container: {
-
+        paddingTop: 16,
+        minHeight: Dimensions.get("window").height
     },
     view: {},
     fab: {
@@ -136,4 +184,43 @@ const styles = StyleSheet.create({
         alignSelf: "flex-end",
         backgroundColor: "coral",
     },
+    modal: {
+        height: Dimensions.get("window").height,
+    },
+    modalWrapper: {
+        position: "relative",
+        top: "20%",
+    },
+    modalText: {
+        fontSize: 17,
+        fontWeight: "700",
+        textAlign: "center",
+    },
+    modalFeedsName: {
+        fontSize: 20,
+        fontWeight: "700",
+        textAlign: "center",
+    },
+    textInput: {
+        alignSelf: "center",
+        width: (Dimensions.get("window").width - 32),
+        borderBottomColor: "black",
+        borderBottomWidth: 1,
+    },
+    modalBtn: {
+        marginTop: 8,
+        padding: 16,
+        borderRadius: 10,
+        backgroundColor: "#f4f4f4",
+        //alignSelf: "center",
+        //width: 100,
+    },
+    buttonTxt: {
+        textAlign: "center",
+    },
+    fab1: {
+        position: "absolute",
+        bottom: 150,
+        end: 16,
+    }
 });

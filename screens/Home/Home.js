@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   View, 
+  ScrollView,
   StyleSheet, 
   Dimensions,
   NativeModules,
@@ -104,11 +105,13 @@ export default class Home extends React.PureComponent{
     let renderedCards = this.renderCards();
 
     return(
-      <View style={styles.home}>
-        {renderedCards}
+      <View>
+        <ScrollView style={styles.home}>
+          {renderedCards}
         <View style={styles.FAB}>
-          <FAB navigation={this.props.navigation}/>
+          <FAB navigation={this.props.navigation} />
         </View>
+        </ScrollView>
       </View>
       );
     }
@@ -121,9 +124,6 @@ const styles = StyleSheet.create({
     // backgroundColor: Theme.PRIMARY_COLOR_DARK,
   },
   FAB: {
-    position: "absolute",
-    bottom:100,
-    right: 16, 
     alignSelf: "flex-end"
   }, 
 });

@@ -120,6 +120,7 @@ export default class Inventory extends Component {
     }
 
     render() {
+
         return (
             <View style={styles.page}>
                 <View style={styles.currentInventory}>

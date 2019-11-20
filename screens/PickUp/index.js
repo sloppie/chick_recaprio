@@ -3,13 +3,21 @@ import {
     View,
     Text,
     TextInput,
+    ScrollView,
     StyleSheet,
     Alert,
     NativeModules,
     Dimensions,
+    DeviceEventEmitter,
 } from 'react-native';
 
-import EmptyInventory from './Fragments/PickUp';
+import { FAB } from 'react-native-paper';
+
+// fragments
+import LockScreen from './Fragments/LockScreen';
+import PUC from './Fragments/PickUpCard';
+
+// utilities
 import InventoryManager from '../../utilities/InventoryManager';
 
 export default class PickUp extends Component {
@@ -19,20 +27,61 @@ export default class PickUp extends Component {
 
         this.state = {
             currentInventory: "",
-            number: ""
+            number: "",
+            misc: 0,
+            lock: false,
         };
+            let pickUp = JSON.parse(NativeModules.InventoryManager.fetchPickUp());
+            this.pickUp = pickUp;
+        this.subscription = DeviceEventEmitter.addListener("update", this.listen);
     }
 
     componentDidMount() {
+        this.forceUpdate();
+    }
+
+    componentWillUnmount() {
+        this.subscription.remove();
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return (this.state.lock != nextState.lock);
+    }
+
+    listen = (event) => {
+        if(event.done) {
+            this.forceUpdate();
+        }
+    }
+
+    forceUpdate = () => {
         try {
             let currentInventory = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory())[0];
-            console.log(currentInventory, "current Inventory");
+            // fetch pickUp and compare dates
             this.setState({
                 currentInventory
             });
+            if(this.pickUp.length > 0) {
+                let today = new Date().toDateString();
+                //lpud = lastPickUpDate
+                let lpud = this.pickUp[0].date
+                if(today == lpud) {
+                    this.lock();
+                } else {
+
+                }
+            } else {
+                this.lock();
+            }
         } catch (err) {
             // pass
         }
+    }
+
+    lock = () => {
+        this.setState({
+            lock: true,
+        });
     }
 
     getNumber = (trays) => {
@@ -41,41 +90,36 @@ export default class PickUp extends Component {
         });
     }
 
-    confirm = () => {
-        // let regEx = /d+.d{1,1}/gi;
-        // if(regEx.test(this.state.number)) {
-        //     console.log(this.state.number);
+    getMisc = (misc) => {
+        this.setState({
+            misc: Number(misc)
+        });
+    }
 
-        // }
-        InventoryManager.addPickUp();
+    emptyInventory = () => {
+        this.props.navigation.navigate("EmptyInventory", {
+            lock: this.lock,
+        });
     }
 
     renderScreen = () => {
-        if(this.state.currentInventory == [] || this.state.currentInventory == "") {
+            let cards = [];
+            for(let i=0; i<this.pickUp.length; i++) {
+                if(this.pickUp[i].price == undefined || !this.pickUp[i].price) {
+                    cards.push(
+                        <PUC pickUp={this.pickUp[i]} key={i} navigation={this.props.navigation}/>
+                    );
+                }
+            }
+
             return (
-                <View style={styles.errorScreen}>
-                    <Text style={styles.errorTitle}>Oops, Something went wrong</Text>
-                    <Text style={styles.errorBody}>There may be no eggs in your current inventory. Please add inventory to allow for pick up in the future</Text>
+                <View style={styles.screen}>
+                    <ScrollView style={styles.scrollView}>
+                        { cards }
+                    </ScrollView>
+                    {(!this.state.lock)?<FAB onPress={this.emptyInventory} style={styles.fab} label="Empty Inventory"/>: <View />}
                 </View>
             );
-        } else {
-            return (
-                <View>
-                    <Text style={styles.title}>Existing Inventory</Text>
-                    <View style={styles.existingInventory}>
-                        <Text style={styles.eggs}>{`Normal Eggs: ${this.state.currentInventory[0]}`}</Text>
-                        <Text style={styles.eggs}>{`Broken Eggs: ${this.state.currentInventory[1]}`}</Text>
-                        <Text style={styles.eggs}>{`Smaller Eggs ${this.state.currentInventory[2]}`}</Text>
-                        <Text style={styles.eggs}>{`Larger Eggs: ${this.state.currentInventory[3]}`}</Text>
-                        <Text style={styles.eggs}>{`Total: ${this.state.currentInventory[4]}`}</Text>
-                    </View>
-                    <TextInput 
-                        keyboardType="numeric"
-                        onChangeText={this.getNumber}/>
-                    <EmptyInventory style={styles.pickUp} label="Empty Inventory" onClick={this.confirm}/>
-                </View>
-            );
-        }
     }
 
     render() {
@@ -107,12 +151,34 @@ const styles = StyleSheet.create({
         textAlignVertical: "center",
         fontWeight: "600",
     },
-    existingInventory: {
+    screen: {
+        minHeight: Dimensions.get("window").height
+    },
+    scrollView: {
+        minHeight: Dimensions.get("window").height,
+    },
+    inventoryCard: {
         maxWidth: (Dimensions.get("window").width - 16),
+        minWidth: (Dimensions.get("window").width - 16),
+        elevation: 1,
+        padding: 16,
+    },
+    existingInventory: {
         alignSelf: "center",
         backgroundColor: "#999",
     },
     eggs: {
         textAlignVertical: "center",
     },
+    miscellaneous: {
+        elevation: 1,
+        borderBottomColor: "#999",
+        paddingTop: 4,
+        borderBottomWidth: 1,
+    },
+    fab: {
+        position: "absolute",
+        bottom: 150,
+        end: 16
+    }
 });

@@ -1,7 +1,12 @@
 import { createAppContainer } from 'react-navigation';
 import { createDrawerNavigator } from 'react-navigation-drawer';
+
+// routes
 import Home from './HomeRoute';
 import Inventory from './Inventory';
+import Statistics from './Statistics';
+
+// theme
 import Theme from '../theme/Theme';
 
 const Drawer = createDrawerNavigator(
@@ -20,6 +25,13 @@ const Drawer = createDrawerNavigator(
                 drawerLabel: "Inventory",
                 title: "Inventory",
             },
+        },
+        Statistics: {
+            screen: Statistics,
+            navigationOptions: {
+                headerTitle: "Statistics",
+                drawerLabel: "Statistics",
+            }
         }
     },
     {

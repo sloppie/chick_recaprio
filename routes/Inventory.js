@@ -4,10 +4,9 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 
 // screens
 import Inventory from '../screens/Inventory';
-import Restock from '../screens/Restock';
-import PickUp from '../screens/PickUp';
+import PickUp from './PickUp';
+import Restock from './Restock';
 
-import Theme from '../theme/Theme';
 
 const bottomTabNavigator = createMaterialBottomTabNavigator(
     {
@@ -27,7 +26,10 @@ const bottomTabNavigator = createMaterialBottomTabNavigator(
             }
         },
         PickUp: {
-            screen: PickUp
+            screen: PickUp,
+            navigationOptions: {
+                headerTitle: "Pick Up"
+            },
         }
         
     },

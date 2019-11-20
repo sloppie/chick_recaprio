@@ -208,8 +208,20 @@ export default class InventoryManager {
 
     /**
      * This function takes the curren inventory and subtracts the number leaving only the eggs collected on the same day.
+     * @param details contais the details on the price and misc. expenses e.g: 
+     * ```js
+     *  let details = {
+     *      misc: 2000,
+     *      price: {
+     *          normalEggs: 280,
+     *          smallerEggs: 250,
+     *          brokenEggs: 200,
+     *          largerEggs: 300,
+     *      },
+     *  };
+     * ```
      */
-    static addPickUp() {
+    static addPickUp(details = null) {
         let pickUp;
         let currentInventory;
         let cim; //cim = currentInventoryMatrix
@@ -246,10 +258,26 @@ export default class InventoryManager {
                 smallerEggs: InventoryManager.findTrays(stock[2]),
                 largerEggs: InventoryManager.findTrays(stock[3])
             };
+
             let date = new Date().toDateString();
+            let price = null;
+            let misc = null;
+            if(details) {
+                try {
+                    // try-catch block because  this might throw ann error considering details.price may be *undefined*
+                    misc = details.misc;
+                    price = details.price;
+                } catch {
+                    price = null;
+                    misc = null;
+                }
+            }
+
             let batch = {
                 date,
-                number
+                number,
+                price,
+                misc
             };
 
             pickUp.unshift(batch);
@@ -257,6 +285,46 @@ export default class InventoryManager {
             NativeModules.InventoryManager.addPickUp(JSON.stringify(pickUp))
             NativeModules.InventoryManager.addCurrentInventory(JSON.stringify(currentInventory));
         }
+    }
+
+    /**
+     * this function adds prices to the pickUp object much later after it's stored to allow for chance to actually sell the eggs
+     * @param { Object } pU is the object containing the updated pickUp object that now contains the new price details 
+     * 
+     * example `pU` Object:
+     * ```js
+     *      let pU = {
+     *          date: "Tue Nov 19 2019",
+     *          number: {
+     *              normalEggs: "500.24",
+     *              largerEggs: "20.24",
+     *              smallerEggs: "5.23",
+     *              broken: "5.23",
+     *          },
+     *          price: {
+     *              normalEggs: 280,
+     *              largerEggs: 300,
+     *              smallerEggs: 250,
+     *              brokenEggs: 200,
+     *          },
+     *          misc: 2000,
+     *      };
+     * ```
+     */
+    static addPrices(pU) {
+        let pickUp = pU;
+        let all = JSON.parse(NativeModules.InventoryManager.fetchPickUp());
+        let index;
+        for(let i=0; i<all.length; i++) {
+            if(pickUp.date == all[i].date) {
+                index = i;
+                break;
+            }
+        }
+
+        all[index] = pickUp;
+
+        NativeModules.InventoryManager.addPickUp(JSON.stringify(all));
     }
 
     /**
