@@ -198,7 +198,7 @@ export default class FileManager {
      * ```
      * the resultant stored matrix is in the form:
      * ```js 
-     * [ date:Date, number:Number]
+     * [ date:Date, number:Number, price:Number]
      * ```
      */
     static addFeeds(batchInformation, data) {
@@ -209,8 +209,9 @@ export default class FileManager {
         let weekInfo = batch.calculateWeek();
         let {date, number, type} = JSON.parse(data);
         type = InventoryManager.normaliseFeedsName(type);
+        let price = JSON.parse(NativeModules.InventoryManager.fetchFeeds(type)).price;
         let previousData;
-        let newData = [date, number];
+        let newData = [date, number, price];
 
         NativeModules.FileManager.fetchData(batch.context, "feeds", (oldData) => {
             if(oldData) {

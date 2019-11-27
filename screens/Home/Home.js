@@ -47,8 +47,10 @@ export default class Home extends React.PureComponent{
   forceUpdate = () => {
     this._isMounted = true;
     this._isMounted && NativeModules.FileManager.fetchBatches((data) => {
+      let newData = data.replace(',"eggs":', "");
+      console.log(newData);
       this.setState({
-        batches: JSON.parse(data),
+        batches: JSON.parse(newData),
       });
     
     });

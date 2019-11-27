@@ -21,10 +21,10 @@ export default class AddPrices extends PureComponent {
         super(props);
 
         this.state = {
-            normalEggs: 0,
-            largerEggs: 0,
-            smallerEggs: 0,
-            brokenEggs: 0
+            normalEggs: "",
+            largerEggs: "",
+            smallerEggs: "",
+            brokenEggs: ""
         };
     }
 

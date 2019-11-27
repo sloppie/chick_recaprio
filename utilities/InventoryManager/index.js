@@ -4,6 +4,7 @@ import {
 
 import { Matrix } from '../Matrix';
 
+
 export default class InventoryManager {
 
     /**
@@ -171,6 +172,7 @@ export default class InventoryManager {
                 }
 
                 data.number.unshift(newStock);
+                data.price = feedsObject.price;
 
                 // add in the current inventory
                 let currentInventory = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());

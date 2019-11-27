@@ -21,14 +21,14 @@ export default class EmptyInventory extends PureComponent {
         super(props);
 
         this.state = {
-            misc: 0,
+            misc: "",
             price: null
         };
     }
 
     getMisc = (value) => {
         this.setState({
-            value: Number(value),
+            misc: Number(value),
         });
     }
 
@@ -56,13 +56,15 @@ export default class EmptyInventory extends PureComponent {
         return (
             <View style={styles.screen}>
                 <TextInput 
-										value={String(this.state.misc)}
+					value={String(this.state.misc)}
                     label="Misc."
                     keyboardType="decimal-pad"
                     onChangeText={this.getMisc}
                     />
                 <Button 
-                    mode="outlined">
+                    style={styles.btn}
+                    mode="outlined"
+                    onPress={this.confirm}>
                     <Text>Empty Inventory</Text>
                 </Button>
             </View>
@@ -74,4 +76,7 @@ export default class EmptyInventory extends PureComponent {
 
 const styles = StyleSheet.create({
     screen: {},
+    btn: {
+        marginTop: 16,
+    },
 });
