@@ -1,10 +1,12 @@
 import { NativeModules } from 'react-native';
 import InventoryManager from '../InventoryManager/index.js';
 
-const brief = require('./../../data/brief.json');
-const casualties = require('./../../data/casualties.json');
-const eggs = require('./../../data/eggs.json');
-const feeds = require('./../../data/feeds.json');
+import { Matrix } from '../Matrix';
+
+// const brief = require('./../../data/brief.json');
+// const casualties = require('./../../data/casualties.json');
+// const eggs = require('./../../data/eggs.json');
+// const feeds = require('./../../data/feeds.json');
 
 // Date format = MM/DD/YY
 
@@ -12,6 +14,7 @@ const feeds = require('./../../data/feeds.json');
  * This class helps link the FileManager NativeModule to the react-native app
  */
 export default class FileManager {
+
     constructor(batchInformation) {
         this.batchInformation = batchInformation;
         this.context = this.batchInformation.name;
@@ -284,7 +287,7 @@ export default class FileManager {
         let currentDay = days[new Date().getDay()];
         let weekInfo = batch.calculateWeek();
         let parsedData = JSON.parse(data);
-        let {date, number, description} = parsedData;
+        let { date, number, description } = parsedData;
         let previousData;
         let newData = [date, number, description];
 
@@ -312,7 +315,16 @@ export default class FileManager {
                 previousData[0].push(newData);
             }
 
+            let brief = JSON.parse(NativeModules.FileManager.fetchBriefSync());
+            let { population } = brief.population[0];
+            let newPopulation = {
+                date: new Date().toDateString(),
+                population: (population - number),
+            };
+            brief.population.unshift(newPopulation);
+
             NativeModules.FileManager.addData(batch.context, "casualties", JSON.stringify(previousData));
+            NativeModules.FileManager.writeBrief(batch.context, JSON.stringify(brief));
         });
     }
 
@@ -345,7 +357,6 @@ export default class FileManager {
                 let day = 6;
                 if (type == "eggs") {
                     console.log(JSON.stringify(oldData[week][day]))
-                    // exists = oldData[week][day] instanceof Array;
                     exists = oldData[week].length == 7;
                 } else {
                     let lastWeek = oldData[week];
@@ -377,6 +388,32 @@ export default class FileManager {
             }
         });
     }
+
+    static resetCurrentInventory() {
+        let batchNames = NativeModules.FileManager.fetchBatchNames().split(",");
+        batchNames.pop();
+
+        let eggInventory = [];
+
+        batchNames.forEach(batch => {
+            let eggData = JSON.parse(NativeModules.FileManager.fetchDataSync(batch, "eggs"))
+            let { length } = eggData;
+            let todaysEggs = eggData[(length - 1)][0];
+            eggInventory.push(todaysEggs);
+        });
+
+        let eggMatrix = new Matrix(eggInventory[0]);
+
+        for(let i=1; i<eggInventory.length; i++) {
+            eggMatrix.add(new Matrix(eggInventory[i]));
+        }
+
+        let currentInventory = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
+        currentInventory[0] = eggMatrix.matrix;
+
+        NativeModules.InventoryManager.addCurrentInventory(JSON.stringify(currentInventory));
+    }
+
 }
 
 function eggsToList(data) {    
@@ -392,6 +429,7 @@ function eggsToList(data) {
             eggList.unshift(week);
         }
     }
+
     let answer = JSON.stringify(eggList);
     return answer;
 }
@@ -406,6 +444,7 @@ function feedsToList(data) {
         };
         feedsList.unshift(week);
     }
+
     let answer = JSON.stringify(feedsList);
     return answer;
 }

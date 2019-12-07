@@ -329,6 +329,45 @@ export default class InventoryManager {
         NativeModules.InventoryManager.addPickUp(JSON.stringify(all));
     }
 
+	static previewPickUp() {
+		let pickUp;
+		let history;
+		let today = new Date().toDateString();
+		let preview;
+		try {
+			pickUp = JSON.parse(NativeModules.InventoryManager.fetchPickUp());
+			history = JSON.parse(NativeModules.InventoryManager.fetchHistory());
+		} catch(err) {
+			pickUp = null;
+			history = null;
+		}
+		if(pickUp) {
+            let stock;
+
+            if (history[0][2] == today) {
+                stock = history[1][0];
+            } else {
+                stock = history[0][0];
+            }
+
+            preview = {
+                normalEggs: InventoryManager.findTrays(stock[0]),
+                brokenEggs: InventoryManager.findTrays(stock[1]),
+                smallerEggs: InventoryManager.findTrays(stock[2]),
+                largerEggs: InventoryManager.findTrays(stock[3])
+            };
+		} else {
+			preview = {
+				normalEggs: "0.0",
+				brokeEggs: "0.0",
+				smallerEggs: "0.0",
+				largerEggs: "0.0",
+			}
+		}
+
+		return preview;
+	}
+
     /**
      * Converts number fed in into tray equivalent number. 
      * Eg: `30.23` which translates to `30 trays` and `23 eggs`

@@ -67,6 +67,17 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
     writeFile(brief, data);
   }
 
+  /**
+   * This function is used to write new data to the batch passed in through the context
+   * @param context is the nname of the batch in question
+   * @param data is the new data to be written to the brief
+   */
+  @ReactMethod
+  public void writeBrief(String context, String data) {
+    File brief = new File(filesDir, "data/" + context + "/brief");
+    writeFile(brief, data);
+  }
+
   // One method provided to the context then afterwards adds the data to the respective key of the data
   @ReactMethod
   public void addData(String context, String key, String data) {
@@ -126,9 +137,22 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
     return contents;
   }
 
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public String fetchBriefSync(String context) {
+	String contents = fetchBrif(context);
+
+	return contents;
+  }
+
   @ReactMethod
   public void fetchData(String context, String key, Callback data) {
     data.invoke(readFile(getDir(context, key)));
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public String fetchDataSync(String context, String key) {
+    String data = readFile(getDir(context, key));
+    return data;
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)

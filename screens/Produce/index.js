@@ -14,6 +14,8 @@ import Icon from 'react-native-ionicons';
 
 import Theme from '../../theme/Theme';
 
+import { orderFinder } from './utilities'
+
 
 export default class ProduceTab extends Component {
   constructor(props) {
@@ -22,6 +24,7 @@ export default class ProduceTab extends Component {
     this.state = {
       data: null
     };
+
   }
 
   componentDidMount() {
@@ -30,6 +33,8 @@ export default class ProduceTab extends Component {
       // console.log(data);
       try{
         let parsedData = JSON.parse(data);
+        this.weekOrder = orderFinder();
+        console.log(this.weekOrder)
         this.setState({
             data: parsedData,
           });
@@ -51,7 +56,7 @@ export default class ProduceTab extends Component {
         <FlatList
             legacyImplementation={true}
             data={this.state.data}
-            renderItem={({item}) => <WeeklyCard week={item.eggs} weekNumber={item.weekNumber}/>}/>
+            renderItem={({item}) => <WeeklyCard weekOrder={this.weekOrder} week={item.eggs} weekNumber={item.weekNumber}/>}/>
       );
     } else {
       return <Text>Loading List...</Text>
@@ -148,19 +153,21 @@ export class WeeklyCard extends Component {
     let {week} = this.props;
     let days = [];
     if(week) {
+      let counterDays = week.length - 1;
       for(let i=0; i<week.length; i++) {
         // [normalEggs, brokenEggs, smallerEggs, largerEggs] 
         // the `if block` statement makes sure the data trying to be converted to an `Object` is not `null`
         if(week[i]) {
           days.push(
             <View style={WCStyles.day} key={i}>
-              <Text style={WCStyles.dayText}>{week[i][4]}</Text>
+              <Text style={WCStyles.dayText}>{this.props.weekOrder[counterDays]}: {week[i][4]}</Text>
               <TouchableHighlight onPress={() => { console.log("Hello") }}>
                 <Icon name="create" style={WCStyles.editIcon} />
               </TouchableHighlight>
             </View>
           );
         }
+        counterDays--;
       }
     }
 

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
     View,
     Text,
-    TextInput,
     ScrollView,
     StyleSheet,
     Alert,
@@ -11,7 +10,7 @@ import {
     DeviceEventEmitter,
 } from 'react-native';
 
-import { FAB } from 'react-native-paper';
+import { FAB, Card, Title } from 'react-native-paper';
 
 // fragments
 import LockScreen from './Fragments/LockScreen';
@@ -102,6 +101,19 @@ export default class PickUp extends Component {
         });
     }
 
+	preview = () => {
+		let preview = InventoryManager.previewPickUp();
+		
+		return (
+			<View style={styles.rfp}>
+				<Text style={styles.eggType}>Normal Eggs: <Text style={styles.eggNumber}>{preview.normalEggs}</Text></Text>
+				<Text style={styles.eggType}>Broken Eggs: <Text style={styles.eggNumber}>{preview.brokenEggs}</Text></Text>
+				<Text style={styles.eggType}>Smaller Eggs: <Text style={styles.eggNumber}>{preview.smallerEggs}</Text></Text>
+				<Text style={styles.eggType}>Larger Eggs: <Text style={styles.eggNumber}>{preview.largerEggs}</Text></Text>
+			</View>
+			);
+	}
+		
     renderScreen = () => {
             let cards = [];
             for(let i=0; i<this.pickUp.length; i++) {
@@ -115,6 +127,10 @@ export default class PickUp extends Component {
             return (
                 <View style={styles.screen}>
                     <ScrollView style={styles.scrollView}>
+						<Title>Ready For Pick Up</Title>
+						{ this.preview() }
+						<View style={styles.border}></View>
+						<Title>Add Prices</Title>
                         { cards }
                     </ScrollView>
                     {(!this.state.lock)?<FAB onPress={this.emptyInventory} style={styles.fab} label="Empty Inventory"/>: <View />}
@@ -180,5 +196,29 @@ const styles = StyleSheet.create({
         position: "absolute",
         bottom: 150,
         end: 16
-    }
+    },
+	rfp: {
+		marginTop: 16,
+		minWidth: (Dimensions.get("window").width - 32),
+		maxWidth: (Dimensions.get("window").width - 32),
+		padding: 8,
+		backgroundColor: "#f3f3f3",
+		borderRadius: 10,
+		alignSelf: "center",
+	},
+	eggType: {
+		fontSize: 18,
+		fontWeight: "600"
+	},
+	eggNumber: {
+		fontSize: 15,
+		fontWeight: "700"
+	},
+	border: {
+		marginTop: 18,
+		marginBottom: 8,
+		minHeight: 1,
+		maxHeight: 1,
+		backgroundColor: "#f4f4f4"
+	},
 });

@@ -7,6 +7,14 @@ import {
     Dimensions,
     NativeModules,
 } from 'react-native';
+
+import {
+    Card,
+    Title,
+    Paragraph,
+    Caption,
+} from 'react-native-paper';
+
 import BalanceSheet from '../../utilities/BalanceSheet';
 
 
@@ -43,7 +51,7 @@ export default class Statistics extends Component {
         })
     }
 
-    generateBatchInfo = () => {
+    generateBatchInfoCards = () => {
         let batches = [];
         this.state.batches.forEach((batch, index) => {
             batches.push(<BatchInfo batch={batch} key={index}/>);
@@ -54,18 +62,28 @@ export default class Statistics extends Component {
 
     render() {
         let returns = BalanceSheet.balanceEggs();
+
         return (
             <ScrollView style={styles.screen}>
-                <View style={styles.batchInformation}>
-                    {this.generateBatchInfo()}
-                </View>
-                <View style={styles.chicken}>
-                    <Text>Chicken</Text>
-                    <Text>Price: {this.state.totalSum}</Text>
-                    <Text>Returns: {returns}</Text>
-                    <Text>Profit = {returns - this.state.totalSum}</Text>
-                </View>
-                <View style={styles.finance}></View>
+                <Card style={styles.summary}>
+                    <Title>Chicken Total Finances</Title>
+                    <View style={batchStyles.wrapper}>
+                        <Caption style={batchStyles.caption}>Price: </Caption>
+                        <Text style={batchStyles.exp}>Ksh{this.state.totalSum}</Text>
+                    </View>
+                    <View style={batchStyles.wrapper}>
+                        <Caption style={batchStyles.caption}>Returns: </Caption>
+                        <Text style={batchStyles.exp}>Ksh{returns}</Text>
+                    </View>
+                    <View style={batchStyles.wrapper}>
+                        <Caption style={batchStyles.caption}>Profit: </Caption>
+                        <Text style={batchStyles.exp}>Ksh{returns - this.state.totalSum}</Text>
+                    </View>
+                </Card>
+                		<View style={styles.batchInformation}>
+                    		{this.generateBatchInfoCards()}
+                		</View>
+                		<View style={styles.finance}></View>
             </ScrollView>
         );
     }
@@ -76,22 +94,55 @@ export default class Statistics extends Component {
 class BatchInfo extends PureComponent {
 
     render() {
+        let batch:BalanceSheet = this.props.batch;
+
         return (
-            <View>
-                <Text>{this.props.batch.context}</Text>
-                <Text>{this.props.batch.eggPercentage()}</Text>
-                <Text>{this.props.batch.balanceFeeds()}</Text>
-            </View>
+            <Card style={batchStyles.card}>
+                <Title>{batch.context}</Title>
+                <Caption >from {batch.getInitialDate()}</Caption>
+                <Text style={batchStyles.exp}>{batch.eggPercentage()}%</Text>
+								<View style={batchStyles.wrapper}>
+                		<Caption style={batchStyles.caption}>Expenditure on Feeds:</Caption>
+                		<Text style={batchStyles.exp}>Ksh{batch.balanceFeeds()}</Text>
+								</View>
+            </Card>
         );
     }
 
 }
 
+const batchStyles = StyleSheet.create({
+		card: {
+				padding: 8,
+				maxWidth: (Dimensions.get("window").width - 32),
+				minWidth: (Dimensions.get("window").width - 32),
+				margin: 8,
+		},
+		wrapper: {
+				flexDirection: "row",
+		},
+		caption: {
+				textAlignVertical: "bottom",
+		},
+    exp: {
+        fontSize: 25,
+        fontWeight: "700",
+        color: "red",
+    },
+});
+
 const styles = StyleSheet.create({
     screen: {
+				alignSelf: "center",
         height: Dimensions.get("window").height,
         flex: 1,
     },
+		summary: {
+				maxWidth: (Dimensions.get("window").width - 32),
+				minWidth: (Dimensions.get("window").width - 32),
+				alignSelf: "center",
+				padding: 8,
+		},
     chicken: {
         marginBottom: 16,
         elevation: 1,

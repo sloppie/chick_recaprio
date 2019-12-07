@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 import {
     View,
     Text,
-    TextInput,
     Alert,
     StyleSheet,
     Button,
     Dimensions,
     NativeModules,
 } from 'react-native';
+
+import {
+    TextInput,
+} from 'react-native-paper';
 
 import Theme from '../../../theme/Theme';
 
@@ -22,6 +25,7 @@ export default class Feeds extends Component{
         this.state = {
             number: 0,
             date: new Date().toDateString(),
+            type: "",
         };
 
     }
@@ -127,23 +131,27 @@ export default class Feeds extends Component{
     render(){
         return (
             <View>
-                <Text>Date: { this.state.date }</Text>
-                <Text>Number Used:</Text>
+                <View style={styles.dateHeader}>
+                    <Text>Date: { this.state.date }</Text>
+                </View>
                 <TextInput
+                    label="Number Used"
                     style={styles.textInput}
                     onChangeText={this.onInput}
                     keyboardType="numeric"/>
-                <Text>Feeds Type:</Text>
                 <TextInput
+                    label="Feeds Type"
                     style={styles.textInput}
                     onChangeText={this.feedsType}
-                    keyboardType="default"/>
-                <Text>Price:</Text>
+                    keyboardType="default"
+                    value={this.state.type}
+                    />
+                {/* <Text>Price:</Text>
                 <TextInput
                     style={styles.textInput}
                     onChangeText={this.feedsPrice}
                     keyboardType="numeric"
-                    />
+                    /> */}
                 <Button 
                     style={styles.button}
                     title="Submit"
@@ -160,6 +168,15 @@ const styles = StyleSheet.create({
         alignContent: "center",
         justifyContent: "center",
     },
+    dateHeader: {
+        padding: 16,
+        elevation: 1,
+        alignContent: "center",
+    },
+    date: {
+        fontSize: 20,
+        fontWeight: "600"
+    },
     info: {
         textAlign: "center",
         color: Theme.HEADER_COLOR,
@@ -170,7 +187,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
     },
     textInput: {
-        borderBottomColor: Theme.PRIMARY_COLOR_DARK,
-        borderBottomWidth: 2,
+        margin: 8,
     },   
 });

@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 import {
     View,
     Text,
-    TextInput,
     Alert,
     StyleSheet,
     Button,
     Dimensions,
     NativeModules,
 } from 'react-native';
+
+import {
+    TextInput
+} from 'react-native-paper';
 
 import Theme from '../../../theme/Theme';
 
@@ -101,7 +104,6 @@ export default class Eggs extends Component{
 
     formatData = () => {
         let { batchInformation } = this.props;
-        console.log(`This is batch information from AI:\n${batchInformation}`)
         let { population } = batchInformation.population[0];
         if (this.formValidation()) {    
             let {
@@ -118,16 +120,12 @@ export default class Eggs extends Component{
                 smallerEggs
             };
     
-            console.log("Egg Number below");
-            console.log(JSON.stringify(data, null, 2));
-    
             var sum = 0;
             for (let key in data) {
                 console.log(data[key]);
                 sum += data[key];
             }
     
-            console.log(sum);
             if(sum <= population)
                 return JSON.stringify(data, null, 2);
             else{
@@ -188,31 +186,36 @@ export default class Eggs extends Component{
     }
 
     render(){
+				let fixer = (state) => (state == "0.0")? "": state;
         return (
             <View>
-                <Text>Normal Eggs: </Text>
                 <TextInput 
+                    label="Normal Eggs"
                     style={styles.textInput}
                     keyboardType="numeric"
                     onChangeText={this.NEChange}
+                    value={fixer(this.state.normalEggs)}
                 />
-                <Text>Broken Eggs: </Text>
                 <TextInput 
+                    label="Broken Eggs"
                     style={styles.textInput}
                     keyboardType="numeric"
                     onChangeText={this.BEChange}
+                    value={fixer(this.state.brokenEggs)}
                 />
-                <Text>Larger Eggs: </Text>
                 <TextInput 
+                    label="Larger Eggs"
                     style={styles.textInput}
                     keyboardType="numeric"
                     onChangeText={this.LEChange}
+                    value={fixer(this.state.largerEggs)}
                 />
-                <Text>Smaller Eggs: </Text>
                 <TextInput 
+                    label="Smaller Eggs"
                     style={styles.textInput}
                     keyboardType="numeric"
                     onChangeText={this.SEChange}
+                    value={fixer(this.state.smallerEggs)}
                 />
                 <Button
                     style={styles.button}
@@ -241,7 +244,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
     },
     textInput: {
-        borderBottomColor: Theme.PRIMARY_COLOR_DARK,
-        borderBottomWidth: 2,
+        margin: 8,
     },   
 });

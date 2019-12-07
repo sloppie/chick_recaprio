@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   View,
-  TextInput,
   Text,
   Button,
   StyleSheet,
@@ -9,9 +8,14 @@ import {
   NativeModules,
 } from 'react-native';
 
+import {
+  TextInput,
+} from 'react-native-paper';
+
 import FileManager from '../../utilities/FileManager';
 
 export default class NewBatch extends Component{
+
   constructor(props){
     super(props);
     this.state = {
@@ -90,13 +94,16 @@ export default class NewBatch extends Component{
             onPress: () => console.log('Cancel Pressed'),
             style: 'cancel',
           },
-          { text: 'OK', onPress: () => {
-            NativeModules.FileManager.create(construct.name, JSON.stringify(construct, null, 2), (success, err) => {
-              if(success){
-                return this.props.navigation.goBack();
-              }
-            })
-          }},
+          {
+            text: 'OK', 
+            onPress: () => {
+              NativeModules.FileManager.create(construct.name, JSON.stringify(construct), (success, err) => {
+                if (success) {
+                  return this.props.navigation.goBack();
+                }
+              });
+            }
+          },
         ],
         { cancelable: false },
       );
@@ -108,44 +115,46 @@ export default class NewBatch extends Component{
           {
             text: "Okay",
             onPress: () => {
-              console.log("Agreed to change");
+              this.setState({
+                name: ""
+              });
             },
             style: "default",
           },
         ],
       );
     }
-    // NativeModules.create(this.state.name, JSON.stringify(construct));
-    // console.log(JSON.stringify(construct));
   }
 
-  render(){
-    return(
+  render() {
+    return (
       <View>
-        <Text>Batch Name:</Text>
         <TextInput 
-          style={styles.name}
+          label="Batch Name"
+          style={styles.textInput}
           onChangeText={this.nameChange}
+          value={this.state.name}
         />
-        <Text>Population: </Text>
         <TextInput
-          style={styles.population}
+          label="Population"
+          style={styles.textInput}
           keyboardType="numeric"
-          onChangeText={this.populationChange} />
+          onChangeText={this.populationChange} 
+          value={String(this.state.population)}
+          />
         <Button 
           title="create"
           onPress={this.createBatch}
         />
-
-        <Text>{this.state.complete}</Text>
+        {/* <Text>{this.state.complete}</Text> */}
       </View>
     );
   }
+
 }
 
 const styles = StyleSheet.create({
-  name: {
-    borderBottomWidth: 2,
-    borderBottomColor: "red",
+  textInput: {
+    margin: 8,
   },
 });

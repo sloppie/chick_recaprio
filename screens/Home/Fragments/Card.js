@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
   View,
   Text,
@@ -8,31 +8,33 @@ import {
   NativeModules,
 } from 'react-native';
 import Icon from 'react-native-ionicons';
+import { Title, Caption } from 'react-native-paper';
 
 import FileManager from '../../../utilities/FileManager';
 import Theme from './../../../theme/Theme';
+import BalanceSheet from '../../../utilities/BalanceSheet';
 
 
-export default class Card extends Component {
+export default class Card extends PureComponent {
   constructor(props) {
     super(props);
 
     this.state = {
-      age: null
+      age: null,
+      batch: null,
     };
+    this.updated = false
   }
 
   componentDidMount() {
-    let weeks = new FileManager(this.props.batchInformation).calculateWeek();
-    let age = (weeks[1])? weeks[0] + 1 : weeks[0];
     this.setState({
-      age
+      batch: new BalanceSheet(this.props.batchName)
     });
-  }
 
+  }
   goToBatch = () => {
     requestAnimationFrame(() => {
-      let { name } = this.props.batchInformation;
+      let name = this.props.batchName;
       NativeModules.Sessions.createSession(name, (state) => {
         if (state) {
           this.props.navigation.push("Chicken");
@@ -42,46 +44,54 @@ export default class Card extends Component {
   }
 
   render() {
-    let { batchInformation } = this.props;
-    let len = batchInformation.population.length - 1;
-    return (
-      <TouchableHighlight
-        onPress={this.goToBatch}
-        activeOpacity={0.6}
-        style={styles.card}
-        underlayColor={Theme.PRIMARY_COLOR_DARK}>
-        <View>
-          <View style={styles.titleHolder}>
-            <Text style={styles.name}> {batchInformation.name}</Text>
-            <Text style={styles.weekTitle}>{`Week ${this.state.age}, from ${new Date(this.props.batchInformation.population[len].date).toLocaleDateString()}`}</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-            }}>
-            <Text style={styles.pp}>{Math.round(68.9) + "%"}</Text>
-            <Text
+    if(this.state.batch) {
+      return (
+        <TouchableHighlight
+          onPress={this.goToBatch}
+          activeOpacity={0.6}
+          style={styles.card}
+          underlayColor={Theme.PRIMARY_COLOR_DARK}>
+          <View>
+            <View style={styles.titleHolder}>
+              {/* <Text style={styles.name}> {batchInformation.name}</Text> */}
+              <Text style={styles.name}> {this.state.batch.context}</Text>
+              <Text style={styles.weekTitle}>{`From ${this.state.batch.getInitialDate()}`}</Text>
+            </View>
+            <View
               style={{
-                fontFamily: "serif",
-                textAlignVertical: "center",
-                color: "#444",
-              }}>{" production"}</Text>
-          </View>
-          <View style={styles.navigate}>
-            <Text style={styles.lpa}>Population: {this.props.batchInformation.population[0].population}</Text>
-            <TouchableHighlight
-              onPress={this.goToBatch}>
-              <View style={{
-                flex: 1,
-                justifyContent: "center",
+                flexDirection: "row",
               }}>
-                <Icon name="arrow-forward" style={styles.arrow} />
-              </View>
-            </TouchableHighlight>
+              {/* <Text style={styles.pp}>{Math.round(68.9) + "%"}</Text> */}
+              <Text style={styles.pp}>{this.state.batch.eggPercentage()}%</Text>
+              <Text
+                style={{
+                  fontFamily: "serif",
+                  textAlignVertical: "center",
+                  color: "#444",
+                }}>{" production"}</Text>
+            </View>
+            <View style={styles.navigate}>
+              <Text style={styles.lpa}>Population: {this.state.batch.batchInformation.population[0].population}</Text>
+              {/* <TouchableHighlight
+                onPress={this.goToBatch}>
+                <View style={{
+                  flex: 1,
+                  justifyContent: "center",
+                }}>
+                  <Icon name="arrow-dropdown" style={styles.arrow} />
+                </View>
+              </TouchableHighlight> */}
+            </View>
+            <View style={styles.feeds}>
+              <Caption style={styles.feedsCaption}>Spent on Feeds:</Caption>
+              <Title style={styles.feedsCost}>Ksh{ this.state.batch.balanceFeeds() }</Title>
+            </View>
           </View>
-        </View>
-      </TouchableHighlight>
-    );
+        </TouchableHighlight>
+      );
+    } else {
+      return <View></View>
+    }
   }
 }
 
@@ -131,5 +141,14 @@ let styles = StyleSheet.create({
   },
   arrow: {
     color: Theme.PRIMARY_COLOR_LIGHT,
+  },
+  feeds: {
+    flexDirection: "row"
+  },
+  feedsCaption: {
+    textAlignVertical: "center"
+  },
+  feedsCost: {
+    color: "green"
   },
 });

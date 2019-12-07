@@ -8,7 +8,8 @@ const ERR = 0;
 export default class BalanceSheet {
 
     constructor(batchName) {
-        // this state is used to ensure when the methods are running the NativeModules methods which are asychronous have finished executing
+        // this state is used to ensure when the methods are running the NativeModules
+        // methods which are asychronous have finished executing
         this.state = {
             eggs: false,
             feeds: false
@@ -19,24 +20,45 @@ export default class BalanceSheet {
         this.feeds = JSON.parse(NativeModules.FileManager.fetchForCheck(batchName, "feeds"));
         this.state.eggs = true;
         this.state.feeds = true;
-        NativeModules.FileManager.fetchBrief(batchName, (data) => {
-            this.batchInformation = JSON.parse(data);
-            this.context = batchName;
-        });
+        this.batchInformation = JSON.parse(NativeModules.FileManager.fetchBriefSync(batchName));
     }
 
-    eggPercentage() {
+    /**
+     * Returns the percentage of chicken that are laying eggs based on the last egg-entrance
+     * divided by the total population of the batch at the time
+     * 
+     * @returns the percentage of the chicken laying eggs rounded to the nearest real number
+     */
+    eggPercentage():Number {
         // get eggs in stock
-        let eggs;
+        let eggs = 0;
         let percentage = 0;
-        if(this.eggs) {
-            eggs = this.eggs[(this.eggs.length - 1)][0];
+        if(this.eggs && this.batchInformation) {
+            eggs = this.eggs[(this.eggs.length - 1)][0][4];
             if(eggs) {
-                percentage = Math.round(eggs/this.batchInformation.population[0].population);
+                percentage = Math.round(eggs/(this.batchInformation.population[0].population) * 100);
             }
         }
 
         return percentage;
+    }
+
+    /**
+     * This function gets the initial date from the batch held in the class
+     * 
+     * @returns the date when the batch was bought
+     */
+    getInitialDate() {
+        if (this.batchInformation) {
+            let { population } = this.batchInformation;
+            let { length } = population;
+
+            let date = new Date(population[(length - 1)].date);
+
+            return date.toDateString();
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -48,7 +70,7 @@ export default class BalanceSheet {
      * 
      * @returns total sum of costs from the first week
      */
-    balanceFeeds() {
+    balanceFeeds():Number {
         let totalSum = 0;
         if (this.state.feeds) {
             this.feeds.forEach((weeks) => {
@@ -62,7 +84,12 @@ export default class BalanceSheet {
         return totalSum;
     }
 
-    static balanceEggs() {
+    /**
+     * this function gets the total amount grossed by the eggs sold over the pick up period specified
+     * 
+     * @returns the total sum of eggs in the inventory pickUp data based on the calculated prices
+     */
+    static balanceEggs():Number {
         let totalSum = 0;
         let pickUp;
         try {
@@ -78,7 +105,14 @@ export default class BalanceSheet {
         return totalSum;
     } 
 
-    static eggPriceCalculator(pU) {
+    /**
+     * this function calculates the total amount grossed by eggs picked up in a specific pick up object
+     * 
+     * @param { Object } pU object containing pick up data such as: `date`, `eggs` and `prices`
+     * 
+     * @returns the total amount grossed by the eggs sold in the pick up object specified
+     */
+    static eggPriceCalculator(pU):Number {
         let pickUp = pU;
         let sum = 0;
         if(pickUp.price) {

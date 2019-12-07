@@ -37,6 +37,12 @@ function switchToFeeds() {
   });
 }
 
+function switchToCasualties() {
+  propGrabber.navigation.navigate("AddInventory", {
+    context: "casualties"
+  });
+}
+
 /**
  * Resets the Session, and then goes back to top
  */
@@ -60,8 +66,8 @@ let stackNavigator = createStackNavigator(
         headerRight: ( 
           <OptionsMenu
             customButton={<Icon name="add" style={{marginEnd: 16, color: "#444"}}/>}
-            options={["Add Eggs", "Add Feeds"]}
-            actions={[switchToEggs, switchToFeeds]} />
+            options={["Add Eggs", "Add Feeds", "Add Casualties"]}
+            actions={[switchToEggs, switchToFeeds, switchToCasualties]} />
         ),
       },
     },

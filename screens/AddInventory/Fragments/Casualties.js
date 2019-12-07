@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import {
     View,
     Text,
-    TextInput,
     Alert,
     StyleSheet,
     Button,
     Dimensions,
 } from 'react-native';
+
+import {  
+    TextInput
+} from 'react-native-paper';
 
 import Theme from '../../../theme/Theme';
 
@@ -17,7 +20,7 @@ export default class Casualties extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: new Date().toLocaleDateString(),
+            date: new Date().toDateString(),
             number: 0,
             description: "",
         };
@@ -73,16 +76,20 @@ export default class Casualties extends Component {
     render() {
         return (
             <View>
-                <Text>{this.state.date}</Text>
-                <Text>Number: </Text>
+                <View style={styles.dateHeader}>
+                    <Text style={styles.date}>{this.state.date}</Text>
+                </View>
                 <TextInput 
+                    label="Number"
                     onChangeText={this.handleChange}
                     style={styles.textInput}
                     keyboardType="numeric"
+                    value={(this.state.number)?String(this.state.number):""}
                 />
-                <Text>Cause of death:</Text>
-                <TextInput 
+                <TextInput
+                    label="Cause of Death" 
                     onChangeText={this.handleDesc}
+                    value={this.state.description}
                     style={styles.textInput}
                 />
                 <Button 
@@ -99,6 +106,15 @@ const styles = StyleSheet.create({
         minHeight: Dimensions.get("window").height,
         alignContent: "center",
         justifyContent: "center",
+    },
+    dateHeader: {
+        padding: 16,
+        elevation: 1,
+        alignContent: "center",
+    },
+    date: {
+        fontSize: 20,
+        fontWeight: "600"
     },
     info: {
         textAlign: "center",
