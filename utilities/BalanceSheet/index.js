@@ -16,10 +16,17 @@ export default class BalanceSheet {
         };
         this.context = batchName;
 
-        this.eggs = JSON.parse(NativeModules.FileManager.fetchForCheck(batchName, "eggs"));
-        this.feeds = JSON.parse(NativeModules.FileManager.fetchForCheck(batchName, "feeds"));
-        this.state.eggs = true;
-        this.state.feeds = true;
+        try {
+            this.eggs = JSON.parse(NativeModules.FileManager.fetchForCheck(batchName, "eggs"));
+            this.feeds = JSON.parse(NativeModules.FileManager.fetchForCheck(batchName, "feeds"));
+            this.state.eggs = true;
+            this.state.feeds = true;
+        } catch {
+            this.eggs = null;
+            this.state.feeds = null;
+            this.state.eggs = null;
+            this.feeds = null;
+        }
         this.batchInformation = JSON.parse(NativeModules.FileManager.fetchBriefSync(batchName));
     }
 

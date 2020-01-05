@@ -19,6 +19,7 @@ import Theme from './../../theme/Theme';
 
 // utilities
 import BalanceSheet from '../../utilities/BalanceSheet';
+import SecurityManager from '../../utilities/SecurityManager';
 
 
 export default class Home extends React.PureComponent {
@@ -35,8 +36,9 @@ export default class Home extends React.PureComponent {
       profit: 0,
     };
     this.sum = 0;
-
+    
     this.subscription = DeviceEventEmitter.addListener("update", this.listen);
+    this.ref = React.createRef();
   }
 
   getProfit = () => {
@@ -46,8 +48,8 @@ export default class Home extends React.PureComponent {
 
   getFeedsBalance = () => {
     let sum = 0;
-    if(this.state.batchBalanceSheets) {
-      this.state.batchBalanceSheets.forEach((batch:BalanceSheet) => {
+    if (this.state.batchBalanceSheets) {
+      this.state.batchBalanceSheets.forEach((batch: BalanceSheet) => {
         sum += batch.balanceFeeds();
       });
     }
@@ -93,6 +95,7 @@ export default class Home extends React.PureComponent {
       batches,
       batchBalanceSheets
     });
+    console.log("These are the batches: " + batches);
   }
 
   setBatches(name, data) {
@@ -137,15 +140,22 @@ export default class Home extends React.PureComponent {
     return cards;
   }
 
+  openBottomSheet = () => {
+    setTimeout(() => {
+      this.ref.current.snapTo(1);
+    }, 9000);
+  }
+
   render() {
     let renderedCards = this.renderCards();
+    // this.openBottomSheet();
 
     return (
       <View>
         <ScrollView style={styles.home}>
           <Title>Batches Summary</Title>
           <View style={styles.summary}>
-            <Text style={styles.feedsTotal}>Feeds Expenditure: Ksh{ this.getFeedsBalance() }</Text>
+            <Text style={styles.feedsTotal}>Feeds Expenditure: Ksh{this.getFeedsBalance()}</Text>
             <Text style={styles.returns}>Returns: Ksh{this.state.returns}</Text>
             <Text style={styles.profit}>Profit: Ksh{this.getProfit()}</Text>
           </View>
@@ -156,6 +166,7 @@ export default class Home extends React.PureComponent {
         <View style={styles.FAB}>
           <FAB navigation={this.props.navigation} />
         </View>
+        {SecurityManager.runAuthenticationQuery(this.ref)}
       </View>
     );
   }
@@ -164,8 +175,7 @@ export default class Home extends React.PureComponent {
 
 const styles = StyleSheet.create({
   home: {
-    height: Dimensions.get("window").height - 100,
-    // backgroundColor: Theme.PRIMARY_COLOR_DARK,
+    height: "100%",
   },
   summary: {
     marginTop: 12,

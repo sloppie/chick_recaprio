@@ -10,12 +10,15 @@ import {
 // utilities
 import InventoryManager from '../../utilities/InventoryManager';
 import { TextInput } from 'react-native-paper';
+import SecurityManager from '../../utilities/SecurityManager';
 
 
 export default class RestockExisting extends PureComponent {
 
     constructor(props) {
         super(props);
+
+        this.bottomSheetRef = React.createRef();
 
         this.state = {
             number: 0,
@@ -46,8 +49,22 @@ export default class RestockExisting extends PureComponent {
             number,
         };
 
-        InventoryManager.addFeeds(feedsObject);
+        // InventoryManager.addFeeds(feedsObject);
+        console.log("Was able to authenticate");
         this.props.navigation.pop();
+    }
+
+    authenticate = (authenticated) => {
+        if(authenticated == true) {
+            this.restock();
+        } else {
+            ToastAndroid.show('Unable to authenticate. Please try again', ToastAndroid.SHORT);
+            this.props.navigation.pop();
+        }
+    }
+
+    callBottomSheet = () => {
+        this.bottomSheetRef.current.snapTo(1);
     }
 
     render() {
@@ -65,7 +82,8 @@ export default class RestockExisting extends PureComponent {
                     onChangeText={this.getPrice}/>
                 <Button 
                     title="Restock"
-                    onPress={this.restock}/>
+                    onPress={this.callBottomSheet}/>
+                { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate) }
             </View>
         );
     }

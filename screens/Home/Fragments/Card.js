@@ -37,7 +37,9 @@ export default class Card extends PureComponent {
       let name = this.props.batchName;
       NativeModules.Sessions.createSession(name, (state) => {
         if (state) {
-          this.props.navigation.push("Chicken");
+          this.props.navigation.push("Chicken", {
+            eggWeek: this.props.navigation
+          });
         }
       });
     });

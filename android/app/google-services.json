@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "809663371765",
+    "firebase_url": "https://chickledger.firebaseio.com",
+    "project_id": "chickledger",
+    "storage_bucket": "chickledger.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809663371765:android:c59d9226a0cb69467468bc",
+        "android_client_info": {
+          "package_name": "com.joocy.chickledger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "809663371765-gmefids8r8cfapng5ck1vsntud0ilobn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDA3Xbsqo6GUG6HktztWTeadrhucBdVw3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "809663371765-gmefids8r8cfapng5ck1vsntud0ilobn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

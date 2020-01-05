@@ -1,3 +1,6 @@
+import 'react-native-gesture-handler';
+
+import React from 'react';
 
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
@@ -12,7 +15,7 @@ import Theme from '../theme/Theme';
 const TopTab = createMaterialTopTabNavigator(
   {
     Produce: {
-      screen: ProduceTab,
+      screen: (props) => <ProduceTab {...props}/>,
       navigationOptions: {
         headerTitleStyle: {
           color: "#444"

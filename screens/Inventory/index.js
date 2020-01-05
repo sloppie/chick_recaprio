@@ -12,6 +12,7 @@ import {
 
 // utilities
 import InventoryManager from '../../utilities/InventoryManager';
+import { DataTable, Surface, Title } from 'react-native-paper';
 
 
 export default class Inventory extends Component {
@@ -83,7 +84,10 @@ export default class Inventory extends Component {
         let feed = [];
         for(let i=0; i<this.feeds.length; i++) {
             feed.push(
-                <Text key={this.feeds[i][0]} style={styles.eggCategories}>{this.feeds[i][0]}: <Text style={styles.number}>{this.feeds[i][1]}</Text></Text>
+                <DataTable.Row key={this.feeds[i][0]}>
+                    <DataTable.Cell>{this.feeds[i][0]}</DataTable.Cell>
+                    <DataTable.Cell numeric>{this.feeds[i][1]}</DataTable.Cell>
+                </DataTable.Row>
             );
         }
         this.fd = feed;
@@ -123,24 +127,53 @@ export default class Inventory extends Component {
 
         return (
             <View style={styles.page}>
-                <View style={styles.currentInventory}>
-                    <View style={styles.currentEggs}>
-                        <Text style={styles.currentCardTitle}>Eggs in Stock</Text>
-                        <Text style={styles.eggCategories}>Normal Eggs: <Text style={styles.number}>{this.state.normalEggs}</Text></Text>
-                        <Text style={styles.eggCategories}>Broken Eggs: <Text style={styles.number}>{this.state.brokenEggs}</Text></Text>
-                        <Text style={styles.eggCategories}>Smaller Eggs: <Text style={styles.number}>{this.state.smallerEggs}</Text></Text>
-                        <Text style={styles.eggCategories}>Larger Eggs: <Text style={styles.number}>{this.state.largerEggs}</Text></Text>
-                    </View>
-                    <View style={styles.currentFeeds}>
-                        <Text style={styles.currentCardTitle}>Feeds</Text>
-                        {(this.state.rendered)?this.fd:<View></View>}
-                    </View>
-                </View>
-                <View style={styles.history}>
-                    <View></View>
-                </View>
-                <View style={styles.fab}>
-                </View>
+                <Title style={styles.label}>Eggs In Inventory</Title>
+                <Surface style={styles.dataTable}>
+                    <DataTable 
+                        collapsable
+                        >
+                        <DataTable.Header>
+                            <DataTable.Title >Egg Type</DataTable.Title>
+                            <DataTable.Title numeric>Full Trays</DataTable.Title>
+                            <DataTable.Title numeric>Extra Eggs</DataTable.Title>
+                        </DataTable.Header>
+                        <DataTable.Row>
+                            <DataTable.Cell>Normal Eggs</DataTable.Cell>
+                            <DataTable.Cell numeric>{this.state.normalEggs.split(".")[0]}</DataTable.Cell>
+                            <DataTable.Cell numeric>{this.state.normalEggs.split(".")[1]}</DataTable.Cell>
+                        </DataTable.Row>
+                        <DataTable.Row>
+                            <DataTable.Cell>Broken Eggs</DataTable.Cell>
+                            <DataTable.Cell numeric>{this.state.brokenEggs.split(".")[0]}</DataTable.Cell>
+                            <DataTable.Cell numeric>{this.state.brokenEggs.split(".")[1]}</DataTable.Cell>
+                        </DataTable.Row>
+                        <DataTable.Row>
+                            <DataTable.Cell>Smaller Eggs</DataTable.Cell>
+                            <DataTable.Cell numeric>{this.state.smallerEggs.split(".")[0]}</DataTable.Cell>
+                            <DataTable.Cell numeric>{this.state.smallerEggs.split(".")[1]}</DataTable.Cell>
+                        </DataTable.Row>
+                        <DataTable.Row>
+                            <DataTable.Cell>Larger Eggs</DataTable.Cell>
+                            <DataTable.Cell numeric>{this.state.largerEggs.split(".")[0]}</DataTable.Cell>
+                            <DataTable.Cell numeric>{this.state.largerEggs.split(".")[1]}</DataTable.Cell>
+                        </DataTable.Row>
+                    </DataTable>
+                </Surface>
+                <Title style={styles.label}>Feeds In Inventory</Title>
+                <Surface style={styles.dataTable}>
+                    <DataTable>
+                        <DataTable.Header>
+                            <DataTable.Title>Feeds Name</DataTable.Title>
+                            <DataTable.Title numeric>Stock</DataTable.Title>
+                        </DataTable.Header>
+                        {this.state.rendered? this.fd: <View />}
+                        <DataTable.Pagination 
+                            page={1}
+                            onPageChange={page => console.log(page)}
+                            numberOfPages={2}
+                        />
+                    </DataTable>
+                </Surface>
             </View>
         );
     }
@@ -201,5 +234,16 @@ const styles = StyleSheet.create({
         alignSelf: "flex-end"
     },
     pickUp: {
+    },
+    label: {
+        margin: 8,
+    },
+    dataTable: {
+        minWidth: (Dimensions.get("window").width - 32),
+        maxWidth: (Dimensions.get("window").width - 32),
+        alignSelf: "center",
+        elevation: 1,
+        zIndex: 1,
+        marginTop: 8,
     },
 });

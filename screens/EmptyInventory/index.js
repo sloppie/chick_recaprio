@@ -13,12 +13,15 @@ import {
 
 // utilities
 import InventoryManager from '../../utilities/InventoryManager';
+import SecurityManager from '../../utilities/SecurityManager';
 
 
 export default class EmptyInventory extends PureComponent {
 
     constructor(props) {
         super(props);
+
+        this.bottomSheetRef = React.createRef();
 
         this.state = {
             misc: "",
@@ -52,6 +55,19 @@ export default class EmptyInventory extends PureComponent {
         this.props.navigation.pop();
     }
 
+    authenticate = (authenticated) => {
+        if(authenticated == true) {
+            this.restock();
+        } else {
+            ToastAndroid.show("Unable to verify password", ToastAndroid.SHORT);
+            this.props.navigation.pop();
+        }
+    }
+
+    callBottomSheet = () => {
+        this.bottomSheetRef.current.snapTo(1);
+    }
+
     render() {
         return (
             <View style={styles.screen}>
@@ -64,9 +80,10 @@ export default class EmptyInventory extends PureComponent {
                 <Button 
                     style={styles.btn}
                     mode="outlined"
-                    onPress={this.confirm}>
+                    onPress={this.callBottomSheet}>
                     <Text>Empty Inventory</Text>
                 </Button>
+                { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate) }
             </View>
         );
     }
@@ -75,7 +92,9 @@ export default class EmptyInventory extends PureComponent {
 
 
 const styles = StyleSheet.create({
-    screen: {},
+    screen: {
+        minHeight: "100%",
+    },
     btn: {
         marginTop: 16,
     },

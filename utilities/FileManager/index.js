@@ -3,13 +3,6 @@ import InventoryManager from '../InventoryManager/index.js';
 
 import { Matrix } from '../Matrix';
 
-// const brief = require('./../../data/brief.json');
-// const casualties = require('./../../data/casualties.json');
-// const eggs = require('./../../data/eggs.json');
-// const feeds = require('./../../data/feeds.json');
-
-// Date format = MM/DD/YY
-
 /**
  * This class helps link the FileManager NativeModule to the react-native app
  */
@@ -91,6 +84,18 @@ export default class FileManager {
         "feeds": "feeds"
     };
 
+    static get CASUALTIES() {
+        return "casualties";
+    }
+
+    static get EGGS() {
+        return "eggs";
+    }
+
+    static get FEEDS() {
+        return "feeds";
+    }
+
     /**
      * 
      * @param {Object} batchInformation is the informatio pertaining to the relevant batch
@@ -119,6 +124,7 @@ export default class FileManager {
         let parsedData = JSON.parse(data);
         let previousData;
         let newDay;
+        let recordCheck = FileManager.checkForRecords(batchInformation, "eggs");
         NativeModules.FileManager.fetchData(batch.context, "eggs", (oldData) => {
             let {normalEggs, smallerEggs, largerEggs, brokenEggs} = parsedData;
 				// !TODO use a try-catch block to account for first time data insert
@@ -131,16 +137,20 @@ export default class FileManager {
     
                 if(weekInfo[1]) {
                     let cd = (weekInfo[1] - 1);
+                    let previousWeekLength = previousData[weekInfo[0] - 1].length;
+                    if(previousWeekLength == 7) {
                     // adds to the current day offset to the newly incomplete week
-                    if(previousData[weekInfo[0]] instanceof Array) {
-                        let recordCheck = FileManager.checkForRecords(batchInformation, "eggs");
-                        if(recordCheck) {
-                            previousData[weekInfo[0]][0] = newDay;
+                        if (previousData[weekInfo[0]] instanceof Array) {
+                            if (recordCheck) {
+                                previousData[weekInfo[0]][0] = newDay;
+                            } else {
+                                previousData[weekInfo[0]].unshift(newDay);
+                            }
                         } else {
-                            previousData[weekInfo[0]].unshift(newDay);
+                            previousData[weekInfo[0]] = [newDay];
                         }
                     } else {
-                        previousData[weekInfo[0]] = [newDay];
+                        previousData[weekInfo[0] - 1].unshift(newDay);
                     }
                 } else {
                     let pi = (weekInfo[0] - 1);
@@ -277,7 +287,11 @@ export default class FileManager {
      * ```
      * The new data to be added to the matrix is in the form:
      * ```js
-     *  [date:String, number:Number, description:String]
+     *  {
+     *      date:String, 
+     *      number:Number, 
+     *      description:String
+     *  }
      * ```
      */
     static addCasualties(batchInformation, data) {
@@ -289,39 +303,36 @@ export default class FileManager {
         let parsedData = JSON.parse(data);
         let { date, number, description } = parsedData;
         let previousData;
-        let newData = [date, number, description];
+        let newData = {
+            date, 
+            number, 
+            description
+        };
+        let exists = FileManager.checkForRecords(batchInformation, "casualties");
+        console.log("Code got past exists")
+        let today = new Date().toDateString();
 
         NativeModules.FileManager.fetchData(batch.context, "casualties", (oldData) => {
             if (oldData) {
                 previousData = JSON.parse(oldData);
-                if (weekInfo[1]) {
-                    if (previousData[weekInfo[0]] instanceof Array) {
-                        previousData[weekInfo[0]].unshift(newData);
-                    } else {
-                        previousData[weekInfo[0]] = [];
-                        previousData[weekInfo[0]].unshift(newData);
-                    }
+                if(exists) {
+                    previousData[today].unshift(newData);                    
                 } else {
-                    let pi = (weekInfo[0] - 1);
-                    if (previousData[pi] instanceof Array) {
-                        previousData[pi].unshift(newData);
-                    } else {
-                        previousData[pi] = [];
-                        previousData[pi].push(newData);
-                    }
+                    previousData[today] = [newData];
                 }
             } else {
-                previousData = [[]];
-                previousData[0].push(newData);
+                previousData = {};
+                previousData[today] = [newData];
             }
 
-            let brief = JSON.parse(NativeModules.FileManager.fetchBriefSync());
+            let brief = JSON.parse(NativeModules.FileManager.fetchBriefSync(batch.context));
             let { population } = brief.population[0];
             let newPopulation = {
                 date: new Date().toDateString(),
                 population: (population - number),
             };
             brief.population.unshift(newPopulation);
+            JSON.stringify(brief, null, 2);
 
             NativeModules.FileManager.addData(batch.context, "casualties", JSON.stringify(previousData));
             NativeModules.FileManager.writeBrief(batch.context, JSON.stringify(brief));
@@ -340,14 +351,16 @@ export default class FileManager {
                 let week = weeks[0];
                 let day = weeks[1] - 1;
                 if (type == "eggs") {
-                    console.log(JSON.stringify(oldData[week][0]))
                     exists = oldData[week].length == weeks[1];
-                } else {
+                } else if(type == "feeds"){
                     let lastWeek = oldData[week];
                     let today = new Date().toDateString();
                     let i = lastWeek.length - 1;
                     let interrim = lastWeek[0][0];
                     exists = today == interrim;
+                } else {
+                    let today = new Date().toDateString();
+                    exists = !(data[today] == undefined);
                 }
                 return exists;
             } else {
@@ -356,14 +369,16 @@ export default class FileManager {
                 let week = weeks[0] - 1;
                 let day = 6;
                 if (type == "eggs") {
-                    console.log(JSON.stringify(oldData[week][day]))
                     exists = oldData[week].length == 7;
-                } else {
+                } else if(type == "feeds"){
                     let lastWeek = oldData[week];
                     let today = new Date().toDateString();
                     let i = lastWeek.length - 1;
                     let interrim = lastWeek[0][0];
                     exists = (interrim == today);
+                } else {
+                    let today = new Date().toDateString();
+                    exists = !(data[today] == undefined);
                 }
             }
         } catch (err) {
@@ -414,7 +429,7 @@ export default class FileManager {
         NativeModules.InventoryManager.addCurrentInventory(JSON.stringify(currentInventory));
     }
 
-}
+} 
 
 function eggsToList(data) {    
     let eggList = [];

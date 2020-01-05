@@ -28,7 +28,7 @@ export default class FloatingActionButton extends Component{
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 0,
+    bottom: 16,
     right: 16,
     borderRadius: 100, 
     minHeight: 64, 

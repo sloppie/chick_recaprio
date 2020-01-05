@@ -2,6 +2,7 @@ import {
     NativeModules,
 } from 'react-native';
 
+import DATE from '../Date';
 import { Matrix } from '../Matrix';
 
 
@@ -32,16 +33,35 @@ export default class InventoryManager {
             console.log("This is history: ", history);
             if (history.length != 0) {
                 let tod = new Date().toDateString();
-                console.log(tod)
                 if (history[0][2] != tod) {
-                    // add new Data to the eggs inventory using matrices
-                    console.log("we're in adding new block");
                     let newInv = new Matrix(eggsArray);
-                    let oldInv = new Matrix(currentInventory[0]);
-                    oldInv.add(newInv);
-                    let newData = [[...oldInv.matrix], currentInventory[1], new Date().toDateString()];
-                    history.unshift(newData);
-                    currentInventory[0] = newData[0];
+                    // add new Data to the eggs inventory using matrices
+                    let suppossedDate = DATE.getDate();
+                    // searches for the date in history before proceeding
+                    let historyIndex = -1;
+                    for(let i=0; i<history.length; i++) {// !WARNING: BRUTEFORCE
+                        if(history[i][2] == suppossedDate) {
+                            historyIndex = i;
+                            break;
+                        }
+                    }
+
+                    if(historyIndex < 0) {
+                        console.log("we're in adding new block");
+                        let oldInv = new Matrix(currentInventory[0]);
+                        oldInv.add(newInv);
+                        let newData = [[...oldInv.matrix], currentInventory[1], DATE.getDate()];
+                        history.unshift(newData);
+                        currentInventory[0] = newData[0];
+                    } else {
+                        for(let i=historyIndex; i>=0; i--) {
+                            let oldInv = new Matrix(history[i][0]);
+                            oldInv.add(newInv);
+                            history[i][0] = oldInv.matrix;
+                        }
+
+                        currentInventory[0] = history[0][0];
+                    }
 
                     // Rewrite the data to local storage
                     NativeModules.InventoryManager.addCurrentInventory(JSON.stringify(currentInventory));
@@ -64,17 +84,37 @@ export default class InventoryManager {
                     // Rewrite newData to loocal storage
                     NativeModules.InventoryManager.addCurrentInventory(JSON.stringify(currentInventory));
                     NativeModules.InventoryManager.addHistory(JSON.stringify(history));
-                } else if((history[0][2] == tod) && !todaysCollect) {
+                } else if ((history[0][2] == tod) && !todaysCollect) {
                     // This is the block that allows adding eggs for multiple batches per day
                     console.log("We're in the reeeeeaalllllly special block");
+                    let currentBatchDay = DATE.getDate(); // helps add egg inventory to the correct date
+                    let historyIndex = 0;
                     let newInv = new Matrix(eggsArray);
-                    let oldInv = new Matrix(currentInventory[0]);
-                    oldInv.add(newInv);
-                    let newData = [[...oldInv.matrix], currentInventory[1], new Date().toDateString()];
-                    history[0] = newData;
-                    currentInventory[0] = newData[0];
+                    let previousCollect = history[0][0];
+                    for (let i = 0; i < history.length; i++) {
+                        if (history[i][2] == currentBatchDay) {
+                            previousCollect = history[i][0];
+                            historyIndex = i;
+                            break;
+                        }
+                    }
 
-                    // Rewrite the data to local storage
+                    let oldInv = new Matrix(previousCollect);
+                    oldInv.add(newInv);
+                    // all the data is retained from the previous history 
+                    //except the eggs number which is adjusted accordingly
+                    let newData = [[...oldInv.matrix], history[historyIndex][1], history[historyIndex][2]];
+                    history[historyIndex] = newData;
+                    // scrutinize code below for errors
+                    for (let i = (historyIndex - 1); i >= 0; i--) {// loop goes front adding the eggs into inv that were not accounted for
+                        let prevInv = new Matrix(history[i][0]);
+                        prevInv.add(newInv);
+                        history[i][0] = prevInv.matrix;
+                    }
+                    currentInventory[0] = history[0][0];
+                    console.log(JSON.stringify(currentInventory, null, 2))
+
+                    // Rewrite newData to loocal storage
                     NativeModules.InventoryManager.addCurrentInventory(JSON.stringify(currentInventory));
                     NativeModules.InventoryManager.addHistory(JSON.stringify(history));
                 } else { // added this statement for the unique case of rewriting data on the first day of using the application
@@ -248,7 +288,7 @@ export default class InventoryManager {
                 stock = history[0][0];
                 stockMatrix = new Matrix(stock);
             }
-            
+
             // subtracts only leaving out the eggs keyed in today
             cim.subtract(stockMatrix);
 
@@ -264,7 +304,7 @@ export default class InventoryManager {
             let date = new Date().toDateString();
             let price = null;
             let misc = null;
-            if(details) {
+            if (details) {
                 try {
                     // try-catch block because  this might throw ann error considering details.price may be *undefined*
                     misc = details.misc;
@@ -317,8 +357,8 @@ export default class InventoryManager {
         let pickUp = pU;
         let all = JSON.parse(NativeModules.InventoryManager.fetchPickUp());
         let index;
-        for(let i=0; i<all.length; i++) {
-            if(pickUp.date == all[i].date) {
+        for (let i = 0; i < all.length; i++) {
+            if (pickUp.date == all[i].date) {
                 index = i;
                 break;
             }
@@ -329,19 +369,19 @@ export default class InventoryManager {
         NativeModules.InventoryManager.addPickUp(JSON.stringify(all));
     }
 
-	static previewPickUp() {
-		let pickUp;
-		let history;
-		let today = new Date().toDateString();
-		let preview;
-		try {
-			pickUp = JSON.parse(NativeModules.InventoryManager.fetchPickUp());
-			history = JSON.parse(NativeModules.InventoryManager.fetchHistory());
-		} catch(err) {
-			pickUp = null;
-			history = null;
-		}
-		if(pickUp) {
+    static previewPickUp() {
+        let pickUp;
+        let history;
+        let today = DATE.getDate();
+        let preview;
+        try {
+            pickUp = JSON.parse(NativeModules.InventoryManager.fetchPickUp());
+            history = JSON.parse(NativeModules.InventoryManager.fetchHistory());
+        } catch (err) {
+            pickUp = null;
+            history = null;
+        }
+        if (pickUp) {
             let stock;
 
             if (history[0][2] == today) {
@@ -356,17 +396,17 @@ export default class InventoryManager {
                 smallerEggs: InventoryManager.findTrays(stock[2]),
                 largerEggs: InventoryManager.findTrays(stock[3])
             };
-		} else {
-			preview = {
-				normalEggs: "0.0",
-				brokeEggs: "0.0",
-				smallerEggs: "0.0",
-				largerEggs: "0.0",
-			}
-		}
+        } else {
+            preview = {
+                normalEggs: "0.0",
+                brokeEggs: "0.0",
+                smallerEggs: "0.0",
+                largerEggs: "0.0",
+            }
+        }
 
-		return preview;
-	}
+        return preview;
+    }
 
     /**
      * Converts number fed in into tray equivalent number. 

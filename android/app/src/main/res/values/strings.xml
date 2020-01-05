@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">chickledger2</string>
+    <string name="default_notification_channel_id">Egg Inventory Reminder</string>
 </resources>

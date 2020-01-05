@@ -16,12 +16,20 @@ import android.widget.Toast;
 
 public class Sessions extends ReactContextBaseJavaModule {
     private File cacheDir = getReactApplicationContext().getCacheDir();
+    private File filesDir = getReactApplicationContext().getFilesDir();
     File SESSIONS = new File(cacheDir, "SESSIONS"); 
     File INV = new File(cacheDir, "INV");
+    File NOTIFICATION_FOLDER = new File(filesDir, "NOTIFICATIONS");
+    File NOTIFICATION_IDS = new File(NOTIFICATION_FOLDER, "NOTIFICATIONS");
     ReactContext context = (ReactContext) getReactApplicationContext();
 
     public Sessions(ReactApplicationContext reactContext) {
         super(reactContext);
+
+        if(!NOTIFICATION_FOLDER.exists()) {
+            NOTIFICATION_FOLDER.mkdirs();
+            writeFile(NOTIFICATION_IDS, "100");
+        }
     }
 
     @Override
@@ -94,6 +102,18 @@ public class Sessions extends ReactContextBaseJavaModule {
         } catch(Exception ex) {
             // unable to delete
         }
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String fetchNotificationId() {
+        String data = readFile(NOTIFICATION_IDS);
+
+        return data;
+    }
+
+    @ReactMethod
+    public void writeNotificationId(String data) {
+        writeFile(NOTIFICATION_IDS, data);
     }
 
     private void makeToast(String message) {

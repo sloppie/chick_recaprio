@@ -3,8 +3,9 @@ import {
     View,
     Text,
     Alert,
-    StyleSheet,
     Button,
+    ToastAndroid,
+    StyleSheet,
     Dimensions,
     NativeModules,
 } from 'react-native';
@@ -17,11 +18,13 @@ import Theme from '../../../theme/Theme';
 
 import FileManager from '../../../utilities/FileManager';
 import InventoryManager from '../../../utilities/InventoryManager';
+import SecurityManager from '../../../utilities/SecurityManager';
 
 export default class Feeds extends Component{
     constructor(props){
         super(props);
 
+        this.bottomSheetRef = React.createRef();
         this.state = {
             number: 0,
             date: new Date().toDateString(),
@@ -91,10 +94,17 @@ export default class Feeds extends Component{
 
     }
 
-    sendData = (data) => {
-        let { batchInformation } = this.props;
-        FileManager.addFeeds(batchInformation, data);
-        this.props.navigation.popToTop();
+    sendData = (authenticated) => {
+        if(authenticated == true) {
+            let data = this.formatData();
+            let { batchInformation } = this.props;
+            FileManager.addFeeds(batchInformation, data);
+            console.log(JSON.stringify(data));
+            this.props.navigation.popToTop();
+        } else {
+            ToastAndroid.show("Unable to verify password. Please try again", ToastAndroid.SHORT);
+            this.props.navigation.pop();
+        }
     }
 
     alert = () => {
@@ -119,7 +129,7 @@ export default class Feeds extends Component{
                         {
                             text: "Confirm",
                             onPress: () => {
-                                this.sendData(data);
+                                this.bottomSheetRef.current.snapTo(1);
                             },
                         }
                     ],
@@ -130,7 +140,7 @@ export default class Feeds extends Component{
 
     render(){
         return (
-            <View>
+            <View style={styles.screen}>
                 <View style={styles.dateHeader}>
                     <Text>Date: { this.state.date }</Text>
                 </View>
@@ -138,12 +148,15 @@ export default class Feeds extends Component{
                     label="Number Used"
                     style={styles.textInput}
                     onChangeText={this.onInput}
+                    mode="outlined"
+                    value={(this.state.number==0)?"": String(this.state.number)}
                     keyboardType="numeric"/>
                 <TextInput
                     label="Feeds Type"
                     style={styles.textInput}
                     onChangeText={this.feedsType}
                     keyboardType="default"
+                    mode="outlined"
                     value={this.state.type}
                     />
                 {/* <Text>Price:</Text>
@@ -157,6 +170,7 @@ export default class Feeds extends Component{
                     title="Submit"
                     onPress={this.alert}
                 />
+                { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.sendData) }
             </View>
         );
     }
@@ -167,6 +181,9 @@ const styles = StyleSheet.create({
         minHeight: Dimensions.get("window").height,
         alignContent: "center",
         justifyContent: "center",
+    },
+    screen: {
+        minHeight: "100%",
     },
     dateHeader: {
         padding: 16,

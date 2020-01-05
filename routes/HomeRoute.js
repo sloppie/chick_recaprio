@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
@@ -18,6 +19,7 @@ import Restock from '../screens/Restock';
 
 import Theme from '../theme/Theme';
 import Icon from 'react-native-ionicons';
+import EggWeek from '../screens/EggWeek';
 
 /**
  * Grabs the props from the initial Home component and helps to manipulate oustide the main Component
@@ -31,6 +33,11 @@ function switchToEggs() {
   });
 }
 
+export function switchToEggWeek(params) {
+  // propGrabber.navigation.navigate("EggWeek", params);
+  switchTo("EggWeek", params);
+}
+
 function switchToFeeds() {
   propGrabber.navigation.navigate("AddInventory", {
     context: "feeds"
@@ -41,6 +48,10 @@ function switchToCasualties() {
   propGrabber.navigation.navigate("AddInventory", {
     context: "casualties"
   });
+}
+
+function switchTo(route, params) {
+  propGrabber.navigation.navigate(route, params);
 }
 
 /**
@@ -90,6 +101,12 @@ let stackNavigator = createStackNavigator(
       screen: Restock,
       navigationOptions: {
         title: "Restock",
+      },
+    },
+    EggWeek: {
+      screen: EggWeek,
+      navigationOptions: {
+        headerTitle: "Expanded Week"
       },
     },
   },

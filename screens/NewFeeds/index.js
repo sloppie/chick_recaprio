@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import {
     View,
     Text,
+    ToastAndroid,
     StyleSheet,
 } from 'react-native';
 
@@ -10,11 +11,14 @@ import InventoryManager from '../../utilities/InventoryManager';
 
 import Icon from 'react-native-ionicons';
 import { TextInput, Button } from 'react-native-paper';
+import SecurityManager from '../../utilities/SecurityManager';
 
 export default class NewFeeds extends PureComponent {
 
     constructor(props) {
         super(props);
+
+        this.bottomSheetRef = React.createRef();
 
         this.state = {
             number: 0,
@@ -48,12 +52,27 @@ export default class NewFeeds extends PureComponent {
             number,
         };
 
-        InventoryManager.addFeeds(feedsObject);
+        // InventoryManager.addFeeds(feedsObject);
+        console.log("Was able to authenticate");
         this.props.navigation.pop();
     }
+
+    authenticate = (authenticated) => {
+        if(authenticated) {
+            this.restock();
+        } else {
+            ToastAndroid.show("Unable to verify password. Please try again");
+            this.props.navigation.pop();
+        }
+    }
+
+    callBottomSheet = () => {
+        this.bottomSheetRef.current.snapTo(1);
+    }
+
     render() {
         return (
-            <View>
+            <View style={styles.screen}>
                 <Text>Type:</Text>
                 <TextInput
                     onChangeText={this.getType}/>
@@ -71,9 +90,10 @@ export default class NewFeeds extends PureComponent {
                     theme="text"
                     mode="contained"
                     label={true}
-                    onPress={this.restock}>
+                    onPress={this.callBottomSheet}>
                         <Text>New Feeds</Text>
                 </Button>
+                { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate) }
             </View>
         );
     }
@@ -81,5 +101,7 @@ export default class NewFeeds extends PureComponent {
 }
 
 const styles = StyleSheet.create({
-
+    screen: {
+        minHeight: "100%"
+    },
 });

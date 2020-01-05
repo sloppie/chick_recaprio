@@ -32,8 +32,16 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
 
   public FileManager(ReactApplicationContext reactContext) {
     super(reactContext);
+    File batch = new File(filesDir, "data/Batch");
     if(new File(filesDir, "data/eggs").exists())
       new File(filesDir, "data/eggs").delete();
+
+    if(batch.exists()) {
+      for(File batchFile: batch.listFiles()) {
+        batchFile.delete();
+      }
+      batch.delete();
+    }
   }
 
   @Override
@@ -85,7 +93,7 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
       makeToast("data added to " + key + " store");
   }
 
-  // fetching the data
+  // fetching the data 
   @ReactMethod(isBlockingSynchronousMethod = true)
   public boolean batchExists(String context) {
     return new File(filesDir, "data/" + context).exists();

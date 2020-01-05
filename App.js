@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
 
-import { NativeModules } from 'react-native';
-import FileManager from './utilities/FileManager';
+import 'react-native-gesture-handler';
+
 import HomeDrawer from './routes/HomeDrawer';
 
-//  if(!NativeModules.FileManager.batchExists("Batch II")){
-//    FileManager.write();
-// }
+import SecurityManager from './utilities/SecurityManager';
+
+
 
 export default class App extends Component {
+
+  componentDidMount() {
+    new SecurityManager();
+  }
+
   render() {
     return <HomeDrawer />;
   }
+
 }

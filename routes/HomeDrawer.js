@@ -1,3 +1,6 @@
+import 'react-native-gesture-handler';
+import React from 'react';
+
 import { createAppContainer } from 'react-navigation';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 
@@ -5,9 +8,12 @@ import { createDrawerNavigator } from 'react-navigation-drawer';
 import Home from './HomeRoute';
 import Inventory from './Inventory';
 import Statistics from './Statistics';
+import Events from './Events';
 
 // theme
 import Theme from '../theme/Theme';
+import Icon from 'react-native-ionicons';
+import Settings from './Settings';
 
 const Drawer = createDrawerNavigator(
     {
@@ -16,6 +22,7 @@ const Drawer = createDrawerNavigator(
             navigationOptions: {
                 headerTitle: "Home",
                 drawerLabel: "Home",
+                drawerIcon: <Icon name="home" />
             },
         },
         Inventory: {
@@ -23,6 +30,7 @@ const Drawer = createDrawerNavigator(
             navigationOptions: {
                 headerTitle: "Inventory",
                 drawerLabel: "Inventory",
+                drawerIcon: <Icon name="paper" />,
                 title: "Inventory",
             },
         },
@@ -31,13 +39,29 @@ const Drawer = createDrawerNavigator(
             navigationOptions: {
                 headerTitle: "Statistics",
                 drawerLabel: "Statistics",
+                drawerIcon: <Icon name="stats" />
             }
-        }
+        },
+        Event: {
+            screen: Events,
+            navigationOptions: {
+                headerTitle: "Events",
+                drawerLabel: "Events",
+                drawerIcon: <Icon name="calendar" />
+            },
+        },
+        Settings: {
+            screen: Settings,
+            navigationOptions: {
+                drawerIcon: <Icon name="cog" />,
+                drawerLabel: "Settings",
+                headerTitle: "Settings",
+            }
+        },
     },
     {
+        hideStatusBar: false,
         minSwipeDistance: 30,
-        // overlayColor: Theme.PRIMARY_COLOR_LIGHT,
-        // drawerBackgroundColor: Theme.PRIMARY_COLOR,
     }
 );
 

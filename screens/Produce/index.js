@@ -1,23 +1,29 @@
 import React, { Component } from 'react';
+
 import {
-    View,
-    StyleSheet,
-    Text,
-    TouchableHighlight,
-    ScrollView,
-    FlatList,
-    Dimensions,
-    // DeviceEventEmitter,
-    NativeModules,
+  View,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  ScrollView,
+  FlatList,
+  Dimensions,
+  // DeviceEventEmitter,
+  NativeModules,
 } from 'react-native';
 import Icon from 'react-native-ionicons';
 
 import Theme from '../../theme/Theme';
 
-import { orderFinder } from './utilities'
+import { orderFinder } from './utilities';
+import { TouchableRipple, Colors, Title, Caption, Divider } from 'react-native-paper';
+
+import { switchToEggWeek } from '../../routes/HomeRoute';
+import InventoryManager from '../../utilities/InventoryManager';
 
 
 export default class ProduceTab extends Component {
+
   constructor(props) {
     super(props);
 
@@ -30,33 +36,36 @@ export default class ProduceTab extends Component {
   componentDidMount() {
     let context = NativeModules.Sessions.getCurrentSession();
     true && NativeModules.FileManager.fetchList(context, "eggs", (data) => {
-      // console.log(data);
-      try{
+      try {
         let parsedData = JSON.parse(data);
         this.weekOrder = orderFinder();
-        console.log(this.weekOrder)
         this.setState({
-            data: parsedData,
-          });
-        } catch(err) {
-        console.log(err);
+          data: parsedData,
+        });
+      } catch (err) {
         this.setState({
           data: {},
         });
       }
-      }); 
+    });
   }
 
   componentWillUnmount() {
   }
 
   option = () => {
-    if(this.state.data) {
+    if (this.state.data) {
+
       return (
         <FlatList
-            legacyImplementation={true}
-            data={this.state.data}
-            renderItem={({item}) => <WeeklyCard weekOrder={this.weekOrder} week={item.eggs} weekNumber={item.weekNumber}/>}/>
+          legacyImplementation={true}
+          data={this.state.data}
+          renderItem={({ item }) =>
+            <WeeklyCard
+              navigateToEggs={this.props.navigation}
+              weekOrder={this.weekOrder}
+              week={item.eggs}
+              weekNumber={item.weekNumber} />} />
       );
     } else {
       return <Text>Loading List...</Text>
@@ -70,66 +79,12 @@ export default class ProduceTab extends Component {
       </View>
     );
   }
+
 }
 
 
-class EWC extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      visible: this.props.visible,
-    };
-  }
-
-  render() {
-    return (
-      <View style={{
-        elevation: 2,
-        display: this.state.visible ? "flex" : "none",
-      }}>
-        <View style={EWCStyles.card}>
-          <Button
-            title="Show"
-            onPress={() => {
-              this.setState({
-                visible: !this.state.visible,
-              });
-            }}
-          />
-        </View>
-      </View>
-    );
-  }
-}
-
-let EWCStyles = StyleSheet.create({
-  card: {
-    height: Dimensions.get("window").height,
-    width: Dimensions.get("window").width,
-    backgroundColor: Theme.PRIMARY_COLOR_DARK,
-  },
-});
-
-/**
- * 
- * This Component displays Eggs produce per day and is grouped with weeks
- * `this.props.weekNumber` contains the week's object
- * ```js
- *  this.props.weekNumber = {
- *    weekNumber: Number,
- *    MON: {
- *      normalEggs: Number,
- *      brokenEggs: Number,
- *      largerEggs: Number,
- *      smallerEggs: Number,
- *    },
- *    ...
- *    // Goes on the same for all other days of the week
- *    ...
- *  };
- * ```
- */
 export class WeeklyCard extends Component {
+
   constructor(props) {
     super(props);
 
@@ -139,66 +94,42 @@ export class WeeklyCard extends Component {
     };
   }
 
-  expand = () => {
-    this.setState({
-      expanded: !this.state.expanded,
-    });
-  }
+  viewWeek = () => {
+    let params = {
+      week: this.props.week,
+      weekOrder: this.props.weekOrder,
+      weekNumber: this.props.weekNumber
+    };
 
-  feedsCard = () => {
-
-  }
-
-  renderDays = () => {
-    let {week} = this.props;
-    let days = [];
-    if(week) {
-      let counterDays = week.length - 1;
-      for(let i=0; i<week.length; i++) {
-        // [normalEggs, brokenEggs, smallerEggs, largerEggs] 
-        // the `if block` statement makes sure the data trying to be converted to an `Object` is not `null`
-        if(week[i]) {
-          days.push(
-            <View style={WCStyles.day} key={i}>
-              <Text style={WCStyles.dayText}>{this.props.weekOrder[counterDays]}: {week[i][4]}</Text>
-              <TouchableHighlight onPress={() => { console.log("Hello") }}>
-                <Icon name="create" style={WCStyles.editIcon} />
-              </TouchableHighlight>
-            </View>
-          );
-        }
-        counterDays--;
-      }
-    }
-
-    return days;
+    switchToEggWeek(params);
   }
 
   render() {
-    let copiedStyles = Object.create(WCStyles.expanded);
     let sum = 0;
     this.props.week.forEach((data) => {
-      if(data != null)
+      if (data != null)
         sum += data[4];
     });
-    copiedStyles.display = this.state.expanded ? "flex" : "none";
+    let trays = InventoryManager.findTrays(String(sum)).split(".");
     return (
       <View style={WCStyles.card}>
-        <TouchableHighlight onPress={this.expand} >
-          <View style={WCStyles.summary}>
-            <View style={WCStyles.cardInfo}>
-              <Text style={WCStyles.cardTitle}>WEEK {this.props.weekNumber}</Text>
-              <Text style={WCStyles.totalTally}>Total eggs produced: {sum}</Text>
+        <TouchableRipple
+          style={WCStyles.week}
+          onPress={this.viewWeek}
+          color={Colors.amber500}>
+          <View style={WCStyles.weekHolder}>
+            <Icon name="clipboard" style={WCStyles.weekIcon} />
+            <View style={WCStyles.weekInfo}>
+              <Title>WEEK {this.props.weekNumber}</Title>
+              <Caption>Total: {InventoryManager.findTrays(String(sum))}: Trays: {trays[0]} Extra Eggs: {trays[1]}</Caption>
+              <Divider />
             </View>
-            <Icon name={this.state.expanded ? "arrow-dropup-circle" : "arrow-dropdown-circle"} style={WCStyles.expand} />
           </View>
-        </TouchableHighlight>
-        <View style={copiedStyles}>
-          {this.renderDays()}
-        </View>
+        </TouchableRipple>
       </View>
     );
   }
+
 }
 
 let WCStyles = StyleSheet.create({
@@ -243,7 +174,25 @@ let WCStyles = StyleSheet.create({
   editIcon: {
     flex: 1,
     color: Theme.PRIMARY_COLOR,
-    // textAlignVertical: "center",
     textAlign: "center",
+  },
+  weekHolder: {
+    flexDirection: "row",
+  },
+  weekIcon: {
+    flex: 1,
+    textAlignVertical: "center",
+    marginEnd: 8,
+  },
+  week: {
+    minWidth: (Dimensions.get("window").width - 32),
+    maxWidth: (Dimensions.get("window").width - 32),
+    alignSelf: "center",
+    backgroundColor: "#f4f4f4",
+    paddingStart: 8,
+  },
+  weekInfo: {
+    flex: 8,
+    alignSelf: "stretch",
   },
 });

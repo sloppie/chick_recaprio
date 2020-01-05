@@ -15,6 +15,7 @@ import java.io.IOException;
 import android.widget.Toast;
 
 public class InventoryManager extends ReactContextBaseJavaModule {
+    
     private File cacheDir = getReactApplicationContext().getCacheDir();
     private File filesDir = getReactApplicationContext().getFilesDir();
     private ReactContext reactContext = (ReactContext) getReactApplicationContext();

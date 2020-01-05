@@ -3,6 +3,7 @@ import {
     View,
     Text,
     Alert,
+    ToastAndroid,
     StyleSheet,
     Button,
     Dimensions,
@@ -15,10 +16,12 @@ import {
 import Theme from '../../../theme/Theme';
 
 import FileManager from '../../../utilities/FileManager';
+import SecurityManager from '../../../utilities/SecurityManager';
 
 export default class Casualties extends Component {
     constructor(props) {
         super(props);
+        this.bottomSheetRef = React.createRef();
         this.state = {
             date: new Date().toDateString(),
             number: 0,
@@ -51,7 +54,7 @@ export default class Casualties extends Component {
 
         Alert.alert(
             `Confirm casualty count`,
-            `The number of chicken dead is: ${date}\nReason being: ${description}\nNew Population: ${popo - number}`,
+            `The number of chicken dead is: ${number}\nReason being: ${description}\nNew Population: ${popo - number}`,
             [
                 {
                     text: "Cancel",
@@ -60,22 +63,35 @@ export default class Casualties extends Component {
                     },
                     style: "cancel"
                 },
-                {
+                { 
                     text: "Confirm",
-                    onPress: () => {
-                        console.log(JSON.stringify(finalData, null, 2));
-                        this.props.navigation.popToTop();
+                    onPress:() => {
+                        this.setState({
+                            finalData
+                        });
+                        this.bottomSheetRef.current.snapTo(1)
                     },
                     style: "default"
                 }
             ],
-            {cancelable: false}
+            { cancelable: false }
         );
+    }
+
+    sendData = (authenticated) => {
+        if(authenticated == true) {
+            let { finalData } = this.state;
+            FileManager.addCasualties(this.props.batchInformation, JSON.stringify(finalData));
+            this.props.navigation.popToTop();
+        } else {
+            ToastAndroid.show("Unable to authenticate", ToastAndroid.SHORT);
+            this.props.navigation.pop();
+        }
     }
 
     render() {
         return (
-            <View>
+            <View style={styles.screen}>
                 <View style={styles.dateHeader}>
                     <Text style={styles.date}>{this.state.date}</Text>
                 </View>
@@ -96,6 +112,7 @@ export default class Casualties extends Component {
                     title="submit"
                     onPress={this.formatData}
                 />
+                { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.sendData) }
             </View>
         );
     }
@@ -106,6 +123,9 @@ const styles = StyleSheet.create({
         minHeight: Dimensions.get("window").height,
         alignContent: "center",
         justifyContent: "center",
+    },
+    screen: {
+        minHeight: "100%"
     },
     dateHeader: {
         padding: 16,

@@ -3,6 +3,7 @@ import {
     View,
     Text,
     Alert,
+    ToastAndroid,
     StyleSheet,
     Dimensions,
 } from 'react-native';
@@ -13,12 +14,15 @@ import {
 } from 'react-native-paper';
 
 import InventoryManager from '../../utilities/InventoryManager';
+import SecurityManager from '../../utilities/SecurityManager';
 
 
 export default class AddPrices extends PureComponent {
 
     constructor(props) {
         super(props);
+
+        this.bottomSheetRef = React.createRef();
 
         this.state = {
             normalEggs: "",
@@ -69,6 +73,19 @@ export default class AddPrices extends PureComponent {
         );
     }
 
+    callBottomSheet = () => {
+        this.bottomSheetRef.current.snapTo(1);
+    }
+
+    authenticate = (authenticated) => {
+        if(authenticated == true) {
+            this.addPrices();
+        } else {
+            ToastAndroid.show("Unable to authenticate. Please try again", ToastAndroid.SHORT);
+            this.props.navigation.pop();
+        }
+    }
+
     addPrices = () => {
         let pickUp = this.props.navigation.getParam("pickUp", {
             pickUp: null
@@ -82,6 +99,7 @@ export default class AddPrices extends PureComponent {
             } = this.state;
 
             if(normalEggs > 0) {
+
                 let price = {
                     normalEggs,
                     largerEggs,
@@ -104,7 +122,7 @@ export default class AddPrices extends PureComponent {
             <View style={styles.screen}>
                 <View style={styles.inputContainer}>
                     <TextInput
-												value={String(this.state.normalEggs)}
+						value={String(this.state.normalEggs)}
                         style={styles.input}
                         editable={true}
                         label="Normal Eggs"
@@ -112,7 +130,7 @@ export default class AddPrices extends PureComponent {
                         keyboardType="numeric"
                     />
                     <TextInput
-												value={String(this.state.smallerEggs)}
+						value={String(this.state.smallerEggs)}
                         style={styles.input}
                         editable={true}
                         label="Smaller Eggs"
@@ -138,9 +156,10 @@ export default class AddPrices extends PureComponent {
                 </View>
                 <Button 
                     mode="text"
-                    onPress={this.addPrices}>
+                    onPress={this.callBottomSheet}>
                         <Text>ADD PRICES</Text>
                 </Button>
+                { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate) }
             </View>
         );
     }
@@ -149,7 +168,9 @@ export default class AddPrices extends PureComponent {
 
 
 const styles = StyleSheet.create({
-    screen: {},
+    screen: {
+        minHeight: "100%"
+    },
     inputContainer: {
         marginTop: 8,
         maxWidth: (Dimensions.get("window").width - 32),
