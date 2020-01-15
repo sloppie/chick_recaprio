@@ -7,7 +7,7 @@ import {
     ToastAndroid,
 } from 'react-native';
 
-import { TextInput, Button } from 'react-native-paper';
+import { TextInput, Button, List, Card, Paragraph } from 'react-native-paper';
 import Icon from 'react-native-ionicons';
 
 import EventManager from '../../utilities/EventManager';
@@ -117,7 +117,7 @@ export default class ArchiveEvent extends PureComponent {
         if (this.state.render) {
             return (
                 <View style={styles.screen}>
-                    <View style={styles.batchNameContainer}>
+                    {/* <View style={styles.batchNameContainer}>
                         <Text style={styles.batchName}>{this.state.event.batchName}</Text>
                     </View>
                     <View style={styles.titleContainer}>
@@ -154,10 +154,51 @@ export default class ArchiveEvent extends PureComponent {
                             icon="archive"
                             mode="outlined"
                             onPress={this.callBottomSheet}>
-                            {/* <Icon name="archive" style={styles.buttonIcon}/> */}
                             <Text style={styles.buttonIcon}>Complete Event</Text>
                         </Button>
+                    </View> */}
+                    <List.Item 
+                        title={this.state.event.batchName}
+                    />
+                    {/* <List.Item 
+                        title={this.getTitle()}
+                        description="Title of the event below"
+                        left={props => <List.Icon {...props} icon="tag"/>}
+                    /> */}
+                    <Card>
+                        <Card.Title title={this.getTitle()} subtitle="Name of the event"/>
+                        <Card.Content>
+                            <Paragraph>{this.getDescription()}</Paragraph>
+                        </Card.Content>
+                    </Card>
+                    <List.Item 
+                        title={this.getTime()}
+                        description="Reminder time for the event"
+                        left={props => <List.Icon {...props} icon="clock"/>}
+                    />
+                    <List.Item 
+                        title={`${this.getMonth()} ${this.getDay()}, ${this.getYear()}`}
+                        description="Date of the event"
+                        left={props => <List.Icon {...props} icon="calendar"/>}
+                    />
+                    <View style={styles.textInputContainer}>
+                        <Icon name="pricetags" style={styles.expensesIcon}/>
+                        <TextInput
+                            style={styles.textInput}
+                            mode="outlined"
+                            keyboardType="numeric"
+                            label="Expenses"
+                            onChangeText={this.setExpenses}
+                            value={String(this.state.expenses)} />
                     </View>
+                    <Button
+                        style={styles.button}
+                        color="white"
+                        icon="archive"
+                        mode="outlined"
+                        onPress={this.callBottomSheet}>
+                        <Text style={styles.buttonIcon}>Complete Event</Text>
+                    </Button>
                     { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate) }
                 </View>
             );
@@ -265,10 +306,8 @@ const styles = StyleSheet.create({
     },
     button: {
         padding: 8,
-        // position: "relative",
-        // top: 60,
         alignSelf: "center",
-        backgroundColor: "green"
+        width: "60%",
     },
     buttonIcon: {
     },

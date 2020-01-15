@@ -5,12 +5,14 @@ import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { createDrawerNavigator } from 'react-navigation-drawer';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import ProduceTab from './../screens/Produce';
 import FeedsTab from './../screens/Feeds';
 import ChickenTab from './../screens/Period';
 
-import Theme from '../theme/Theme';
+import Theme from '../theme';
+import { Colors } from 'react-native-paper';
 
 const TopTab = createMaterialTopTabNavigator(
   {
@@ -19,14 +21,23 @@ const TopTab = createMaterialTopTabNavigator(
       navigationOptions: {
         headerTitleStyle: {
           color: "#444"
-        }
+        },
+        tabBarLabel: "Egg Produce",
+        tabBarIcon: <Icon color={Theme.SECONDARY_COLOR} name="egg"/>,
       }
     },
     Feeds: {
       screen: FeedsTab,
+      navigationOptions: {
+        // tabBarIcon: "clipboard",
+        tabBarIcon: <Icon color={Theme.SECONDARY_COLOR} name="clipboard"/>,
+      },
     },
     Chicken: {
       screen: ChickenTab,
+      navigationOptions: {
+        tabBarIcon: <Icon color={Theme.SECONDARY_COLOR} name="egg"/>,
+      }
     }
   },
   {
@@ -34,15 +45,18 @@ const TopTab = createMaterialTopTabNavigator(
     tabBarOptions: {
       swipeEnabled: true,
       style: {
-        // backgroundColor: Theme.PRIMARY_COLOR_DARK,
-        // backgroundColor: "white",
+        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
         color: "#444"
       },
+      // activeTintColor: Colors.red600,
+      activeTintColor: Theme.SECONDARY_COLOR_DARK,
+      inactiveTintColor: Colors.teal200,
+      // showIcon: true,
+      showLabel: true,
     },
     tabBarPosition: 'top',
     swipeEnabled: true,
     animationEnabled: true,
-    // lazy: true,
   }
 );
 

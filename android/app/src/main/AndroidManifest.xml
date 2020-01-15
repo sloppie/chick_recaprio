@@ -1,15 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.joocy.chickledger">
 
-    <permission
-        android:name="${applicationId}.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
-    <!-- < Only if you're using GCM or localNotificationSchedule() > -->
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
       android:name=".MainApplication"
@@ -55,16 +47,9 @@
         <intent-filter>
           <action android:name="com.google.firebase.MESSAGING_EVENT" />
         </intent-filter>
-      </service>
+      </service> 
 
       <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
-        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_name"
-                android:value="Chick Ledger Event Notifications"/>
-        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_description"
-                    android:value="Acts as a reminder for the user on upcoming events"/>
-        <!-- Change the resource name to your App's accent color - or any other color you want -->
-        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"
-                    android:resource="@android:color/white"/>
  
         <!-- < Only if you're using GCM or localNotificationSchedule() > -->
         <receiver
@@ -104,8 +89,24 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_name"
+                android:value="@string/default_notification_channel_id"/>
+                <!-- android:value="Chick-Ledger-Event-Notifications"/> -->
+        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_description"
+                    android:value="Acts as a reminder for the user on upcoming events"/>
+        <!-- Change the resource name to your App's accent color - or any other color you want -->
+        <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"
+                    android:resource="@android:color/white"/>
         <!-- </Else> -->
     </application>
     <!-- < Only if you're using GCM or localNotificationSchedule() > -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <permission
+        android:name="${applicationId}.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
+    <!-- < Only if you're using GCM or localNotificationSchedule() > -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
 </manifest>

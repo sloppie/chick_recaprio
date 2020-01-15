@@ -3,8 +3,8 @@ import {
     View,
     Text,
     TextInput,
-    Button,
     TouchableHighlight,
+    ScrollView,
     Alert,
     StyleSheet,
     SafeAreaView,
@@ -18,7 +18,7 @@ import InventoryManager from '../../utilities/InventoryManager';
 
 // fragments
 import FeedCard from './Fragments/FeedCard';
-import { FAB } from 'react-native-paper';
+import { Title, FAB, Card, Button, Colors } from 'react-native-paper';
 
 
 export default class Restock extends Component {
@@ -59,7 +59,6 @@ export default class Restock extends Component {
 
     renderCards() {
         let current = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
-        console.log(current)
         let feedsInventory = current[1];
         let cards = [];
 
@@ -67,13 +66,24 @@ export default class Restock extends Component {
             let type = feedsInventory[i];
             type = [type.date, type.number];
             // new `type` Array = [date, Number, normalisedFeedsName]
-            type.push(i);
+            let redoneFeedsName = InventoryManager.redoFeedsName(i);
+            type.push(redoneFeedsName);
 
-            cards.push(<FeedCard
-                type={type}
-                key={i}
-                toggleState={this.toggleState}
-                navigation={this.props.navigation} />);
+           cards.push(
+               <Card key={i} style={styles.card}>
+                   <Title style={styles.cardTitle}>{type[1]}</Title>
+                   <Card.Title title={type[2]} subtitle={`Last restock on: ${type[0]}`}/>
+                   <Card.Actions>
+                       <Button
+                            onPress={this.restockFeeds.bind(this, type[2], type[1])}
+                            icon="layers-plus"
+                            style={styles.button}
+                       >
+                           Restock
+                        </Button>
+                   </Card.Actions>
+               </Card>
+           );
         }
 
 
@@ -148,6 +158,13 @@ export default class Restock extends Component {
         }
     }
 
+    restockFeeds = (feedsName, number) => {
+        this.props.navigation.navigate("Restock", {
+            feedsName,
+            number
+        });
+    }
+
     confirm = (feedsObject) => {
         InventoryManager.addFeeds(feedsObject);
         this.props.navigation.goBack();
@@ -161,9 +178,12 @@ export default class Restock extends Component {
         let renderedCards = this.renderCards();
         return (
             <SafeAreaView style={styles.container}>
-                {renderedCards}
+                <ScrollView style={styles.scrollView}>
+                    {renderedCards}
+                </ScrollView>
             <FAB 
                 onPress={this.newFeeds}
+                icon="plus"
                 style={styles.fab1}
                 label="New Feeds"/>
             </SafeAreaView>
@@ -172,9 +192,32 @@ export default class Restock extends Component {
 }
 
 const styles = StyleSheet.create({
+    card: {
+        minWidth: (Dimensions.get("window").width - 32),
+        maxWidth: (Dimensions.get("window").width - 32),
+        alignSelf: "center",
+        marginBottom: 8,
+    },
+    cardContent: {
+    },
+    cardTitle: {
+        minHeight: 80,
+        position: "absolute",
+        right: 0,
+        top: 0,
+        margin: 16,
+        fontSize: 50,
+        fontWeight: "700",
+        textAlignVertical: "bottom",
+    },
     container: {
-        paddingTop: 16,
-        minHeight: Dimensions.get("window").height
+        minHeight: Dimensions.get("window").height,
+        backgroundColor: "#f3f3f3",
+    },
+    scrollView: {
+        paddingTop: 8,
+        height: "100%",
+        backgroundColor: "#f3f3f3"
     },
     view: {},
     fab: {
@@ -215,8 +258,9 @@ const styles = StyleSheet.create({
         //alignSelf: "center",
         //width: 100,
     },
-    buttonTxt: {
-        textAlign: "center",
+    button: {
+        backgroundColor: Colors.orange300,
+        marginStart: 8,
     },
     fab1: {
         position: "absolute",

@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -79,6 +80,14 @@ public class InventoryManager extends ReactContextBaseJavaModule {
         return data;
     }
 
+    @ReactMethod
+    public void fetchFeedsAsync(String feedsName, Promise onData) {
+        File feeds = new File(feedsDirectory, feedsName + ".json");
+        String data = readFile(feeds);
+
+        onData.resolve(data);
+    }
+
 	@ReactMethod
 	public void addHistory(String data) {
 		writeFile(history, data);
@@ -101,6 +110,13 @@ public class InventoryManager extends ReactContextBaseJavaModule {
 	public String fetchCurrentInventory() {
 		String data = readFile(currentInventory);
 		return data;
+    }
+    
+	@ReactMethod
+	public void fetchCurrentInventoryAsync(Promise onData) {
+		String data = readFile(currentInventory);
+        
+        onData.resolve(data);
 	}
 
 	@ReactMethod
@@ -112,7 +128,14 @@ public class InventoryManager extends ReactContextBaseJavaModule {
 	public String fetchPickUp() {
 		String data = readFile(pickUp);
 		return data;
-	}
+    }
+    
+    @ReactMethod
+    public void fetchPickUpAsync(Promise onData) {
+        String data = readFile(pickUp);
+
+        onData.resolve(data);
+    }
 
     private void makeToast(String message) {
         Toast.makeText(getReactApplicationContext(), message, Toast.LENGTH_SHORT).show();

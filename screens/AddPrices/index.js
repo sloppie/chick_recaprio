@@ -122,6 +122,7 @@ export default class AddPrices extends PureComponent {
             <View style={styles.screen}>
                 <View style={styles.inputContainer}>
                     <TextInput
+                        mode="outlined"
 						value={String(this.state.normalEggs)}
                         style={styles.input}
                         editable={true}
@@ -130,6 +131,7 @@ export default class AddPrices extends PureComponent {
                         keyboardType="numeric"
                     />
                     <TextInput
+                        mode="outlined"
 						value={String(this.state.smallerEggs)}
                         style={styles.input}
                         editable={true}
@@ -138,7 +140,8 @@ export default class AddPrices extends PureComponent {
                         keyboardType="numeric"
                     />
                     <TextInput
-												value={String(this.state.largerEggs)}
+                        mode="outlined"
+                        value={String(this.state.largerEggs)}
                         style={styles.input}
                         editable={true}
                         label="Larger Eggs"
@@ -146,7 +149,8 @@ export default class AddPrices extends PureComponent {
                         keyboardType="numeric"
                     />
                     <TextInput
-												value={String(this.state.brokenEggs)}
+                        mode="outlined"
+                        value={String(this.state.brokenEggs)}
                         style={styles.input}
                         editable={true}
                         label="Broken Eggs"
@@ -155,7 +159,8 @@ export default class AddPrices extends PureComponent {
                     />
                 </View>
                 <Button 
-                    mode="text"
+                    mode="outlined"
+                    style={styles.button}
                     onPress={this.callBottomSheet}>
                         <Text>ADD PRICES</Text>
                 </Button>
@@ -179,5 +184,10 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 8,
+    },
+    button: {
+        width: "50%",
+        padding: 8,
+        alignSelf: "center",
     },
 });

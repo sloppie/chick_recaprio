@@ -1,22 +1,18 @@
 import React, { Component } from 'react';
-
 import {
   View,
   StyleSheet,
-  Text,
-  TouchableHighlight,
-  ScrollView,
   FlatList,
+  ActivityIndicator,
   Dimensions,
-  // DeviceEventEmitter,
   NativeModules,
 } from 'react-native';
-import Icon from 'react-native-ionicons';
-
-import Theme from '../../theme/Theme';
 
 import { orderFinder } from './utilities';
-import { TouchableRipple, Colors, Title, Caption, Divider } from 'react-native-paper';
+import { Colors, List } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import Theme from '../../theme';
 
 import { switchToEggWeek } from '../../routes/HomeRoute';
 import InventoryManager from '../../utilities/InventoryManager';
@@ -44,9 +40,10 @@ export default class ProduceTab extends Component {
         });
       } catch (err) {
         this.setState({
-          data: {},
+          data: [],
         });
       }
+      console.log(JSON.stringify(this.state.data) + " this is the data");
     });
   }
 
@@ -54,21 +51,41 @@ export default class ProduceTab extends Component {
   }
 
   option = () => {
-    if (this.state.data) {
-
-      return (
-        <FlatList
-          legacyImplementation={true}
-          data={this.state.data}
-          renderItem={({ item }) =>
-            <WeeklyCard
-              navigateToEggs={this.props.navigation}
-              weekOrder={this.weekOrder}
-              week={item.eggs}
-              weekNumber={item.weekNumber} />} />
-      );
+    if (this.state.data !== null) {
+      if (this.state.data.length == 0) {
+        console.log('WERE HERE')
+        return (
+          <View style={{justifyContent: "center", height: "100%"}}>
+            <Icon 
+              style={{textAlign: "center"}}
+              size={50}
+              name="null"
+              color={Theme.SECONDARY_COLOR_DARK}
+            />
+          </View>
+        );
+      } else {
+        return (
+          <FlatList
+            legacyImplementation={true}
+            data={this.state.data}
+            renderItem={({ item }) =>
+              <WeeklyCard
+                navigateToEggs={this.props.navigation}
+                weekOrder={this.weekOrder}
+                week={item.eggs}
+                weekNumber={item.weekNumber} />} />
+        );
+      }
     } else {
-      return <Text>Loading List...</Text>
+      return(
+          <View style={{justifyContent: "center", height: "100%"}}>
+            <ActivityIndicator 
+              animating={true}
+              color={Theme.PRIMARY_COLOR}
+            />
+          </View>
+      );
     }
   }
 
@@ -95,38 +112,37 @@ export class WeeklyCard extends Component {
   }
 
   viewWeek = () => {
-    let params = {
-      week: this.props.week,
-      weekOrder: this.props.weekOrder,
-      weekNumber: this.props.weekNumber
-    };
-
-    switchToEggWeek(params);
+    requestAnimationFrame(() => {
+      let params = {
+        week: this.props.week,
+        weekOrder: this.props.weekOrder,
+        weekNumber: this.props.weekNumber
+      };
+  
+      switchToEggWeek(params);
+    });
   }
 
   render() {
     let sum = 0;
+
     this.props.week.forEach((data) => {
       if (data != null)
         sum += data[4];
     });
+
     let trays = InventoryManager.findTrays(String(sum)).split(".");
+
     return (
-      <View style={WCStyles.card}>
-        <TouchableRipple
-          style={WCStyles.week}
-          onPress={this.viewWeek}
-          color={Colors.amber500}>
-          <View style={WCStyles.weekHolder}>
-            <Icon name="clipboard" style={WCStyles.weekIcon} />
-            <View style={WCStyles.weekInfo}>
-              <Title>WEEK {this.props.weekNumber}</Title>
-              <Caption>Total: {InventoryManager.findTrays(String(sum))}: Trays: {trays[0]} Extra Eggs: {trays[1]}</Caption>
-              <Divider />
-            </View>
-          </View>
-        </TouchableRipple>
-      </View>
+      <List.Item
+        title={`Week ${this.props.weekNumber}`}
+        description={`Trays: ${trays[0]} Extra Eggs: ${trays[1]}`}
+        left={props => <List.Icon {...props} icon="clipboard-outline" />}
+        right={props => <List.Icon {...props} icon="arrow-right" />}
+        onPress={this.viewWeek}
+        rippleColor={Colors.blue100}
+        style={WCStyles.card}
+      />
     );
   }
 
@@ -140,59 +156,5 @@ let WCStyles = StyleSheet.create({
     padding: 4,
     elevation: 1,
     alignSelf: "center",
-  },
-  summary: {
-    flexDirection: "row",
-    backgroundColor: Theme.GRAY,
-  },
-  cardInfo: {
-    flex: 7,
-    paddingStart: 8,
-  },
-  cardTitle: {
-    fontWeight: Theme.HEADER_WEIGHT,
-    fontSize: 16,
-  },
-  totalTally: {
-    fontWeight: Theme.NORMAL_WEIGHT,
-  },
-  expand: {
-    flex: 1,
-    textAlignVertical: "center",
-    textAlign: "center",
-  },
-  expanded: {},
-  day: {
-    padding: 8,
-    flexDirection: "row",
-    borderBottomWidth: 2,
-    borderBottomColor: Theme.GRAY,
-  },
-  dayText: {
-    flex: 4,
-  },
-  editIcon: {
-    flex: 1,
-    color: Theme.PRIMARY_COLOR,
-    textAlign: "center",
-  },
-  weekHolder: {
-    flexDirection: "row",
-  },
-  weekIcon: {
-    flex: 1,
-    textAlignVertical: "center",
-    marginEnd: 8,
-  },
-  week: {
-    minWidth: (Dimensions.get("window").width - 32),
-    maxWidth: (Dimensions.get("window").width - 32),
-    alignSelf: "center",
-    backgroundColor: "#f4f4f4",
-    paddingStart: 8,
-  },
-  weekInfo: {
-    flex: 8,
-    alignSelf: "stretch",
   },
 });

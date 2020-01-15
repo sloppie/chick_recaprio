@@ -3,7 +3,6 @@ import {
     View,
     Text,
     Alert,
-    Button,
     ToastAndroid,
     StyleSheet,
     Dimensions,
@@ -11,10 +10,12 @@ import {
 } from 'react-native';
 
 import {
-    TextInput,
+    TextInput, 
+    List,
+    Button,
 } from 'react-native-paper';
 
-import Theme from '../../../theme/Theme';
+import Theme from '../../../theme';
 
 import FileManager from '../../../utilities/FileManager';
 import InventoryManager from '../../../utilities/InventoryManager';
@@ -99,7 +100,7 @@ export default class Feeds extends Component{
             let data = this.formatData();
             let { batchInformation } = this.props;
             FileManager.addFeeds(batchInformation, data);
-            console.log(JSON.stringify(data));
+            ToastAndroid.show("Activity added to batch.", ToastAndroid.SHORT);
             this.props.navigation.popToTop();
         } else {
             ToastAndroid.show("Unable to verify password. Please try again", ToastAndroid.SHORT);
@@ -142,14 +143,18 @@ export default class Feeds extends Component{
         return (
             <View style={styles.screen}>
                 <View style={styles.dateHeader}>
-                    <Text>Date: { this.state.date }</Text>
+                    <List.Item 
+                        title={this.state.date}
+                        description="Today's date"
+                        left={props => <List.Icon {...props} icon="calendar"/>}
+                    />
                 </View>
                 <TextInput
                     label="Number Used"
                     style={styles.textInput}
                     onChangeText={this.onInput}
                     mode="outlined"
-                    value={(this.state.number==0)?"": String(this.state.number)}
+                    value={(this.state.number == 0)? "": String(this.state.number)}
                     keyboardType="numeric"/>
                 <TextInput
                     label="Feeds Type"
@@ -167,9 +172,12 @@ export default class Feeds extends Component{
                     /> */}
                 <Button 
                     style={styles.button}
-                    title="Submit"
                     onPress={this.alert}
-                />
+                    mode="outlined"
+                    icon="send"
+                >
+                    Submit
+                </Button>
                 { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.sendData) }
             </View>
         );
@@ -206,4 +214,9 @@ const styles = StyleSheet.create({
     textInput: {
         margin: 8,
     },   
+    button: {
+        padding: 8,
+        width: "45%",
+        alignSelf: "center",
+    },
 });

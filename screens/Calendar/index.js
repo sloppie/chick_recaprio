@@ -6,7 +6,7 @@ import {
     StyleSheet,
     Dimensions,
 } from 'react-native';
-import { FAB, Button, Caption } from 'react-native-paper';
+import { FAB, Button, Caption, List, Colors } from 'react-native-paper';
 import { CompleteEvent,IncompleteEvent } from './Fragments/Event';
 
 //utilities
@@ -37,7 +37,7 @@ export default class Calendar extends PureComponent {
     }
 
     renderEvents = (eventType) => {
-        let fetchedEvents = [];
+        let fetchedEvents = []; 
         let events = [];
 
         if(eventType == EventManager.INCOMPLETE)
@@ -76,11 +76,34 @@ export default class Calendar extends PureComponent {
         this.props.navigation.navigate("AddEvent");
     }
 
+    renderRedButton = () => {
+        return (
+            <Button
+                onPress={this.getIncomplete}
+                color={Colors.green500}
+                style={[styles.navButton, { backgroundColor: Colors.red500 }]}>
+                <Text>MORE</Text>
+            </Button>
+        );
+    }
+
+    renderGreenButton = (props) => {
+        return (
+            <Button
+                onPress={this.getComplete}
+                color="red"
+                style={[styles.navButton, { backgroundColor: Colors.red500 }]}>
+                <Text>MORE</Text>
+            </Button>
+        );
+    }
+
     render() {
 
         return (
-            <View style={styles.screen}>
-                <View style={styles.tab}>
+            <View>
+                <ScrollView style={styles.screen}>
+                    {/* <View style={styles.tab}>
                     <View style={styles.descriptionTab}>
                         <View style={styles.descriptionText}>
                             <Text style={styles.eventType}>Incomplete Events</Text>
@@ -117,7 +140,26 @@ export default class Calendar extends PureComponent {
                     <View style={styles.scrollView}>
                         {(this.state.render) ? this.renderEvents(EventManager.COMPLETE) : <View />}
                     </View>
-                </View>
+                </View> */}
+                    <List.Section>
+                        <List.Item 
+                            title="Incomplete Events"
+                            description="Events that have not yet benn archived"
+                            onPress={this.getIncomplete.bind(this)}
+                            right={props => <List.Icon {...props} icon="calendar-clock"/>}
+                        />
+                        {(this.state.render) ? this.renderEvents(EventManager.INCOMPLETE) : <View />}
+                    </List.Section>
+                    <List.Section>
+                        <List.Item 
+                            title="Complete Events"
+                            description="Events that have already been archived"
+                            onPress={this.getComplete.bind(this)}
+                            right={props => <List.Icon {...props} icon="calendar-multiple-check" />}
+                        />
+                        {(this.state.render) ? this.renderEvents(EventManager.COMPLETE) : <View />}
+                    </List.Section>
+                </ScrollView>
                 <FAB
                     onPress={this.addEvent}
                     icon="plus"
@@ -130,7 +172,8 @@ export default class Calendar extends PureComponent {
 
 const styles = StyleSheet.create({
     screen: {
-        height: "100%"
+        minHeight: "100%",
+        maxHeight: "100%",
     },
     tab: {
         maxHeight: "50%",
@@ -156,6 +199,7 @@ const styles = StyleSheet.create({
     },
     navButton: {
         backgroundColor: "red",
+        height: "70%"
     },
     scrollView: {
     },

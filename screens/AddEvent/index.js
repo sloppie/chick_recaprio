@@ -14,6 +14,7 @@ import InventoryManager from '../../utilities/InventoryManager';
 import EventManager from '../../utilities/EventManager';
 import SecurityManager from '../../utilities/SecurityManager';
 import DATE from '../../utilities/Date';
+import { NotificationPreferences } from '../../utilities/NotificationManager';
 
 
 export default class AddEvent extends PureComponent {
@@ -27,7 +28,7 @@ export default class AddEvent extends PureComponent {
             title: "",
             description: "",
             batchName: "",
-            time: "08:00:00",
+            time: NotificationPreferences.TIME,
             to: "",
             from: "",
         };
@@ -97,7 +98,7 @@ export default class AddEvent extends PureComponent {
             to,
         } = this.state;
         
-        if(time != "08:00:00") {
+        if(time != NotificationPreferences.TIME) {
             date = DATE.toString(from, time);
             from = DATE.toString(from, time);
             // to = DATE.toString(to, time);
@@ -108,7 +109,7 @@ export default class AddEvent extends PureComponent {
             to = (this.state.to != "")? DATE.toString(to): "";
         }
 
-        let event = {
+        let event = { 
             title,
             batchName,
             description,
@@ -116,6 +117,8 @@ export default class AddEvent extends PureComponent {
             from,
             to
         };
+
+        console.log(event);
 
         EventManager.addEvent(event);
         this.props.navigation.navigate("Event");

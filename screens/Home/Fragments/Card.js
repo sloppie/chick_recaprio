@@ -7,15 +7,14 @@ import {
   TouchableHighlight,
   NativeModules,
 } from 'react-native';
-import Icon from 'react-native-ionicons';
-import { Title, Caption } from 'react-native-paper';
 
-import FileManager from '../../../utilities/FileManager';
-import Theme from './../../../theme/Theme';
+import { Title, Caption, Card, List, Button, Colors } from 'react-native-paper';
+
 import BalanceSheet from '../../../utilities/BalanceSheet';
+import Theme from '../../../theme';
 
 
-export default class Card extends PureComponent {
+export default class BatchCard extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -45,51 +44,96 @@ export default class Card extends PureComponent {
     });
   }
 
+  addEggs = () => {
+      let name = this.props.batchName;
+      NativeModules.Sessions.createSession(name, (state) => {
+        if (state) {
+          this.props.navigation.push("AddInventory", {
+            context: "eggs"
+          });
+        }
+      });
+  }
+
+  addFeeds = () => {
+      let name = this.props.batchName;
+      NativeModules.Sessions.createSession(name, (state) => {
+        if (state) {
+          this.props.navigation.push("AddInventory", {
+            context: "feeds"
+          });
+        }
+      });
+  }
+
+  addCasualties = () => {
+      let name = this.props.batchName;
+      NativeModules.Sessions.createSession(name, (state) => {
+        if (state) {
+          this.props.navigation.push("AddInventory", {
+            context: "casualties"
+          });
+        }
+      });
+  }
+
   render() {
     if(this.state.batch) {
       return (
-        <TouchableHighlight
-          onPress={this.goToBatch}
-          activeOpacity={0.6}
-          style={styles.card}
-          underlayColor={Theme.PRIMARY_COLOR_DARK}>
-          <View>
-            <View style={styles.titleHolder}>
-              {/* <Text style={styles.name}> {batchInformation.name}</Text> */}
-              <Text style={styles.name}> {this.state.batch.context}</Text>
-              <Text style={styles.weekTitle}>{`From ${this.state.batch.getInitialDate()}`}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-              }}>
-              {/* <Text style={styles.pp}>{Math.round(68.9) + "%"}</Text> */}
-              <Text style={styles.pp}>{this.state.batch.eggPercentage()}%</Text>
-              <Text
-                style={{
-                  fontFamily: "serif",
-                  textAlignVertical: "center",
-                  color: "#444",
-                }}>{" production"}</Text>
-            </View>
-            <View style={styles.navigate}>
-              <Text style={styles.lpa}>Population: {this.state.batch.batchInformation.population[0].population}</Text>
-              {/* <TouchableHighlight
-                onPress={this.goToBatch}>
-                <View style={{
-                  flex: 1,
-                  justifyContent: "center",
-                }}>
-                  <Icon name="arrow-dropdown" style={styles.arrow} />
-                </View>
-              </TouchableHighlight> */}
-            </View>
-            <View style={styles.feeds}>
-              <Caption style={styles.feedsCaption}>Spent on Feeds:</Caption>
-              <Title style={styles.feedsCost}>Ksh{ this.state.batch.balanceFeeds() }</Title>
-            </View>
-          </View>
-        </TouchableHighlight>
+        <View>
+          <Card onPress={this.goToBatch} style={styles.card} >
+            <Card.Title 
+              title={this.state.batch.context} 
+              titleStyle={styles.headerTitleStyle}
+              subtitle={`From: ${this.state.batch.getInitialDate()}`}
+            />
+            <Card.Content style={styles.cardContent}>
+              <View style={styles.infoContainer}>
+                <Card style={styles.population}>
+                  <Card.Title title="Population" titleStyle={styles.titleStyle}/>
+                  <Card.Content>
+                    <Title style={styles.numbersStyle}>{this.state.batch.batchInformation.population[0].population}</Title>
+                  </Card.Content>
+                </Card>
+                <Card style={styles.percentage}>
+                  <Card.Title title="Productive" titleStyle={styles.titleStyle}/>
+                  <Card.Content>
+                    <Title style={styles.numbersStyle}>{this.state.batch.eggPercentage()}%</Title>
+                  </Card.Content>
+                </Card>
+              </View>
+              <List.Item
+                title={`KSH${this.state.batch.balanceFeeds()}`}
+                titleStyle={styles.numbersStyle}
+                description="Amount spent on feeds"
+                left={props => <List.Icon {...props} icon="tag" color={Theme.PRIMARY_COLOR} />}
+              />
+            </Card.Content>
+            <Card.Actions style={styles.cardActions}>
+              <Button
+                style={styles.button}
+                onPress={this.addEggs}
+                color={Theme.SECONDARY_COLOR_DARK}
+              >
+                Add Eggs
+                </Button>
+              <Button
+                style={styles.button}
+                onPress={this.addFeeds}
+                color={Theme.SECONDARY_COLOR_DARK}
+              >
+                Add Feeds
+                </Button>
+              <Button
+                style={styles.button}
+                onPress={this.addCasualties}
+                color={Theme.SECONDARY_COLOR_DARK}
+              >
+                Add Casualties
+                </Button>
+            </Card.Actions>
+          </Card>
+        </View>
       );
     } else {
       return <View></View>
@@ -97,60 +141,63 @@ export default class Card extends PureComponent {
   }
 }
 
-let styles = StyleSheet.create({
+const styles = StyleSheet.create({
   card: {
-    padding: 8,
-    marginTop: 5,
-    marginBottom: 5,
-    borderRadius: 10,
-    paddingBottom: 10,
-    width: (Dimensions.get("window").width - 16),
+    minWidth: (Dimensions.get("window").width - 32),
+    maxWidth: (Dimensions.get("window").width - 32),
     alignSelf: "center",
-    elevation: 1,
-    // backgroundColor: Theme.PRIMARY_COLOR,
-    backgroundColor: "#f3f3f3"
+    marginBottom: 8,
+    paddingBottom: 0,
+    // backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
   },
-  titleHolder: {
-    marginBottom: 24,
+  cardContent: {
+    paddingBottom: 0,
   },
-  name: {
-    fontSize: 25,
-    color: Theme.HEADER_COLOR,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    width: (Dimensions.get("window").width - 20),
-    alignSelf: "center",
-    fontWeight: "500",
+  infoContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
   },
-  weekTitle: {
-    color: "#212121",
-    fontSize: 16,
-    fontStyle: "italic",
+  population: {
+    minWidth: "50%",
+    maxWidth: "50%",
+    elevation: 0,
+    borderEndColor: Theme.PRIMARY_COLOR, 
+    borderEndWidth: 1,
+    // backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+    borderTopEndRadius: 0,
+    borderBottomEndRadius: 0,
   },
-  pp: {
-    fontFamily: "serif",
+  percentage: {
+    minWidth: "50%",
+    maxWidth: "50%",
+    elevation: 0,
+    // backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+  },
+  titleStyle: {
+    fontFamily: "monospace",
+  },
+  headerTitleStyle: {
+    fontFamily: "monospace",
+    color: Theme.SECONDARY_COLOR_DARK,
     fontWeight: "700",
-    color: "#444",
+  },
+  numbersStyle: {
+    fontFamily: "monospace",
+    color: Theme.SECONDARY_COLOR_DARK,
+  },
+  cardActions: {
+    alignSelf: "center",
+    borderTopWidth: 2,
+    borderTopColor: Theme.PRIMARY_COLOR,
+    marginBottom: 0,
+    minWidth: (Dimensions.get("window").width - 32),
+    maxWidth: (Dimensions.get("window").width - 32),
+  },
+  eggPercentage: {
+    textAlign: "center",
+    textAlignVertical: "center",
     fontSize: 30,
   },
-  navigate: {
-    flexDirection: "row",
-  },
-  lpa: {
-    fontSize: 16,
-    color: "#212121",
-    flex: 4,
-  },
-  arrow: {
-    color: Theme.PRIMARY_COLOR_LIGHT,
-  },
-  feeds: {
-    flexDirection: "row"
-  },
-  feedsCaption: {
-    textAlignVertical: "center"
-  },
-  feedsCost: {
-    color: "green"
+  button: {
   },
 });

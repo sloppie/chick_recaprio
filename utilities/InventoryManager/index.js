@@ -239,8 +239,9 @@ export default class InventoryManager {
             if (currentInventory[1]) {
                 currentInventory[1][type] = data.number[0];
             } else {
-                currentInventory[0] = [];
-                currentInventory[1] = {};
+                currentInventory = [];
+                currentInventory.push([]);
+                currentInventory.push({});
                 currentInventory[1][type] = data.number[0];
             }
 
@@ -399,7 +400,7 @@ export default class InventoryManager {
         } else {
             preview = {
                 normalEggs: "0.0",
-                brokeEggs: "0.0",
+                brokenEggs: "0.0",
                 smallerEggs: "0.0",
                 largerEggs: "0.0",
             }

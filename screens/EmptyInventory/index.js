@@ -9,6 +9,7 @@ import {
 import {
     TextInput, 
     Button,
+    List,
 } from 'react-native-paper';
 
 // utilities
@@ -57,7 +58,7 @@ export default class EmptyInventory extends PureComponent {
 
     authenticate = (authenticated) => {
         if(authenticated == true) {
-            this.restock();
+            this.confirm();
         } else {
             ToastAndroid.show("Unable to verify password", ToastAndroid.SHORT);
             this.props.navigation.pop();
@@ -71,14 +72,22 @@ export default class EmptyInventory extends PureComponent {
     render() {
         return (
             <View style={styles.screen}>
+                <List.Item
+                    title="Miscalleneous"
+                    description="Attach a price of any extra costs incurred while ferrying the eggs to sell"
+                    left={props => <List.Icon {...props} icon="truck"/>}
+                />
                 <TextInput 
+                    mode="outlined"
 					value={String(this.state.misc)}
                     label="Misc."
                     keyboardType="decimal-pad"
                     onChangeText={this.getMisc}
+                    style={styles.textInput}
                     />
                 <Button 
                     style={styles.btn}
+                    icon="cash"
                     mode="outlined"
                     onPress={this.callBottomSheet}>
                     <Text>Empty Inventory</Text>
@@ -95,7 +104,15 @@ const styles = StyleSheet.create({
     screen: {
         minHeight: "100%",
     },
+    textInput: {
+        minWidth: (Dimensions.get("window").width - 32),
+        maxWidth: (Dimensions.get("window").width - 32),
+        alignSelf: "center",
+    },
     btn: {
         marginTop: 16,
+        width: "60%",
+        alignSelf: "center",
+        padding: 8,
     },
 });

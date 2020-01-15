@@ -121,13 +121,15 @@ export default class DATE {
                     suppossedSize = weeks[1] + (7 - previousWeek);
                 }
             } else {
-
+                suppossedSize = 7;
             }
             offset = suppossedSize - inputSize - 1;
-        }
-        console.log(`offset: ${offset}\nsuppossedSize: ${suppossedSize}\ninputSize: ${inputSize}`)
+            console.log(`offset: ${offset}\nsuppossedSize: ${suppossedSize}\ninputSize: ${inputSize}`)
 
-        return DATE.stringify(offset);
+            return DATE.stringify(offset);
+        } else {
+            return new Date().toDateString();
+        }
     }
 
     /**
@@ -219,5 +221,29 @@ export default class DATE {
         } //year loop
 
         return offset;
+    }
+
+    static getNumeralDate(date) {
+        let splitDate = date.split(" ");
+        let month;
+        let dayNumber = splitDate[1];
+        let year = splitDate[2];
+        let time = splitDate[3];
+        let newTime = splitDate[3].split(":");
+        newTime[0] = `${DATE.normaliseDate((Number(newTime[0]) - 3))}`;
+        newTime = newTime.join(":");
+        time = newTime;
+        let timezone = splitDate[4];
+
+        for(let i=0; i<DATE.months.length; i++) {
+            if(splitDate[0] == DATE.months[i][0]) {
+                month = i+1;
+                break;
+            }
+        }
+
+        let newDate = `${year}-${DATE.normaliseDate(month)}-${dayNumber} ${time}`;
+
+        return newDate;
     }
 }

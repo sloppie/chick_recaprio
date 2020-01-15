@@ -4,7 +4,7 @@ import {
     Text,
     StyleSheet,
     ScrollView,
-    Dimensions,
+    Dimensions, 
 } from 'react-native';
 
 import { IncompleteEvent, CompleteEvent } from '../../Calendar/Fragments/Event';
@@ -18,7 +18,7 @@ const renderEvents = (eventType, navigation) => {
         if(eventType == EventManager.INCOMPLETE)
             eventsArr.push(<IncompleteEvent navigation={navigation} key={i} event={events[i]} />);
         else
-            eventsArr.push(<CompleteEvent navigation={props.navigation} key={i} event={events[i]} />);
+            eventsArr.push(<CompleteEvent navigation={navigation} key={i} event={events[i]} />);
     }
 
     return eventsArr;

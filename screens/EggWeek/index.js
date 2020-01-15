@@ -1,18 +1,22 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { View, ScrollView, StyleSheet, Dimensions } from 'react-native';
-import { Title, DataTable, Surface, Portal } from 'react-native-paper';
+import { Title, DataTable, Surface, Portal, List } from 'react-native-paper';
 
 import DATE from '../../utilities/Date';
 import InventoryManager from '../../utilities/InventoryManager';
 
+let renderedDays = null;
 
-export default class EggWeek extends PureComponent {
+
+export default class EggWeek extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            weekNumber: ""
+            weekNumber: "",
+            rendered: false,
+            eggs: [],
         };
     }
 
@@ -21,19 +25,27 @@ export default class EggWeek extends PureComponent {
             weekNumber: 0,
         });
 
-        this.setState({
-            weekNumber
+        let eggs = this.props.navigation.getParam("week", {
+            week: [],
         });
+
+        this.setState({
+            weekNumber,
+            eggs,
+        });
+
+        this.forceUpdate();
+    }
+
+    forceUpdate = () => {
+        // renderedDays = this.renderDays();
     }
 
     renderDays = () => {
         let weekOrder = this.props.navigation.getParam("weekOrder", {
             weekOrder: DATE.days,
         });
-
-        let eggs = this.props.navigation.getParam("week", {
-            week: [],
-        });
+        let { eggs } = this.state;
 
         let days = [];
         let counterDays = 6;
@@ -86,9 +98,10 @@ export default class EggWeek extends PureComponent {
     render() {
         return (
             <ScrollView>
-                <Portal.Host>
-                    <Title style={styles.title}>Week { this.state.weekNumber }</Title>
-                </Portal.Host>
+                <List.Item
+                    title={`Week ${this.state.weekNumber}`}
+                    description="Eggs collected during the whole week"
+                />
                 {this.renderDays()}
             </ScrollView>
         );

@@ -11,10 +11,11 @@ import {
 
 import {
     TextInput,
-    Button
+    Button,
+    List
 } from 'react-native-paper';
 
-import Theme from '../../../theme/Theme';
+import Theme from '../../../theme';
 
 import FileManager from '../../../utilities/FileManager';
 import DATE from '../../../utilities/Date';
@@ -211,7 +212,12 @@ export default class Eggs extends Component {
         let fixer = (state) => (state == "0.0") ? "" : state;
         return (
             <View style={styles.screen}>
-                <Text>{DATE.getDate()}</Text>
+                {/* <Text>{DATE.getDate()}</Text> */}
+                <List.Item 
+                    title={DATE.getDate()}
+                    description="Earliest date which eggs weren't added"
+                    left={props => <List.Icon {...props} icon="calendar"/>}
+                />
                 <TextInput
                     label="Normal Eggs"
                     mode="outlined"
@@ -249,6 +255,7 @@ export default class Eggs extends Component {
                     title="Submit"
                     mode="text"
                     onPress={this.alert}
+                    icon="egg"
                 > 
                     Add Inventory
                 </Button>

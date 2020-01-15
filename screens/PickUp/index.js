@@ -10,7 +10,7 @@ import {
     DeviceEventEmitter,
 } from 'react-native';
 
-import { FAB, Card, Title } from 'react-native-paper';
+import { FAB, Card, Title, DataTable, Surface } from 'react-native-paper';
 
 // fragments
 import LockScreen from './Fragments/LockScreen';
@@ -24,18 +24,32 @@ export default class PickUp extends Component {
     constructor(props) {
         super(props);
 
+        let preview = {
+            normalEggs: ["0", "0"],
+            brokenEggs: ["0", "0"],
+            smallerEggs: ["0", "0"],
+            largerEggs: ["0", "0"],
+        };
+
         this.state = {
             currentInventory: "",
             number: "",
             misc: 0,
             lock: false,
+            preview,
+            pickUp: null,
         };
-            let pickUp = JSON.parse(NativeModules.InventoryManager.fetchPickUp());
-            this.pickUp = pickUp;
-        this.subscription = DeviceEventEmitter.addListener("update", this.listen);
+
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        let pickUp = JSON.parse(await NativeModules.InventoryManager.fetchPickUpAsync());
+        
+        this.setState({
+            pickUp
+        });
+
+        this.subscription = DeviceEventEmitter.addListener("update", this.listen);
         this.forceUpdate();
     }
 
@@ -43,9 +57,9 @@ export default class PickUp extends Component {
         this.subscription.remove();
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return (this.state.lock != nextState.lock);
-    }
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     return (this.state.lock != nextState.lock);
+    // }
 
     listen = (event) => {
         if(event.done) {
@@ -54,16 +68,18 @@ export default class PickUp extends Component {
     }
 
     forceUpdate = () => {
+        let preview = InventoryManager.previewPickUp();
+        for(let i in preview) {
+            preview[i] = preview[i].split(".");
+        }
         try {
-            let currentInventory = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory())[0];
-            // fetch pickUp and compare dates
             this.setState({
-                currentInventory
+                preview
             });
-            if(this.pickUp.length > 0) {
+            if(this.state.pickUp.length > 0) {
                 let today = new Date().toDateString();
                 //lpud = lastPickUpDate
-                let lpud = this.pickUp[0].date
+                let lpud = this.state.pickUp[0].date
                 if(today == lpud) {
                     this.lock();
                 } else {
@@ -101,45 +117,69 @@ export default class PickUp extends Component {
         });
     }
 
-	preview = () => {
-		let preview = InventoryManager.previewPickUp();
-		
-		return (
-			<View style={styles.rfp}>
-				<Text style={styles.eggType}>Normal Eggs: <Text style={styles.eggNumber}>{preview.normalEggs}</Text></Text>
-				<Text style={styles.eggType}>Broken Eggs: <Text style={styles.eggNumber}>{preview.brokenEggs}</Text></Text>
-				<Text style={styles.eggType}>Smaller Eggs: <Text style={styles.eggNumber}>{preview.smallerEggs}</Text></Text>
-				<Text style={styles.eggType}>Larger Eggs: <Text style={styles.eggNumber}>{preview.largerEggs}</Text></Text>
-			</View>
-			);
-	}
-		
-    renderScreen = () => {
-            let cards = [];
-            for(let i=0; i<this.pickUp.length; i++) {
-                if(this.pickUp[i].price == undefined || !this.pickUp[i].price) {
+	renderPriceCards = () => {
+        let cards = <View />;
+
+        if(this.state.pickUp) {
+            cards = [];
+            for (let i = 0; i < this.state.pickUp.length; i++) {
+                if (this.state.pickUp[i].price == undefined || !this.state.pickUp[i].price) {
                     cards.push(
-                        <PUC pickUp={this.pickUp[i]} key={i} navigation={this.props.navigation}/>
+                        <PUC pickUp={this.state.pickUp[i]} key={i} navigation={this.props.navigation} />
                     );
                 }
             }
+        }
 
-            return (
-                <View style={styles.screen}>
-                    <ScrollView style={styles.scrollView}>
-						<Title>Ready For Pick Up</Title>
-						{ this.preview() }
-						<View style={styles.border}></View>
-						<Title>Add Prices</Title>
-                        { cards }
-                    </ScrollView>
-                    {(!this.state.lock)?<FAB onPress={this.emptyInventory} style={styles.fab} label="Empty Inventory"/>: <View />}
-                </View>
-            );
+        return cards;
+
+    }
+		
+    renderScreen = () => {
     }
 
     render() {
-        return this.renderScreen();
+        let cards = this.renderPriceCards();
+        return (
+            <View style={styles.screen}>
+                <ScrollView style={styles.scrollView}>
+                    <Title>Ready For Pick Up</Title>
+                    <Surface style={styles.dataTable}>
+                        <DataTable>
+                            <DataTable.Header>
+                                <DataTable.Title >Egg Type</DataTable.Title>
+                                <DataTable.Title numeric>Full Trays</DataTable.Title>
+                                <DataTable.Title numeric>Extra Eggs</DataTable.Title>
+                            </DataTable.Header>
+                            <DataTable.Row>
+                                <DataTable.Cell>Normal Eggs</DataTable.Cell>
+                                <DataTable.Cell numeric>{this.state.preview.normalEggs[0]}</DataTable.Cell>
+                                <DataTable.Cell numeric>{this.state.preview.normalEggs[1]}</DataTable.Cell>
+                            </DataTable.Row>
+                            <DataTable.Row>
+                                <DataTable.Cell>Broken Eggs</DataTable.Cell>
+                                <DataTable.Cell numeric>{this.state.preview.brokenEggs[0]}</DataTable.Cell>
+                                <DataTable.Cell numeric>{this.state.preview.brokenEggs[1]}</DataTable.Cell>
+                            </DataTable.Row>
+                            <DataTable.Row>
+                                <DataTable.Cell>Smaller Eggs</DataTable.Cell>
+                                <DataTable.Cell numeric>{this.state.preview.smallerEggs[0]}</DataTable.Cell>
+                                <DataTable.Cell numeric>{this.state.preview.smallerEggs[1]}</DataTable.Cell>
+                            </DataTable.Row>
+                            <DataTable.Row>
+                                <DataTable.Cell>Larger Eggs</DataTable.Cell>
+                                <DataTable.Cell numeric>{this.state.preview.largerEggs[0]}</DataTable.Cell>
+                                <DataTable.Cell numeric>{this.state.preview.largerEggs[1]}</DataTable.Cell>
+                            </DataTable.Row>
+                        </DataTable>
+                    </Surface>
+                    <View style={styles.border}></View>
+                    <Title>Add Prices</Title>
+                    { cards }
+                </ScrollView>
+                {(!this.state.lock) ? <FAB icon="truck-delivery" onPress={this.emptyInventory} style={styles.fab} label="Empty Inventory" /> : <View />}
+            </View>
+        );
     }
 
 }
@@ -220,5 +260,13 @@ const styles = StyleSheet.create({
 		minHeight: 1,
 		maxHeight: 1,
 		backgroundColor: "#f4f4f4"
-	},
+    },
+    dataTable: {
+        minWidth: (Dimensions.get("window").width - 32),
+        maxWidth: (Dimensions.get("window").width - 32),
+        alignSelf: "center",
+        elevation: 1,
+        zIndex: 1,
+        marginTop: 8,
+    },
 });

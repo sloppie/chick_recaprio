@@ -1,21 +1,18 @@
-import React, { Component } from 'react';
-
 import 'react-native-gesture-handler';
 
-import HomeDrawer from './routes/HomeDrawer';
+import React, { Component } from 'react';
 
-import SecurityManager from './utilities/SecurityManager';
+import HomeSwitch from './routes/HomeSwitch';
 
 
 
 export default class App extends Component {
 
   componentDidMount() {
-    new SecurityManager();
   }
 
   render() {
-    return <HomeDrawer />;
+    return <HomeSwitch />;
   }
 
 }

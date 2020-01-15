@@ -29,26 +29,22 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
   private static final String DURATION_LONG_KEY = "LONG";
   private final File filesDir = getReactApplicationContext().getFilesDir();
   private ReactContext reactContext = (ReactContext) getReactApplicationContext(); 
+  private final File DATA = new File(filesDir,"data");
 
   public FileManager(ReactApplicationContext reactContext) {
     super(reactContext);
-    File batch = new File(filesDir, "data/Batch");
-    if(new File(filesDir, "data/eggs").exists())
-      new File(filesDir, "data/eggs").delete();
 
-    if(batch.exists()) {
-      for(File batchFile: batch.listFiles()) {
-        batchFile.delete();
-      }
-      batch.delete();
+    if(!DATA.exists()) {
+      DATA.mkdirs();
     }
+
   }
 
   @Override
   public String getName() {
     return "FileManager";
   }
-
+ 
   @ReactMethod
   public void create(String context, String data, Callback state) {
     boolean check = DirectoryCheck.makeDirectories(filesDir, context);
@@ -61,6 +57,12 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
     }
     if(check) {
       createBrief(context, data);
+      File eggs = getDir(context, "eggs");
+      File feeds = getDir(context, "feeds");
+      File casualties = getDir(context, "casualties");
+      writeFile(eggs, "[]");
+      writeFile(feeds, "[]");
+      writeFile(casualties, "{}");
       state.invoke(true, false);
     } else {
       state.invoke(false, true);
@@ -96,7 +98,11 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
   // fetching the data 
   @ReactMethod(isBlockingSynchronousMethod = true)
   public boolean batchExists(String context) {
-    return new File(filesDir, "data/" + context).exists();
+    boolean inArchiveDir = new File(filesDir, "ARCHIVE/" + context).exists();
+    boolean inDataDir = new File(filesDir, "data/" + context).exists();
+    boolean exists = (inArchiveDir || inDataDir);
+
+    return exists;
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
@@ -165,7 +171,8 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   public String fetchForCheck(String context, String key) {
-    return readFile(getDir(context, key));
+    String data = readFile(getDir(context, key));
+    return data;
   }
 
   // get write directory
@@ -179,6 +186,7 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
         // pass
       }
     }
+
     return dataFile;
   }
 

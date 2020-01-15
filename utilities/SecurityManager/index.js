@@ -2,6 +2,7 @@ import React from 'react';
 import { NativeModules } from 'react-native';
 
 import Authenticator from './Query';
+import { is } from '@babel/types';
 
 
 export default class SecurityManager {
@@ -45,6 +46,13 @@ export default class SecurityManager {
     static authenticate(psswd) {
         let expected = SecurityManager.getPassword();
         let isCorrect =  (psswd == expected);
+
+        return isCorrect;
+    }
+
+    static authenticateResetCode(resetCode) {
+        let RESET_CODE = this.getResetCode();
+        let isCorrect = (resetCode === RESET_CODE);
 
         return isCorrect;
     }

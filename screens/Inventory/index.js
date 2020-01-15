@@ -54,9 +54,9 @@ export default class Inventory extends Component {
         }
     }
 
-    forceUpdate = () => {
+    forceUpdate = async () => {
         try {
-            this.currentInventory = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
+            this.currentInventory = JSON.parse(await NativeModules.InventoryManager.fetchCurrentInventoryAsync());
             this.feeds = [];
             for(let feedName in this.currentInventory[1]) {
                 let feed = [];

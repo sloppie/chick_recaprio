@@ -28,11 +28,13 @@ public class MainApplication extends Application implements ReactApplication {
       // Packages that cannot be autolinked yet can be added manually here, for
       // example:
       // packages.add(new MyReactNativePackage());
+      packages.add(new InitialSetupRegister());
       packages.add(new FileManagerRegister());
       packages.add(new NotificationManagerRegister());
       packages.add(new SessionsRegister());
       packages.add(new InventoryRegister());
       packages.add(new EventManagerRegister());
+      packages.add(new BatchManagerRegister());
       packages.add(new SecurityRegister());
       packages.add(new RNFirebaseNotificationsPackage());
       packages.add(new RNFirebaseMessagingPackage());

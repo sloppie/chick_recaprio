@@ -14,7 +14,7 @@ import {
 import Icon from 'react-native-ionicons';
 
 import FileManager from '../../utilities/FileManager';
-import Theme from '../../theme/Theme';
+import Theme from '../../theme';
 
 import Casualties from './Fragments/Casualties';
 import Feeds from './Fragments/Feeds';
@@ -35,11 +35,18 @@ export default class AddInventory extends Component{
         true && NativeModules.FileManager.fetchBrief(this.SESSION, (data) => {
             this.batchInformation = JSON.parse(data);
             let context = this.props.navigation.getParam('context', undefined);
-            let confirmation = FileManager.checkForRecords(this.batchInformation, context.toLowerCase());
-            this.setState({
-                exists:confirmation,
-                counterCheck: true,
-            });
+            if(context != "casualties") {
+                let confirmation = FileManager.checkForRecords(this.batchInformation, context.toLowerCase());
+                this.setState({
+                    exists: confirmation,
+                    counterCheck: true,
+                });
+            } else {
+                this.setState({
+                    exists: false,
+                    counterCheck: true
+                });
+            }
         });
     }
 

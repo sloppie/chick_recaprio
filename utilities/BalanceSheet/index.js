@@ -17,8 +17,8 @@ export default class BalanceSheet {
         this.context = batchName;
 
         try {
-            this.eggs = JSON.parse(NativeModules.FileManager.fetchForCheck(batchName, "eggs"));
-            this.feeds = JSON.parse(NativeModules.FileManager.fetchForCheck(batchName, "feeds"));
+            this.eggs = JSON.parse(NativeModules.FileManager.fetchDataSync(batchName, "eggs"));
+            this.feeds = JSON.parse(NativeModules.FileManager.fetchDataSync(batchName, "feeds"));
             this.state.eggs = true;
             this.state.feeds = true;
         } catch {
@@ -40,10 +40,13 @@ export default class BalanceSheet {
         // get eggs in stock
         let eggs = 0;
         let percentage = 0;
-        if(this.eggs && this.batchInformation) {
-            eggs = this.eggs[(this.eggs.length - 1)][0][4];
-            if(eggs) {
-                percentage = Math.round(eggs/(this.batchInformation.population[0].population) * 100);
+        if(this.eggs instanceof Array && this.batchInformation) {
+            let { length } = this.eggs;
+            if(length >= 1) {
+                eggs = this.eggs[(this.eggs.length - 1)][0][4];
+                if(eggs) {
+                    percentage = Math.round(eggs/(this.batchInformation.population[0].population) * 100);
+                }
             }
         }
 
@@ -59,8 +62,12 @@ export default class BalanceSheet {
         if (this.batchInformation) {
             let { population } = this.batchInformation;
             let { length } = population;
-
-            let date = new Date(population[(length - 1)].date);
+            let initialDate = population[(length - 1)].date;
+            let date;
+            if(isNaN(initialDate))
+                date = new Date(population[(length - 1)].date);
+            else
+                date = new Date(Number(initialDate));
 
             return date.toDateString();
         } else {
@@ -78,8 +85,9 @@ export default class BalanceSheet {
      * @returns total sum of costs from the first week
      */
     balanceFeeds():Number {
+        let { price } = this.batchInformation;
         let totalSum = 0;
-        if (this.state.feeds) {
+        if (this.state.feeds && this.feeds !== []) {
             this.feeds.forEach((weeks) => {
                 weeks.forEach(day => {
                     let totalCost = (day[2]) ? (day[1] * day[2]) : (day[1] * 2100); // numberUsed * priceOfUsedFeeds
@@ -87,6 +95,8 @@ export default class BalanceSheet {
                 });
             });
         }
+
+        totalSum += price;
 
         return totalSum;
     }

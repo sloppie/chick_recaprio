@@ -9,6 +9,8 @@ import {
 
 import {
     Caption,
+    List,
+    Colors
 } from 'react-native-paper';
 
 // utilities
@@ -26,7 +28,7 @@ export class IncompleteEvent extends PureComponent {
         };
 
     }
-    
+
     componentDidMount() {
         this.timeConverter();
     }
@@ -36,11 +38,10 @@ export class IncompleteEvent extends PureComponent {
         this.setState({
             date
         });
-        console.log(JSON.stringify(date, null, 2))
     }
 
     getTime = () => {
-        if(!this.state.date) {
+        if (!this.state.date) {
             return "";
         } else {
             return this.state.date.time;
@@ -48,7 +49,7 @@ export class IncompleteEvent extends PureComponent {
     }
 
     getDay = () => {
-        if(!this.state.date) {
+        if (!this.state.date) {
             return "";
         } else {
             return this.state.date.dayNumber;
@@ -56,7 +57,7 @@ export class IncompleteEvent extends PureComponent {
     }
 
     getMonth = () => {
-        if(!this.state.date) {
+        if (!this.state.date) {
             return "";
         } else {
             return this.state.date.month;
@@ -64,7 +65,7 @@ export class IncompleteEvent extends PureComponent {
     }
 
     getYear = () => {
-        if(!this.state.date) {
+        if (!this.state.date) {
             return "";
         } else {
             return this.state.date.year;
@@ -82,7 +83,8 @@ export class IncompleteEvent extends PureComponent {
 
     render() {
         return (
-            <TouchableHighlight onPress={this.archiveEvent} underlayColor="#444">
+            <View>
+                {/* <TouchableHighlight onPress={this.archiveEvent} underlayColor="#444">
             <View style={styles.card}>
                 <View style={styles.description}>
                     <Text style={styles.title}>{this.props.event.title}</Text>
@@ -104,7 +106,31 @@ export class IncompleteEvent extends PureComponent {
                 </View>
                 <View style={[styles.status, {backgroundColor: "red"}]}></View>
             </View>
-            </TouchableHighlight>
+            </TouchableHighlight> */}
+                <View style={styles.eventContainer}>
+                    <List.Accordion
+                        title={this.props.event.title}
+                        description={this.props.event.description}
+                        left={props => <List.Icon {...props} icon="calendar" />}
+                        style={[styles.eventAccordion, styles.incompleteEvent]}
+                    >
+                        <List.Item
+                            title="Time"
+                            description={`${this.getTime()} on: ${this.getMonth()} ${this.getDay()}, ${this.getYear()}`}
+                            left={props => <List.Icon {...props} icon="clock" />}
+                            style={[styles.eventItems, styles.incompleteEvent]}
+                        />
+                        <List.Item
+                            title="Archive"
+                            description="Press to run the archive dialog"
+                            left={props => <List.Icon {...props} icon="archive" />}
+                            onPress={this.archiveEvent}
+                            style={[styles.eventItems, styles.incompleteEvent]}
+                        />
+                    </List.Accordion>
+                </View>
+
+            </View>
         );
     }
 
@@ -122,24 +148,21 @@ export class CompleteEvent extends PureComponent {
         };
 
     }
-    
+
     componentDidMount() {
         this.timeConverter();
     }
 
     timeConverter = () => {
-        console.log("complete event" + JSON.stringify(this.props.event));
         let date = this.props.event["date"];
-        console.log("This is the date: " + date);
         date = DATE.parse(date);
         this.setState({
             date
         });
-        console.log(JSON.stringify(date, null, 2))
     }
 
     getTime = () => {
-        if(!this.state.date) {
+        if (!this.state.date) {
             return "";
         } else {
             return this.state.date.time;
@@ -147,7 +170,7 @@ export class CompleteEvent extends PureComponent {
     }
 
     getDay = () => {
-        if(!this.state.date) {
+        if (!this.state.date) {
             return "";
         } else {
             return this.state.date.dayNumber;
@@ -155,7 +178,7 @@ export class CompleteEvent extends PureComponent {
     }
 
     getMonth = () => {
-        if(!this.state.date) {
+        if (!this.state.date) {
             return "";
         } else {
             return this.state.date.month;
@@ -163,7 +186,7 @@ export class CompleteEvent extends PureComponent {
     }
 
     getYear = () => {
-        if(!this.state.date) {
+        if (!this.state.date) {
             return "";
         } else {
             return this.state.date.year;
@@ -172,9 +195,9 @@ export class CompleteEvent extends PureComponent {
 
     render() {
         return (
-            <View style={styles.card}>
-            {/* <TouchableHighlight onPress={this.archiveEvent} underlayColor="#444"> */}
-                <View style={styles.description}>
+            <View style={styles.eventContainer}>
+                {/* <TouchableHighlight onPress={this.archiveEvent} underlayColor="#444"> */}
+                {/* <View style={styles.description}>
                     <Text style={styles.title}>{this.props.event.title}</Text>
                     <Caption>{this.props.event.description}</Caption>
                     <View style={styles.expenses}>
@@ -195,8 +218,27 @@ export class CompleteEvent extends PureComponent {
                         <Text style={styles.year}>{`${this.getMonth()} ${this.getYear()}`}</Text>
                     </View>
                 </View>
-                <View style={[styles.status, {backgroundColor: "green"}]}></View>
+                <View style={[styles.status, {backgroundColor: "green"}]}></View> */}
                 {/*</TouchableHighlight>*/}
+                <List.Accordion
+                    title={this.props.event.title}
+                    description={this.props.event.description}
+                    left={props => <List.Icon {...props} icon="calendar" />}
+                    style={[styles.eventAccordion, styles.completeEvent]}
+                >
+                    <List.Item
+                        title="Time"
+                        description={`${this.getTime()} on: ${this.getMonth()} ${this.getDay()}, ${this.getYear()}`}
+                        left={props => <List.Icon {...props} icon="clock" />}
+                        style={[styles.eventItems, styles.completeEvent]}
+                    />
+                    <List.Item
+                        title={`KSH${this.props.event.expenses}`}
+                        description="Expenses"
+                        left={props => <List.Icon {...props} icon="tag" />}
+                        style={[styles.eventItems, styles.completeEvent]}
+                    />
+                </List.Accordion>
             </View>
         );
     }
@@ -260,5 +302,32 @@ const styles = StyleSheet.create({
         flex: 1,
         borderTopEndRadius: 10,
         borderBottomEndRadius: 10,
+    },
+    eventContainer: {
+        minWidth: (Dimensions.get("window").width - 32),
+        maxWidth: (Dimensions.get("window").width - 32),
+        alignSelf: "center",
+        marginBottom: 4,
+        backgroundColor: Colors.blue300,
+        borderTopEndRadius: 10,
+        borderTopStartRadius: 10,
+    },
+    eventAccordion: {
+        borderTopEndRadius: 10,
+        borderTopStartRadius: 10,
+    },
+    eventItems: {
+        minWidth: (Dimensions.get("window").width - 64),
+        maxWidth: (Dimensions.get("window").width - 64),
+        alignSelf: "flex-end",
+        backgroundColor: Colors.blue300,
+    },
+    completeEvent: {
+        borderEndColor: Colors.green500,
+        borderEndWidth: 3,
+    },
+    incompleteEvent: {
+        borderEndColor: Colors.red500,
+        borderEndWidth: 3,
     },
 });

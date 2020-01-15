@@ -9,18 +9,16 @@ import {
   NativeModules,
 } from 'react-native';
 
-import { Button } from 'react-native-paper';
-
-import {
-  TextInput,
-} from 'react-native-paper';
+import { Button, TextInput, Card, List } from 'react-native-paper';
 
 import FileManager from '../../utilities/FileManager';
 import SecurityManager from '../../utilities/SecurityManager';
 
-export default class NewBatch extends Component{
+import Theme from '../../theme';
 
-  constructor(props){
+export default class NewBatch extends Component {
+
+  constructor(props) {
     super(props);
 
     this.bottomSheetRef = React.createRef();
@@ -31,7 +29,7 @@ export default class NewBatch extends Component{
       price: "",
       complete: null,
     };
-    
+
   }
 
   componentDidMount() {
@@ -46,7 +44,7 @@ export default class NewBatch extends Component{
 
   populationChange = (value) => {
     // type checker
-    if(!(/\D+/.test(value))){
+    if (!(/\D+/.test(value))) {
       this.setState({
         population: Number(value),
       });
@@ -60,10 +58,10 @@ export default class NewBatch extends Component{
     });
   }
 
-  normalise(name){
+  normalise(name) {
     let splitName = name.split(" ");
 
-    for(let i=0; i<splitName.length; i++){
+    for (let i = 0; i < splitName.length; i++) {
       let temp = splitName[i].split("");
       temp[0] = temp[0].toUpperCase();
 
@@ -94,16 +92,16 @@ export default class NewBatch extends Component{
     let construct = {
       name: this.normalise(this.state.name),
       population: [population],
-      description: this.state.description, 
+      description: this.state.description,
       price: this.state.price,
     };
-    
-    if(!FileManager.batchExists(construct.name)) {
+
+    if (!FileManager.batchExists(construct.name)) {
 
       this.setState({
         complete: JSON.stringify(construct, null, 2),
       });
-  
+
       Alert.alert(
         'Confirm Batch Information',
         `Batch Name: ${construct.name}\nPopulation: ${this.state.population}\nDate: ${new Date(population.date).toLocaleDateString()}`,
@@ -114,7 +112,7 @@ export default class NewBatch extends Component{
             style: 'cancel',
           },
           {
-            text: 'OK', 
+            text: 'OK',
             onPress: () => {
               this.setState({
                 construct
@@ -145,7 +143,7 @@ export default class NewBatch extends Component{
   }
 
   makeBatch = (authenticated) => {
-    if(authenticated == true) {
+    if (authenticated == true) {
       let { construct } = this.state;
       console.log(JSON.stringify(construct));
       NativeModules.FileManager.create(construct.name, JSON.stringify(construct), (success, err) => {
@@ -162,36 +160,50 @@ export default class NewBatch extends Component{
   render() {
     return (
       <View style={styles.screen}>
-        <TextInput 
-          label="Batch Name"
-          mode="outlined"
-          style={styles.textInput}
-          onChangeText={this.nameChange}
-          value={this.state.name}
-        />
-        <TextInput
-          label="Population"
-          mode="outlined"
-          style={styles.textInput}
-          keyboardType="numeric"
-          onChangeText={this.populationChange} 
-          value={String(this.state.population)}
+        <View style={styles.container}>
+          <Card style={styles.header}>
+            <Card.Title
+              style={styles.titleContainer}
+              title="Add batch information"
+              titleStyle={styles.headerTitle}
+              right={props => <List.Icon icon="clipboard" color={Theme.PRIMARY_COLOR} />} />
+          </Card>
+          <TextInput
+            theme={Theme.TEXT_INPUT_THEME}
+            label="Batch Name"
+            mode="outlined"
+            style={styles.textInput}
+            onChangeText={this.nameChange}
+            value={this.state.name}
           />
-        <TextInput
-          label="Initial Cost"
-          mode="outlined"
-          style={styles.textInput}
-          keyboardType="numeric"
-          onChangeText={this.getPrice} 
-          value={String(this.state.price)}
+          <TextInput
+            theme={Theme.TEXT_INPUT_THEME}
+            label="Population"
+            mode="outlined"
+            style={styles.textInput}
+            keyboardType="numeric"
+            onChangeText={this.populationChange}
+            value={String(this.state.population)}
           />
-        <Button 
-          style={styles.button}
-          title="create"
-          onPress={this.createBatch}
-        >
-          Create Batch
-        </Button>
+          <TextInput
+            theme={Theme.TEXT_INPUT_THEME}
+            label="Initial Cost"
+            mode="outlined"
+            style={styles.textInput}
+            keyboardType="numeric"
+            onChangeText={this.getPrice}
+            value={String(this.state.price)}
+          />
+          <Button
+            style={styles.button}
+            icon="clipboard-check"
+            title="create"
+            onPress={this.createBatch}
+            color={Theme.SECONDARY_COLOR_DARK}
+          >
+            Create Batch
+          </Button>
+        </View>
         {/* <Text>{this.state.complete}</Text> */}
         {SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.makeBatch)}
       </View>
@@ -203,6 +215,30 @@ export default class NewBatch extends Component{
 const styles = StyleSheet.create({
   screen: {
     minHeight: Dimensions.get("window").height,
+    backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+  },
+  container: {
+    borderTopEndRadius: 30,
+    borderTopStartRadius: 30,
+    backgroundColor: Theme.WHITE,
+    height: "100%",
+  },
+  header: {
+    elevation: 0,
+    width: Dimensions.get("window").width,
+    borderTopStartRadius: 30,
+    borderTopEndRadius: 30,
+    paddingBottom: 0,
+    marginBottom: 0,
+  },
+  titleContainer: {
+    padding: 0,
+    marginBottom: 0,
+  },
+  headerTitle: {
+    // textAlign: "center",
+    fontSize: 16,
+    color: "#777"
   },
   textInput: {
     alignSelf: "center",

@@ -8,6 +8,10 @@ import EventManager from '../../utilities/EventManager';
 
 export default class Events extends PureComponent {
 
+    constructor(props) {
+        super(props);
+    }
+
     renderEvents = () => {
         let { navigation } = this.props;
         let eventType = navigation.getParam("eventType", {
@@ -15,7 +19,7 @@ export default class Events extends PureComponent {
         });
 
         if (eventType == EventManager.INCOMPLETE) 
-            return <IncompleteEvents naviagtion={ navigation }/>
+            return <IncompleteEvents navigation={ navigation }/>
         else 
             return <CompleteEvents navigation={ navigation }/>
     }
@@ -25,3 +29,4 @@ export default class Events extends PureComponent {
     }
 
 }
+ 

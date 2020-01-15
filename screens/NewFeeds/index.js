@@ -4,13 +4,13 @@ import {
     Text,
     ToastAndroid,
     StyleSheet,
+    Dimensions,
 } from 'react-native';
+
+import { TextInput, Button, List, Divider } from 'react-native-paper';
 
 // utilities
 import InventoryManager from '../../utilities/InventoryManager';
-
-import Icon from 'react-native-ionicons';
-import { TextInput, Button } from 'react-native-paper';
 import SecurityManager from '../../utilities/SecurityManager';
 
 export default class NewFeeds extends PureComponent {
@@ -22,6 +22,8 @@ export default class NewFeeds extends PureComponent {
 
         this.state = {
             number: 0,
+            type: "",
+            price: 0,
         };
     }
 
@@ -44,7 +46,7 @@ export default class NewFeeds extends PureComponent {
     }
 
     restock = () => {
-        let { price, number, type} = this.state;
+        let { price, number, type } = this.state;
 
         let feedsObject = {
             type,
@@ -52,13 +54,13 @@ export default class NewFeeds extends PureComponent {
             number,
         };
 
-        // InventoryManager.addFeeds(feedsObject);
-        console.log("Was able to authenticate");
+        InventoryManager.addFeeds(feedsObject);
+        ToastAndroid.show(`${this.state.type} was added successfully`, ToastAndroid.SHORT);
         this.props.navigation.pop();
     }
 
     authenticate = (authenticated) => {
-        if(authenticated) {
+        if (authenticated) {
             this.restock();
         } else {
             ToastAndroid.show("Unable to verify password. Please try again");
@@ -73,27 +75,49 @@ export default class NewFeeds extends PureComponent {
     render() {
         return (
             <View style={styles.screen}>
-                <Text>Type:</Text>
+                <List.Item 
+                    title="Add a new feeds type"
+                    description="Enter details on the new feedstype below Name, stock size, etc."
+                    left={props => <List.Icon {...props} icon="card-text" />}
+                />
+                <Divider />
+                <List.Section
+                    title="Feeds details"
+                />
                 <TextInput
-                    onChangeText={this.getType}/>
-                <Text>Quantity</Text>
+                    onChangeText={this.getType}
+                    label="Feeds Name"
+                    placeholder="Enter feeds name here"
+                    mode="outlined"
+                    style={styles.textInput}
+                />
                 <TextInput
-                    keyboardType="decimal-pad" 
-                    onChangeText={this.getQuantity}/>
-                <Text>Price</Text>
+                    label="Initial quantity"
+                    placeholder="Initial quantity goes here"
+                    keyboardType="decimal-pad"
+                    onChangeText={this.getQuantity}
+                    mode="outlined"
+                    style={styles.textInput}
+                />
                 <TextInput
+                    label="Feeds price"
+                    placeholder="Feeds price goes here"
                     keyboardType="numeric"
-                    onChangeText={this.getPrice}/>
-                <Button 
-                    icon={<Icon name="add" />}
+                    onChangeText={this.getPrice}
+                    mode="outlined"
+                    style={styles.textInput}
+                />
+                <Button
+                    icon="plus"
                     title="Restock"
-                    theme="text"
-                    mode="contained"
+                    mode="outlined"
                     label={true}
-                    onPress={this.callBottomSheet}>
-                        <Text>New Feeds</Text>
+                    onPress={this.callBottomSheet}
+                    style={styles.button}
+                >
+                    <Text>Add New Feed Type</Text>
                 </Button>
-                { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate) }
+                {SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate)}
             </View>
         );
     }
@@ -103,5 +127,17 @@ export default class NewFeeds extends PureComponent {
 const styles = StyleSheet.create({
     screen: {
         minHeight: "100%"
+    },
+    textInput: {
+        minWidth: (Dimensions.get("window").width - 32),
+        maxWidth: (Dimensions.get("window").width - 32),
+        alignSelf: "center",
+        marginBottom: 8,
+    },
+    button: {
+        marginTop: 8,
+        width: "60%",
+        padding: 8,
+        alignSelf: "center",
     },
 });

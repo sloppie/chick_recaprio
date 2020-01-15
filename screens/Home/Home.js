@@ -1,25 +1,20 @@
 import React, { Component } from 'react';
 import {
   View,
-  Text,
   ScrollView,
   StyleSheet,
   Dimensions,
   NativeModules,
   DeviceEventEmitter,
 } from 'react-native';
-import { Title, Divider } from 'react-native-paper'
+import { List, Title, Divider, Colors, FAB } from 'react-native-paper'
 
 /* Fragments */
-import FAB from './Fragments/FloatingActionButton';
-import Card from './Fragments/Card';
-
-// Theme
-import Theme from './../../theme/Theme';
+import BatchCard from './Fragments/Card';
 
 // utilities
 import BalanceSheet from '../../utilities/BalanceSheet';
-import SecurityManager from '../../utilities/SecurityManager';
+import Theme from '../../theme';
 
 
 export default class Home extends React.PureComponent {
@@ -30,15 +25,18 @@ export default class Home extends React.PureComponent {
 
     let returns = BalanceSheet.balanceEggs();
     this.state = {
-      batches: {},
+      batches: null,
       feedsTotal: [],
       returns,
       profit: 0,
+      batchBalanceSheets: null,
+      cardsRendered: false
     };
     this.sum = 0;
-    
+
     this.subscription = DeviceEventEmitter.addListener("update", this.listen);
     this.ref = React.createRef();
+    console.log("Constructor got passt")
   }
 
   getProfit = () => {
@@ -84,18 +82,21 @@ export default class Home extends React.PureComponent {
   forceUpdate = () => {
     this._isMounted = true;
 
-    let batches = NativeModules.FileManager.fetchBatchNames().split(",");
-    batches.pop();
-    let batchBalanceSheets = [];
-    batches.forEach((batch) => {
-      batchBalanceSheets.push(new BalanceSheet(batch));
-    });
+    let batches = NativeModules.FileManager.fetchBatchNames();
+    if (batches !== "" || batches !== ",") {
+      batches = batches.split(",");
+      batches.pop();
+      console.log(batches)
+      let batchBalanceSheets = [];
+      batches.forEach((batch) => {
+        batchBalanceSheets.push(new BalanceSheet(batch));
+      });
 
-    this.setState({
-      batches,
-      batchBalanceSheets
-    });
-    console.log("These are the batches: " + batches);
+      this.setState({
+        batches,
+        batchBalanceSheets
+      });
+    }
   }
 
   setBatches(name, data) {
@@ -127,46 +128,69 @@ export default class Home extends React.PureComponent {
     if (this.state.batches instanceof Array && this._isMounted) {
       for (let i = 0; i < this.state.batches.length; i++) {
         cards.push(
-          <Card
+          <BatchCard
             key={this.state.batches[i]}
             navigation={this.props.navigation}
             style={styles.card}
             batchName={this.state.batches[i]}
           />
         )
+        console.log(this.state.batches[i] + " This is the batch after the fact");
       }
     }
 
     return cards;
   }
 
-  openBottomSheet = () => {
-    setTimeout(() => {
-      this.ref.current.snapTo(1);
-    }, 9000);
+  newBatch = () => {
+    this.props.navigation.navigate("NewBatch");
   }
 
   render() {
-    let renderedCards = this.renderCards();
-    // this.openBottomSheet();
+    // let renderedCards = this.renderCards();
 
     return (
-      <View>
-        <ScrollView style={styles.home}>
-          <Title>Batches Summary</Title>
-          <View style={styles.summary}>
-            <Text style={styles.feedsTotal}>Feeds Expenditure: Ksh{this.getFeedsBalance()}</Text>
-            <Text style={styles.returns}>Returns: Ksh{this.state.returns}</Text>
-            <Text style={styles.profit}>Profit: Ksh{this.getProfit()}</Text>
-          </View>
-          <Divider />
-          <Title style={styles.bil}>Batch Information</Title>
-          {renderedCards}
-        </ScrollView>
-        <View style={styles.FAB}>
-          <FAB navigation={this.props.navigation} />
+      <View style={styles.screen}>
+          <ScrollView style={styles.home} >
+        <View style={styles.container}>
+            <List.Accordion
+              theme={Theme.TEXT_INPUT_THEME}
+              title="Batches Summary"
+              description="Statistical summary on batches"
+              style={styles.summaryCard}
+            >
+              <List.Item
+                title={`KSH${this.getFeedsBalance()}`}
+                titleStyle={styles.titleStyle}
+                description="Amount spent on: feeds, events and etc."
+                left={props => <List.Icon {...props} color={Colors.red500} icon="arrow-top-right" />}
+                style={styles.summaryItems}
+              />
+              <List.Item
+                title={`KSH${this.state.returns}`}
+                titleStyle={styles.titleStyle}
+                description="Amount received from eggs sold"
+                left={props => <List.Icon  {...props} color={Colors.green600} icon="arrow-bottom-left" />}
+                style={styles.summaryItems}
+              />
+              <List.Item
+                title={`KSH${this.getProfit()}`}
+                titleStyle={styles.titleStyle}
+                description="Net profit"
+                style={styles.summaryItems}
+                left={props => <List.Icon {...props} color={Colors.green400} icon="cash" />}
+              />
+            </List.Accordion>
+            <Divider style={{ marginBottom: 8 }} />
+            {/* <Title style={styles.bil}>Batch Information</Title> */}
+            {this.renderCards()}
         </View>
-        {SecurityManager.runAuthenticationQuery(this.ref)}
+          </ScrollView>
+        <FAB
+          style={styles.FAB}
+          icon="plus"
+          onPress={this.newBatch}
+        />
       </View>
     );
   }
@@ -174,34 +198,40 @@ export default class Home extends React.PureComponent {
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    backgroundColor: Theme.PRIMARY_COLOR_DARK,
+    borderTopEndRadius: 30,
+    borderTopStartRadius: 30,
+  },
   home: {
-    height: "100%",
+    borderTopEndRadius: 30,
+    borderTopStartRadius: 30,
+    minHeight: "100%",
+    maxHeight: "100%",
+    backgroundColor: Theme.PRIMARY_COLOR_DARK,
   },
-  summary: {
-    marginTop: 12,
-    marginBottom: 12,
-    minWidth: (Dimensions.get("window").width - 32),
-    maxWidth: (Dimensions.get("window").width - 32),
-    alignSelf: "center",
-    padding: 8,
-    backgroundColor: "#f3f3f3",
-    borderRadius: 10,
-    elevation: 1,
+  container: {
+    minHeight: Dimensions.get("window").height,
+    backgroundColor: Theme.GRAY,
+    borderTopEndRadius: 30,
+    borderTopStartRadius: 30,
   },
-  feedsTotal: {
-    fontSize: 18,
+  summaryCard: {
+    backgroundColor: Theme.WHITE,
+    borderTopEndRadius: 30,
+    borderTopStartRadius: 30,
   },
-  returns: {
-    fontSize: 18,
+  summaryItems: {
+    backgroundColor: Colors.white,
   },
-  profit: {
-    fontSize: 18,
-  },
-  bil: {
-    marginBottom: 8,
-    marginTop: 8,
+  titleStyle: {
+    fontFamily: "monospace"
   },
   FAB: {
-    alignSelf: "flex-end",
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    margin: 16,
+    backgroundColor: Theme.SECONDARY_COLOR_DARK,
   },
 });

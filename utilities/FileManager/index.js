@@ -211,7 +211,7 @@ export default class FileManager {
      * ```
      * the resultant stored matrix is in the form:
      * ```js 
-     * [ date:Date, number:Number, price:Number]
+     * [ date:Date, number:Number, price:Number, type:String]
      * ```
      */
     static addFeeds(batchInformation, data) {
@@ -224,7 +224,7 @@ export default class FileManager {
         type = InventoryManager.normaliseFeedsName(type);
         let price = JSON.parse(NativeModules.InventoryManager.fetchFeeds(type)).price;
         let previousData;
-        let newData = [date, number, price];
+        let newData = [date, number, price, type];
 
         NativeModules.FileManager.fetchData(batch.context, "feeds", (oldData) => {
             if(oldData) {
@@ -331,6 +331,7 @@ export default class FileManager {
                 date: new Date().toDateString(),
                 population: (population - number),
             };
+            console.log(JSON.stringify(previousData, null, 2))
             brief.population.unshift(newPopulation);
             JSON.stringify(brief, null, 2);
 
@@ -347,6 +348,7 @@ export default class FileManager {
         try {
             if (weeks[1]) {
                 let data = NativeModules.FileManager.fetchForCheck(batch.context, type);
+                console.log(`This is the data according to FFC: ${JSON.stringify(data, null, 2)}`)
                 let oldData = JSON.parse(data);
                 let week = weeks[0];
                 let day = weeks[1] - 1;
@@ -360,7 +362,8 @@ export default class FileManager {
                     exists = today == interrim;
                 } else {
                     let today = new Date().toDateString();
-                    exists = !(data[today] == undefined);
+                    exists = (oldData[today] !== undefined);
+                    console.log(`This is the state of existence: ${exists}`)
                 }
                 return exists;
             } else {
@@ -378,7 +381,8 @@ export default class FileManager {
                     exists = (interrim == today);
                 } else {
                     let today = new Date().toDateString();
-                    exists = !(data[today] == undefined);
+                    exists = (data[today] !== undefined);
+                    console.log(`This is the state of existence: ${exists}`)
                 }
             }
         } catch (err) {
@@ -455,7 +459,7 @@ function feedsToList(data) {
         let week = {
             key: i.toString(),
             weekNumber: (i + 1),
-            week: data[i]
+            week: data[i],
         };
         feedsList.unshift(week);
     }

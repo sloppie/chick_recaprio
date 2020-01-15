@@ -17,6 +17,8 @@ import BottomSheet from 'reanimated-bottom-sheet';
 
 import * as NotificationManager from '../../utilities/NotificationManager';
 
+let context = "";
+
 
 export default class NotificationSettings extends PureComponent {
 
@@ -28,23 +30,35 @@ export default class NotificationSettings extends PureComponent {
         this.state = {
             ringtoneEnabled: false,
             vibrationEnabled: false,
-            defaultTime: ""
+            defaultTime: "",
+            eggRingtoneEnabled: false,
+            eggVibrationEnabled: false,
+            eggDefaultTime: "",
         };
+        this.context = "";
     }
 
     componentDidMount() {
         let ringtoneEnabled = NotificationManager.NotificationPreferences.PLAY_SOUND;
-        let vibrationEnabled = NotificationManager.EggPreferences.VIBRATION;
+        let vibrationEnabled = NotificationManager.NotificationPreferences.VIBRATION;
         let defaultTime = NotificationManager.NotificationPreferences.TIME;
+
+        let eggRingtoneEnabled = NotificationManager.EggPreferences.PLAY_SOUND;
+        let eggVibrationEnabled = NotificationManager.EggPreferences.VIBRATION;
+        let eggDefaultTime = NotificationManager.EggPreferences.TIME;
 
         this.setState({
             ringtoneEnabled,
             vibrationEnabled,
-            defaultTime
+            defaultTime,
+            eggRingtoneEnabled,
+            eggVibrationEnabled,
+            eggDefaultTime,
         });
     }
 
-    editTime = () => {
+    editTime = (newContext) => {
+        context = newContext;
         this.bottomSheetRef.current.snapTo(1);
     }
 
@@ -69,6 +83,27 @@ export default class NotificationSettings extends PureComponent {
         NotificationManager.NotificationPreferences.VIBRATION = vibrationEnabled;
     }
 
+    setEggRingtone = () => {
+        let { eggRingtoneEnabled } = this.state;
+        eggRingtoneEnabled = !eggRingtoneEnabled;
+        this.setState({
+            eggRingtoneEnabled
+        });
+
+        NotificationManager.EggPreferences.PLAY_SOUND = eggRingtoneEnabled;
+    }
+
+    setEggVibration = () => {
+        let { eggVibrationEnabled } = this.state;
+        eggVibrationEnabled = !eggVibrationEnabled;
+
+        this.setState({
+            eggVibrationEnabled,
+        });
+
+        NotificationManager.EggPreferences.VIBRATION = eggVibrationEnabled;
+    }
+
     renderHeader = () => {
         return (
             <Title>Set new default time</Title>
@@ -91,15 +126,28 @@ export default class NotificationSettings extends PureComponent {
     }
 
     setDefaultTime = (defaultTime) => {
-        this.setState({
-            defaultTime
-        });
+        if(context == "default") {
+            this.setState({
+                defaultTime
+            });
+        } else {
+            this.setState({
+                eggDefaultTime: defaultTime
+            });
+        }
     }
 
     verify = () => {
         let format1 = /\d{2}:\d{2}:\d{2}/gi;
         let format2 = /\d{2}:\d{2}/gi;
-        let { defaultTime } = this.state;
+        let defaultTime;
+
+        if(context == "default") {
+            defaultTime = this.state.defaultTime;
+        } else {
+            defaultTime = this.state.eggDefaultTime;
+        }
+
         let format = 0;
 
         if (format2.test(defaultTime)) {
@@ -114,7 +162,13 @@ export default class NotificationSettings extends PureComponent {
             defaultTime += ":00";
         }
 
-        NotificationManager.NotificationPreferences.TIME = defaultTime;
+        if(context == "default") {
+            console.log(context + " is the context. Time is for DEFAULT_TIME, which is: " + defaultTime);
+            // NotificationManager.NotificationPreferences.TIME = defaultTime;
+        } else {
+            console.log(context + " is the context. Time is for EGG_TIME, which is: " + defaultTime);
+            // NotificationManager.EggPreferences.TIME = eggDefaultTime;
+        }
         this.bottomSheetRef.current.snapTo(0);
     }
 
@@ -122,13 +176,13 @@ export default class NotificationSettings extends PureComponent {
         return (
             <View style={styles.screen}>
                 <List.Section
-                    title="Notifications">
+                    title="Default Notifications">
                     <List.Item
                         title="Default Notification Time"
                         description={`Current Default Notification time: ${NotificationManager.NotificationPreferences.TIME}`}
                         left={props => <List.Icon {...props} icon="clock" />}
                         right={props => <List.Icon {...props} icon="pencil" />}
-                        onPress={this.editTime}
+                        onPress={this.editTime.bind(this, "default")}
                     />
                     <List.Item
                         title="Message Tone"
@@ -140,6 +194,25 @@ export default class NotificationSettings extends PureComponent {
                         title="Vibration"
                         left={props => <List.Icon icon="vibrate" {...props} />}
                         right={props => <Switch {...props} value={this.state.vibrationEnabled} onValueChange={this.setVibration} />}
+                    />
+                </List.Section>
+                <List.Section title="Egg collection Notifications">
+                    <List.Item 
+                        title="Egg Collection Time"
+                        description="Set the default time the notification for egg data input reminder notification"
+                        left={props => <List.Icon {...props} icon="egg" />}
+                        onPress={this.editTime.bind(this, "eggReminder")}
+                    />
+                    <List.Item
+                        title="Message Tone"
+                        description="Play a sound on new notifications"
+                        left={props => <List.Icon {...props} icon="music-circle" />}
+                        right={props => <Switch {...props} value={this.state.eggRingtoneEnabled} onValueChange={this.setEggRingtone} />}
+                    />
+                    <List.Item
+                        title="Vibration"
+                        left={props => <List.Icon icon="vibrate" {...props} />}
+                        right={props => <Switch {...props} value={this.state.eggVibrationEnabled} onValueChange={this.setEggVibration} />}
                     />
                 </List.Section>
                 <BottomSheet
