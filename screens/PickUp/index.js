@@ -24,18 +24,6 @@ import Theme from '../../theme';
 import { APP_STORE } from '../..';
 import { PICK_UP_ADDED } from '../../store';
 
-let DUMMY_DATA = {
-    date: "Thu Jul 12 2018",
-    number: {
-        normalEggs: "243.12",
-        brokenEggs: "12.10",
-        largerEggs: "3.23",
-        smallerEggs: "1.3"
-    },
-    price: null,
-    misc: null
-};
-
 
 export default class PickUp extends Component {
 
@@ -211,7 +199,6 @@ export default class PickUp extends Component {
                                 right={props => <List.Icon icon="truck-check" color={Theme.PRIMARY_COLOR} />} />
                         </Card>
                         {this.renderPriceCards()}
-                        <PUC pickUp={DUMMY_DATA} navigation={this.props.navigation} />
                     </ScrollView>
                     {(!this.state.lock) ? <FAB icon="truck-delivery" onPress={this.emptyInventory} style={styles.fab} /> : <View />}
                 </SafeAreaView>
