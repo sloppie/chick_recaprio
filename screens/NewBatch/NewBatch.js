@@ -166,7 +166,7 @@ export default class NewBatch extends Component {
               style={styles.titleContainer}
               title="Add batch information"
               titleStyle={styles.headerTitle}
-              right={props => <List.Icon icon="clipboard" color={Theme.PRIMARY_COLOR} />} />
+              right={props => <List.Icon icon="clipboard-outline" color={Theme.PRIMARY_COLOR} />} />
           </Card>
           <TextInput
             theme={Theme.TEXT_INPUT_THEME}

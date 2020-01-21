@@ -13,6 +13,9 @@ import { Title, Caption, Card, List, Button, Colors } from 'react-native-paper';
 import BalanceSheet from '../../../utilities/BalanceSheet';
 import Theme from '../../../theme';
 
+import { EGGS_ADDED, FEEDS_ADDED, CASUALTIES_ADDED, BATCH_CREATED } from '../../../store';
+import { APP_STORE } from '../../..';
+
 
 export default class BatchCard extends PureComponent {
   constructor(props) {
@@ -30,7 +33,25 @@ export default class BatchCard extends PureComponent {
       batch: new BalanceSheet(this.props.batchName)
     });
 
+    this.eggsListener = APP_STORE.subscribe(EGGS_ADDED, this.listen.bind(this));
+    this.feedsListener =  APP_STORE.subscribe(FEEDS_ADDED, this.listen.bind(this));
+    this.casualtyListener =  APP_STORE.subscribe(CASUALTIES_ADDED, this.listen.bind(this));
+    console.log(this.state.batch)
+
   }
+
+  listen = () => {
+    this.setState({
+      batch: new BalanceSheet(this.props.batchName)
+    });
+  }
+
+  componentWillUnmount() {
+    APP_STORE.unsubscribe(EGGS_ADDED, this.eggsListener);
+    APP_STORE.unsubscribe(FEEDS_ADDED, this.feedsListener);
+    APP_STORE.unsubscribe(CASUALTIES_ADDED, this.casualtyListener);
+  }
+
   goToBatch = () => {
     requestAnimationFrame(() => {
       let name = this.props.batchName;

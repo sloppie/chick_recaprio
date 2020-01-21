@@ -139,6 +139,8 @@ public class BatchManager extends ReactContextBaseJavaModule {
             }
         }
 
+        folderToDelete.delete();
+
         return successful;
     }
 

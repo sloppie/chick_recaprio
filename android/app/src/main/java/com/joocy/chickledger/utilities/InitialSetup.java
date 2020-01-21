@@ -32,9 +32,9 @@ public class InitialSetup extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public Boolean isSetup() {
+    public boolean isSetup() {
         String state = FileOps.readFile(SETUP);
-        boolean isSet = (state == "T");
+        boolean isSet = state.contains("T");
 
         return isSet;
     }

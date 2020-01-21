@@ -14,6 +14,7 @@ import Restock from '../screens/RestockExisting';
 import NewFeeds from '../screens/NewFeeds';
 
 import * as HomeDrawer from './HomeDrawer';
+import Theme from '../theme';
 
 let StackNavigator = createStackNavigator(
     {
@@ -21,7 +22,7 @@ let StackNavigator = createStackNavigator(
             screen: Home,
             navigationOptions: {
                 headerTitle: "Feeds Inventory",
-                headerLeft: <TouchableHighlight style={{ marginStart: 16 }} onPress={() => HomeDrawer.drawerActions.dispatch(DrawerActions.openDrawer())}><Icon name="menu" /></TouchableHighlight>
+                headerLeft: <TouchableHighlight style={{ marginStart: 16 }} onPress={() => HomeDrawer.drawerActions.dispatch(DrawerActions.openDrawer())}><Icon color={Theme.SECONDARY_COLOR_DARK} name="menu" /></TouchableHighlight>
             },
         },
         NewFeeds: {
@@ -41,9 +42,13 @@ let StackNavigator = createStackNavigator(
         defaultNavigationOptions: {
             headerStyle: {
                 elevation: 0,
-                color: "#444"
+                color: Theme.SECONDARY_COLOR_DARK,
+                backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR
             },
-            headerTintColor: "#444",
+            headerTintColor: Theme.SECONDARY_COLOR_DARK,
+            headerTitleStyle: {
+                color: "#444",
+            },
         },
     }
 );

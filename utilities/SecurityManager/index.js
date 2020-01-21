@@ -2,7 +2,6 @@ import React from 'react';
 import { NativeModules } from 'react-native';
 
 import Authenticator from './Query';
-import { is } from '@babel/types';
 
 
 export default class SecurityManager {

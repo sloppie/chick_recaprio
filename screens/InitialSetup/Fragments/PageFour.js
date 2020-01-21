@@ -5,6 +5,7 @@ import {
     ToastAndroid, 
     StyleSheet, 
     Dimensions, 
+    NativeModules,
 } from 'react-native';
 
 import { Card, Title, TextInput, List, Switch, TouchableRipple, FAB, Colors } from 'react-native-paper';
@@ -86,7 +87,7 @@ export default class PageOne extends PureComponent {
 
         if( format > 0) {
             console.log(context + " is the context. Time is for DEFAULT_TIME, which is: " + defaultTime);
-            // NotificationManager.NotificationPreferences.TIME = defaultTime;
+            NotificationManager.EggPreferences.TIME = defaultTime;
             let width = Dimensions.get("window").width;
             let nextPage = width * 4;
             this.scrollTo(nextPage);
@@ -120,6 +121,7 @@ export default class PageOne extends PureComponent {
     nextPage = () => {
         let width = Dimensions.get("window").width;
         let nextPage = width * 4;
+        NativeModules.InitialSetup.userIsSet();
         this.scrollTo(nextPage);
         this.navigateToDrawer();
     }

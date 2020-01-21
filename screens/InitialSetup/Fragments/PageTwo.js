@@ -75,7 +75,7 @@ export default class PageOne extends PureComponent {
                             number: this.state.feedsNumber,
                             price: this.state.feedsPrice
                         };
-                        // InventoryManager.addFeeds(feedsObject);
+                        InventoryManager.addFeeds(feedsObject);
                         let width = Dimensions.get("window").width;
                         let nextPage = width * 2;
                         this.scrollTo(nextPage);

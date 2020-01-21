@@ -1,8 +1,11 @@
 import React, { PureComponent } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { Title, Card, TextInput, Button, Colors } from 'react-native-paper';
+import { Title, Card, List, TextInput, Button, Colors } from 'react-native-paper';
 import BottomSheet from 'reanimated-bottom-sheet';
+
 import SecurityManager from '..';
+
+import Theme from '../../../theme';
 
 
 export default class Authenticator extends PureComponent {
@@ -36,6 +39,7 @@ export default class Authenticator extends PureComponent {
             <View style={styles.bottomSheet}>
                 <View style={styles.container}>
                     <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
                         label="4 Digits"
                         mode="outlined"
                         style={styles.textInput}
@@ -61,9 +65,14 @@ export default class Authenticator extends PureComponent {
 
     renderHeader = () => {
         return (
-            <View style={styles.titleContainer}>
-                <Title>Authenticate</Title>
-            </View>
+            <Card style={styles.header}>
+                <Card.Title
+                    style={styles.titleContainer}
+                    title="Authenticate"
+                    titleStyle={styles.headerTitle}
+                    right={props => <List.Icon icon="safe" color={Theme.PRIMARY_COLOR} />} 
+                />
+            </Card>
         );
     }
 
@@ -87,11 +96,24 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         height: "100%"
     },
-    container: {
-
+    header: {
+        elevation: 1,
+        width: Dimensions.get("window").width,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        paddingBottom: 0,
+        marginBottom: 0,
     },
     titleContainer: {
-        backgroundColor: "white",
+        padding: 0,
+        marginBottom: 0,
+    },
+    headerTitle: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#777"
+    },
+    container: {
     },
     textInput: {
         alignSelf: "center",

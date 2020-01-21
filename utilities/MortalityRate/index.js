@@ -70,15 +70,17 @@ export default class MortalityRate {
         };
         let fourWeeks = this.getWeeks();
         let initialDate = new Date(this.initialPopulation).toDateString();
+        // console.log("This is the inital date: " + JSON.stringify(fourWeeks, null, 2));
 
-        for(let i=0; i<4; i++) {
+        for(let i=3; i>=0; i--) {
             let deaths = {
                 illness: 0,
                 crowding: 0,
                 canibalism: 0,
                 unknown: 0
-            };
+            }; 
             if(fourWeeks[i][0] != initialDate) {
+                // console.log("this is the date not equal: " + fourWeeks[i][0])
                 barChartData.labels.unshift(`W'${DATE.normaliseDate(i+1)}`);
             } else {
                 barChartData.labels.unshift(`W${DATE.normaliseDate(i+1)}`);
@@ -104,7 +106,8 @@ export default class MortalityRate {
                         }
                     }
                     barChartData.data.push([deaths.illness, deaths.crowding, deaths.canibalism, deaths.unknown]);
-                    return Promise.resolve(barChartData);
+                    // console.log(JSON.stringify(barChartData, null, 2));
+                    return barChartData;
                 }
             }
 
@@ -136,7 +139,8 @@ export default class MortalityRate {
         }
 
 
-        return Promise.resolve(barChartData);
+        // console.log("This is the complete data" + JSON.stringify(barChartData, null, 2));
+        return barChartData;
     }
 
     getWeeks() {

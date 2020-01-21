@@ -14,6 +14,7 @@ import {
 } from 'react-native-paper';
 
 import BottomSheet from 'reanimated-bottom-sheet';
+import Theme from '../../theme';
 
 import * as NotificationManager from '../../utilities/NotificationManager';
 
@@ -175,46 +176,59 @@ export default class NotificationSettings extends PureComponent {
     render() {
         return (
             <View style={styles.screen}>
-                <List.Section
-                    title="Default Notifications">
-                    <List.Item
-                        title="Default Notification Time"
-                        description={`Current Default Notification time: ${NotificationManager.NotificationPreferences.TIME}`}
-                        left={props => <List.Icon {...props} icon="clock" />}
-                        right={props => <List.Icon {...props} icon="pencil" />}
-                        onPress={this.editTime.bind(this, "default")}
-                    />
-                    <List.Item
-                        title="Message Tone"
-                        description="Play a sound on new notifications"
-                        left={props => <List.Icon {...props} icon="music-circle" />}
-                        right={props => <Switch {...props} value={this.state.ringtoneEnabled} onValueChange={this.setRingtone} />}
-                    />
-                    <List.Item
-                        title="Vibration"
-                        left={props => <List.Icon icon="vibrate" {...props} />}
-                        right={props => <Switch {...props} value={this.state.vibrationEnabled} onValueChange={this.setVibration} />}
-                    />
-                </List.Section>
-                <List.Section title="Egg collection Notifications">
-                    <List.Item 
-                        title="Egg Collection Time"
-                        description="Set the default time the notification for egg data input reminder notification"
-                        left={props => <List.Icon {...props} icon="egg" />}
-                        onPress={this.editTime.bind(this, "eggReminder")}
-                    />
-                    <List.Item
-                        title="Message Tone"
-                        description="Play a sound on new notifications"
-                        left={props => <List.Icon {...props} icon="music-circle" />}
-                        right={props => <Switch {...props} value={this.state.eggRingtoneEnabled} onValueChange={this.setEggRingtone} />}
-                    />
-                    <List.Item
-                        title="Vibration"
-                        left={props => <List.Icon icon="vibrate" {...props} />}
-                        right={props => <Switch {...props} value={this.state.eggVibrationEnabled} onValueChange={this.setEggVibration} />}
-                    />
-                </List.Section>
+                <ScrollView style={styles.container} stickyHeaderIndices={[0]}>
+                    <View style={styles.headerContainer}>
+                        <Card style={styles.header}>
+                            <Card.Title
+                                style={styles.titleContainer}
+                                title="Preferences for notifications and alerts"
+                                titleStyle={styles.headerTitle}
+                                right={props => <List.Icon icon="bell" color={Theme.PRIMARY_COLOR} />} />
+                        </Card>
+                    </View>
+                    <List.Section
+                        title="Default Notifications">
+                        <List.Item
+                            title="Default Notification Time"
+                            description={`Current Default Notification time: ${NotificationManager.NotificationPreferences.TIME}`}
+                            left={props => <List.Icon {...props} icon="clock" color={Theme.PRIMARY_COLOR} />}
+                            right={props => <List.Icon {...props} icon="pencil" color={Theme.SECONDARY_COLOR_DARK} />}
+                            onPress={this.editTime.bind(this, "default")}
+                        />
+                        <List.Item
+                            title="Message Tone"
+                            description="Play a sound on new notifications"
+                            left={props => <List.Icon {...props} icon="music-circle" color={Theme.PRIMARY_COLOR} />}
+                            right={props => <Switch {...props} value={this.state.ringtoneEnabled} color={Theme.SECONDARY_COLOR_DARK} onValueChange={this.setRingtone} />}
+                        />
+                        <List.Item
+                            title="Vibration"
+                            description="Vibrate on new notifications"
+                            left={props => <List.Icon icon="vibrate" {...props} color={Theme.PRIMARY_COLOR} />}
+                            right={props => <Switch {...props} value={this.state.vibrationEnabled} color={Theme.SECONDARY_COLOR_DARK} onValueChange={this.setVibration} />}
+                        />
+                    </List.Section>
+                    <List.Section title="Egg collection Notifications">
+                        <List.Item
+                            title="Egg Collection Time"
+                            description="Set the default time the notification for egg data input reminder notification"
+                            left={props => <List.Icon {...props} icon="egg" color={Theme.SECONDARY_COLOR} />}
+                            onPress={this.editTime.bind(this, "eggReminder")}
+                        />
+                        <List.Item
+                            title="Message Tone"
+                            description="Play a sound on new notifications"
+                            left={props => <List.Icon {...props} icon="music-circle" color={Theme.PRIMARY_COLOR} />}
+                            right={props => <Switch {...props} value={this.state.eggRingtoneEnabled} color={Theme.SECONDARY_COLOR_DARK} onValueChange={this.setEggRingtone} />}
+                        />
+                        <List.Item
+                            title="Vibration"
+                            description="Play a sound on new notifications"
+                            left={props => <List.Icon icon="vibrate" {...props} color={Theme.PRIMARY_COLOR} />}
+                            right={props => <Switch {...props} value={this.state.eggVibrationEnabled} color={Theme.SECONDARY_COLOR_DARK} onValueChange={this.setEggVibration} />}
+                        />
+                    </List.Section>
+                </ScrollView>
                 <BottomSheet
                     renderContent={this.renderContent}
                     renderHeader={this.renderHeader}
@@ -230,7 +244,32 @@ export default class NotificationSettings extends PureComponent {
 
 const styles = StyleSheet.create({
     screen: {
+        height: "100%",
+        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+    },
+    container: {
+        backgroundColor: Theme.WHITE,
         minHeight: "100%",
+    },
+    headerContainer: {
+        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+    },
+    header: {
+        elevation: 1,
+        width: Dimensions.get("window").width,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        paddingBottom: 0,
+        marginBottom: 0,
+    },
+    titleContainer: {
+        padding: 0,
+        marginBottom: 0,
+    },
+    headerTitle: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#777"
     },
     textInput: {
         marginTop: 8,

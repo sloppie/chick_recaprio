@@ -26,16 +26,18 @@ const Drawer = createDrawerNavigator(
             navigationOptions: {
                 headerTitle: "Home",
                 drawerLabel: "Home",
-                drawerIcon: <Icon name="home" color={Theme.SECONDARY_COLOR_DARK} />,
+                drawerIcon: <Icon name="home" color={Theme.SECONDARY_COLOR_DARK}  style={{paddingRight: 4, width: 40, textAlign: "center"}}/>,
+                order: ["Inventory", "Event", "Settings"]
             },
         },
         Inventory: {
-            screen: Inventory,
+            screen: (props) => {
+                return <Inventory />
+            },
             navigationOptions: {
                 headerTitle: "Inventory",
                 drawerLabel: "Inventory",
-                drawerIcon: <Icon name="paper" color={Theme.SECONDARY_COLOR_DARK}/>,
-                title: "Inventory",
+                drawerIcon: <Icon name="paper" color={Theme.SECONDARY_COLOR_DARK} style={{paddingRight: 4, width: 40, textAlign: "center"}} />,
             },
         },
         // Statistics: {
@@ -43,7 +45,7 @@ const Drawer = createDrawerNavigator(
         //     navigationOptions: {
         //         headerTitle: "Statistics",
         //         drawerLabel: "Statistics",
-        //         drawerIcon: <Icon name="stats" color={Theme.SECONDARY_COLOR_DARK} />
+        //         drawerIcon: <Icon name="stats" color={Theme.SECONDARY_COLOR_DARK}  style={{paddingRight: 4, width: 40, textAlign: "center"}}/>
         //     }
         // },
         Event: {
@@ -51,19 +53,20 @@ const Drawer = createDrawerNavigator(
             navigationOptions: {
                 headerTitle: "Events",
                 drawerLabel: "Events",
-                drawerIcon: <Icon name="calendar" color={Theme.SECONDARY_COLOR_DARK} />
+                drawerIcon: <Icon name="calendar" color={Theme.SECONDARY_COLOR_DARK} style={{paddingRight: 4, width: 40, textAlign: "center"}} />
             },
         },
         Settings: {
-            screen: Settings,
+            screen: (props) => <Settings />,
             navigationOptions: {
-                drawerIcon: <Icon name="cog" color={Theme.SECONDARY_COLOR_DARK} style={{paddingRight: 4}}/>,
+                drawerIcon: <Icon name="cog" color={Theme.SECONDARY_COLOR_DARK} style={{paddingRight: 4, width: 40, textAlign: "center"}}/>,
                 drawerLabel: "Settings",
                 headerTitle: "Settings",
             }
         },
     },
     {
+        initialRouteName: "Home",
         hideStatusBar: false,
         minSwipeDistance: 30,
         drawerWidth: "90%",
@@ -75,11 +78,9 @@ const Drawer = createDrawerNavigator(
                 borderBottomRightRadius: 50,
             },
             activeTintColor: Theme.SECONDARY_COLOR_DARK,
-            iconContainerStyle: {
-                marginRight: 0,
-            },
         },
-    }
+        // order: ["Home", "Inventory", "Event", "Settings"]
+    },
 );
 
 export default createAppContainer(Drawer);

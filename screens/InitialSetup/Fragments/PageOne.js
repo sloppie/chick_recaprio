@@ -37,7 +37,7 @@ export default class PageOne extends PureComponent {
         if(passedRegEx && length && similar) {
             let RESET_CODE = SecurityManager.RESET_CODE;
 
-            // SecurityManager.resetPassword(RESET_CODE, password);
+            SecurityManager.resetPassword(RESET_CODE, password); 
             ToastAndroid.show("Password successfully set:)", ToastAndroid.SHORT);
             let nextPage = Dimensions.get("window").width;
             this.scrollTo(nextPage);

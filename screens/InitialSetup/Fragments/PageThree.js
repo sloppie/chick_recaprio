@@ -86,7 +86,7 @@ export default class PageOne extends PureComponent {
 
         if(format > 0) {
             console.log(context + " is the context. Time is for DEFAULT_TIME, which is: " + defaultTime);
-            // NotificationManager.NotificationPreferences.TIME = defaultTime;
+            NotificationManager.NotificationPreferences.TIME = defaultTime;
         } else {
             ToastAndroid.show("Ensure the time entered is correct", ToastAndroid.SHORT);
         }

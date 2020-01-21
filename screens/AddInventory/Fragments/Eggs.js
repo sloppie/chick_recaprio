@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 
 import {
+    Card,
     TextInput,
     Button,
     List
@@ -213,52 +214,66 @@ export default class Eggs extends Component {
         return (
             <View style={styles.screen}>
                 {/* <Text>{DATE.getDate()}</Text> */}
-                <List.Item 
+                {/* <List.Item 
                     title={DATE.getDate()}
                     description="Earliest date which eggs weren't added"
                     left={props => <List.Icon {...props} icon="calendar"/>}
-                />
-                <TextInput
-                    label="Normal Eggs"
-                    mode="outlined"
-                    style={styles.textInput}
-                    keyboardType="numeric"
-                    onChangeText={this.NEChange}
-                    value={fixer(this.state.normalEggs)}
-                />
-                <TextInput
-                    label="Broken Eggs"
-                    mode="outlined"
-                    style={styles.textInput}
-                    keyboardType="numeric"
-                    onChangeText={this.BEChange}
-                    value={fixer(this.state.brokenEggs)}
-                />
-                <TextInput
-                    label="Larger Eggs"
-                    mode="outlined"
-                    style={styles.textInput}
-                    keyboardType="numeric"
-                    onChangeText={this.LEChange}
-                    value={fixer(this.state.largerEggs)}
-                />
-                <TextInput
-                    label="Smaller Eggs"
-                    style={styles.textInput}
-                    mode="outlined"
-                    keyboardType="numeric"
-                    onChangeText={this.SEChange}
-                    value={fixer(this.state.smallerEggs)}
-                />
-                <Button
-                    style={styles.button}
-                    title="Submit"
-                    mode="text"
-                    onPress={this.alert}
-                    icon="egg"
-                > 
-                    Add Inventory
+                /> */}
+                <Card style={styles.header}>
+                    <Card.Title
+                        style={styles.titleContainer}
+                        title={`${DATE.getDate()}`}
+                        titleStyle={styles.headerTitle}
+                        right={props => <List.Icon icon="calendar" color={Theme.PRIMARY_COLOR} />} />
+                </Card>
+                <View style={styles.container}>
+                    <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
+                        label="Normal Eggs"
+                        mode="outlined"
+                        style={styles.textInput}
+                        keyboardType="numeric"
+                        onChangeText={this.NEChange}
+                        value={fixer(this.state.normalEggs)}
+                    />
+                    <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
+                        label="Broken Eggs"
+                        mode="outlined"
+                        style={styles.textInput}
+                        keyboardType="numeric"
+                        onChangeText={this.BEChange}
+                        value={fixer(this.state.brokenEggs)}
+                    />
+                    <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
+                        label="Larger Eggs"
+                        mode="outlined"
+                        style={styles.textInput}
+                        keyboardType="numeric"
+                        onChangeText={this.LEChange}
+                        value={fixer(this.state.largerEggs)}
+                    />
+                    <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
+                        label="Smaller Eggs"
+                        style={styles.textInput}
+                        mode="outlined"
+                        keyboardType="numeric"
+                        onChangeText={this.SEChange}
+                        value={fixer(this.state.smallerEggs)}
+                    />
+                    <Button
+                        style={styles.button}
+                        title="Submit"
+                        mode="text"
+                        onPress={this.alert}
+                        icon="egg"
+                        color={Theme.SECONDARY_COLOR_DARK}
+                    >
+                        Add Inventory
                 </Button>
+                </View>
                 {SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.sendData)}
             </View>
         );
@@ -279,6 +294,28 @@ const styles = StyleSheet.create({
     },
     screen: {
         minHeight: "100%",
+        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+    },
+    container: {
+        minHeight: "100%",
+        backgroundColor: Theme.WHITE,
+    },
+    header: {
+        elevation: 1,
+        width: Dimensions.get("window").width,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        paddingBottom: 0,
+        marginBottom: 0,
+    },
+    titleContainer: {
+        padding: 0,
+        marginBottom: 0,
+    },
+    headerTitle: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#777"
     },
     eggs: {
         borderBottomColor: Theme.PRIMARY_COLOR_DARK,

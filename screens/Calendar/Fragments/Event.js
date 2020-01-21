@@ -15,6 +15,7 @@ import {
 
 // utilities
 import DATE from '../../../utilities/Date';
+import Theme from '../../../theme';
 
 
 export class IncompleteEvent extends PureComponent {
@@ -109,21 +110,24 @@ export class IncompleteEvent extends PureComponent {
             </TouchableHighlight> */}
                 <View style={styles.eventContainer}>
                     <List.Accordion
+                        theme={Theme.TEXT_INPUT_THEME}
                         title={this.props.event.title}
                         description={this.props.event.description}
-                        left={props => <List.Icon {...props} icon="calendar" />}
+                        left={props => <List.Icon {...props} icon="calendar-clock" />}
                         style={[styles.eventAccordion, styles.incompleteEvent]}
                     >
                         <List.Item
                             title="Time"
+                            titleStyle={styles.eventItemTitle}
                             description={`${this.getTime()} on: ${this.getMonth()} ${this.getDay()}, ${this.getYear()}`}
-                            left={props => <List.Icon {...props} icon="clock" />}
+                            left={props => <List.Icon {...props} icon="clock" color={Theme.PRIMARY_COLOR} />}
                             style={[styles.eventItems, styles.incompleteEvent]}
                         />
                         <List.Item
                             title="Archive"
+                            titleStyle={styles.eventItemTitle}
                             description="Press to run the archive dialog"
-                            left={props => <List.Icon {...props} icon="archive" />}
+                            left={props => <List.Icon {...props} icon="archive" color={Theme.PRIMARY_COLOR} />}
                             onPress={this.archiveEvent}
                             style={[styles.eventItems, styles.incompleteEvent]}
                         />
@@ -223,7 +227,7 @@ export class CompleteEvent extends PureComponent {
                 <List.Accordion
                     title={this.props.event.title}
                     description={this.props.event.description}
-                    left={props => <List.Icon {...props} icon="calendar" />}
+                    left={props => <List.Icon {...props} icon="calendar-check" />}
                     style={[styles.eventAccordion, styles.completeEvent]}
                 >
                     <List.Item
@@ -308,19 +312,20 @@ const styles = StyleSheet.create({
         maxWidth: (Dimensions.get("window").width - 32),
         alignSelf: "center",
         marginBottom: 4,
-        backgroundColor: Colors.blue300,
-        borderTopEndRadius: 10,
-        borderTopStartRadius: 10,
+        borderTopEndRadius: 0,
+        borderTopStartRadius: 0,
     },
     eventAccordion: {
-        borderTopEndRadius: 10,
-        borderTopStartRadius: 10,
+        borderTopEndRadius: 0,
+        borderTopStartRadius: 0,
     },
     eventItems: {
         minWidth: (Dimensions.get("window").width - 64),
         maxWidth: (Dimensions.get("window").width - 64),
         alignSelf: "flex-end",
-        backgroundColor: Colors.blue300,
+    },
+    eventItemTitle: {
+        color: Theme.PRIMARY_COLOR,
     },
     completeEvent: {
         borderEndColor: Colors.green500,

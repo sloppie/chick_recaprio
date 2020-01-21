@@ -9,11 +9,13 @@ export default class Theme {
   static PRIMARY_COLOR_LIGHT = Colors.cyan500;
   static PRIMARY_BACKGROUND_COLOR = `rgba(${Number(0xe0)}, ${Number(0xf2)}, ${Number(0xf1)}, 1)`;
 
-  static ACTIVE_DRAWER_BACKGROUND_COLOR = `rgba(${Number(0xad)}, ${Number(0x46)}, ${Number(0x2a)}, 0.24)`;
-
   static SECONDARY_COLOR = "#e09585";
   static SECONDARY_COLOR_DARK = "#ad462a";
   // static SECONDARY_COLOR_LIGHT = "#8b6b61";
+
+  static ACTIVE_DRAWER_BACKGROUND_COLOR = `rgba(${Number(0xad)}, ${Number(0x46)}, ${Number(0x2a)}, 0.24)`;
+
+  static APP_BAR_HEADER_COLOR = "#444444";
 
   static HEADER_COLOR = "#000";
   static SUBTITLE_COLOR = "#333";

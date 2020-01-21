@@ -13,6 +13,7 @@ import BatchSettings from '../screens/BatchSettings';
 import SecuritySettings from '../screens/SecuritySettings';
 
 import * as HomeDrawer from './HomeDrawer';
+import Theme from '../theme';
 
 
 const StackNavigator = createStackNavigator(
@@ -21,7 +22,7 @@ const StackNavigator = createStackNavigator(
             screen: Settings,
             navigationOptions: {
                 headerTitle: "Settings",
-                headerLeft: <TouchableHighlight style={{ marginStart: 16 }} onPress={() => HomeDrawer.drawerActions.dispatch(DrawerActions.openDrawer())}><Icon name="menu" /></TouchableHighlight>
+                headerLeft: <TouchableHighlight style={{ marginStart: 16 }} onPress={() => HomeDrawer.drawerActions.dispatch(DrawerActions.openDrawer())}><Icon color={Theme.SECONDARY_COLOR_DARK} name="menu" /></TouchableHighlight>
             }
         },
         BatchSettings: {
@@ -47,8 +48,12 @@ const StackNavigator = createStackNavigator(
         defaultNavigationOptions: {
             headerStyle: {
                 elevation: 0,
+                backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
             },
-            headerTintColor: "#444",
+            headerTintColor: Theme.SECONDARY_COLOR_DARK,
+            headerTitleStyle: {
+                color: Theme.APP_BAR_HEADER_COLOR,
+            },
         },
     }
 );

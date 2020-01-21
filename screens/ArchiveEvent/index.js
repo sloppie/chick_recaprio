@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import {
     Text,
     View,
+    ScrollView,
     StyleSheet,
     Dimensions,
     ToastAndroid,
@@ -12,6 +13,7 @@ import Icon from 'react-native-ionicons';
 
 import EventManager from '../../utilities/EventManager';
 import SecurityManager from '../../utilities/SecurityManager';
+import Theme from '../../theme';
 
 
 export default class ArchiveEvent extends PureComponent {
@@ -116,91 +118,65 @@ export default class ArchiveEvent extends PureComponent {
     renderScreen = () => {
         if (this.state.render) {
             return (
-                <View style={styles.screen}>
-                    {/* <View style={styles.batchNameContainer}>
-                        <Text style={styles.batchName}>{this.state.event.batchName}</Text>
+                <ScrollView style={styles.screen} stickyHeaderIndices={[0]}>
+                    <View style={styles.headerContainer}>
+                        <Card style={styles.header}>
+                            <Card.Title
+                                style={styles.titleContainer}
+                                title={this.state.event.batchName ? this.state.event.batchName : "No attatched batch"}
+                                titleStyle={styles.headerTitle}
+                                right={props => <List.Icon icon="clipboard-check" color={Theme.PRIMARY_COLOR} />} />
+                        </Card>
                     </View>
-                    <View style={styles.titleContainer}>
-                        <Icon style={styles.titleIcon} name="pricetag" />
-                        <Text style={styles.title}>{this.getTitle()}</Text>
-                    </View>
-                    <View style={styles.descriptionContainer}>
-                        <Text style={styles.description}>{this.getDescription()}</Text>
-                    </View>
-                    <View style={styles.dateContainer}>
-                        <View style={styles.timeContainer}>
-                            <Icon style={styles.timeIcon} name="time" />
-                            <Text style={styles.time}>{this.getTime()}</Text>
-                        </View>
-                        <View style={styles.calendarContainer}>
-                            <Icon name="calendar" style={styles.calendarIcon} />
-                            <Text style={styles.calendar}>{`${this.getMonth()} ${this.getDay()}, ${this.getYear()}`}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.textInputContainer}>
-                        <Icon name="pricetags" style={styles.expensesIcon}/>
-                        <TextInput
-                            style={styles.textInput}
-                            mode="outlined"
-                            keyboardType="numeric"
-                            label="Expenses"
-                            onChangeText={this.setExpenses}
-                            value={String(this.state.expenses)} />
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <Button
-                            style={styles.button}
-                            color="white"
-                            icon="archive"
-                            mode="outlined"
-                            onPress={this.callBottomSheet}>
-                            <Text style={styles.buttonIcon}>Complete Event</Text>
-                        </Button>
-                    </View> */}
-                    <List.Item 
-                        title={this.state.event.batchName}
+                    <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
+                        style={styles.textInput}
+                        mode="outlined"
+                        keyboardType="numeric"
+                        label="Expenses"
+                        onChangeText={this.setExpenses}
+                        value={String(this.state.expenses)}
+                        placeholder="Enter the expenses incurred"
                     />
+                    {/* <List.Item 
+                        title={this.state.event.batchName}
+                    /> */}
                     {/* <List.Item 
                         title={this.getTitle()}
                         description="Title of the event below"
                         left={props => <List.Icon {...props} icon="tag"/>}
                     /> */}
-                    <Card>
-                        <Card.Title title={this.getTitle()} subtitle="Name of the event"/>
-                        <Card.Content>
-                            <Paragraph>{this.getDescription()}</Paragraph>
-                        </Card.Content>
-                    </Card>
-                    <List.Item 
-                        title={this.getTime()}
-                        description="Reminder time for the event"
-                        left={props => <List.Icon {...props} icon="clock"/>}
-                    />
-                    <List.Item 
-                        title={`${this.getMonth()} ${this.getDay()}, ${this.getYear()}`}
-                        description="Date of the event"
-                        left={props => <List.Icon {...props} icon="calendar"/>}
-                    />
-                    <View style={styles.textInputContainer}>
-                        <Icon name="pricetags" style={styles.expensesIcon}/>
-                        <TextInput
-                            style={styles.textInput}
-                            mode="outlined"
-                            keyboardType="numeric"
-                            label="Expenses"
-                            onChangeText={this.setExpenses}
-                            value={String(this.state.expenses)} />
-                    </View>
+                    <List.Section title="Event description">
+                        <Card style={styles.eventDescription}>
+                            <Card.Title title={this.getTitle()} subtitle="Name of the event" />
+                            <Card.Content>
+                                <Paragraph>{this.getDescription()}</Paragraph>
+                            </Card.Content>
+                        </Card>
+                        <List.Item
+                            title={`${this.getMonth()} ${this.getDay()}, ${this.getYear()}`}
+                            description="Date of the event"
+                            left={props => <List.Icon {...props} icon="calendar" color={Theme.PRIMARY_COLOR} />}
+                        />
+                        <List.Item
+                            title={this.getTime()}
+                            description="Reminder time for the event"
+                            left={props => <List.Icon {...props} icon="clock" color={Theme.PRIMARY_COLOR} />}
+                        />
+                        {/* <View style={styles.textInputContainer}> */}
+                        {/* <Icon name="pricetags" style={styles.expensesIcon}/> */}
+                        {/* </View> */}
+                    </List.Section>
                     <Button
                         style={styles.button}
-                        color="white"
+                        color={Theme.SECONDARY_COLOR_DARK}
                         icon="archive"
                         mode="outlined"
                         onPress={this.callBottomSheet}>
                         <Text style={styles.buttonIcon}>Complete Event</Text>
                     </Button>
                     { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate) }
-                </View>
+                </ScrollView>
             );
         } else {
             return <View />
@@ -217,72 +193,29 @@ export default class ArchiveEvent extends PureComponent {
 
 const styles = StyleSheet.create({
     screen: {
-        padding: 16,
         minHeight: "100%"
     },
-    batchNameContainer: {
+    headerContainer: {
+        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
     },
-    batchName: {
-        fontSize: 30,
-        fontWeight: "700",
-        color: "#444",
-        textAlign: "center",
+    header: {
+        elevation: 0,
+        width: Dimensions.get("window").width,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        paddingBottom: 0,
+        marginBottom: 0,
     },
     titleContainer: {
-        flexDirection: "row",
+        padding: 0,
+        marginBottom: 0,
     },
-    title: {
-        flex: 8,
-        fontSize: 30,
-        fontWeight: "600",
-        color: "#444",
+    headerTitle: {
+        fontSize: 16,
+        color: "#777"
     },
-    titleIcon: {
-        flex: 1,
-        textAlign: "center",
-        textAlignVertical: "center",
-    },
-    descriptionContainer: {
-        borderStartWidth: 3,
-        borderStartColor: "#666",
-        width: "70%",
-        alignSelf: "center",
-        height: "30%"
-    },
-    description: {
-        paddingStart: 8
-    },
-    dateContainer: {
-    },
-    timeContainer: {
-        flexDirection: "row",
-    },
-    timeIcon: {
-        textAlign: "center",
-        textAlignVertical: "center",
-        color: "#444",
-    },
-    time: {
-        flex: 8,
-        fontSize: 30,
-        fontWeight: "700",
-        color: "#444",
-        paddingStart: 8
-    },
-    calendarContainer: {
-        flexDirection: "row",
-    },
-    calendarIcon: {
-        textAlign: "center",
-        textAlignVertical: "center",
-        color: "#444",
-    },
-    calendar: {
-        flex: 8,
-        fontSize: 30,
-        fontWeight: "700",
-        color: "#444",
-        paddingStart: 8
+    eventDescription: {
+        elevation: 0,
     },
     textInputContainer: {
         flexDirection: "row",
@@ -293,11 +226,9 @@ const styles = StyleSheet.create({
         color: "#444",
     },
     textInput: {
-        marginStart: 8,
-        flex: 7,
         alignSelf: "center",
-        // minWidth: Dimensions.get("window").width - 32,
-        // maxWidth: Dimensions.get("window").width - 32,
+        minWidth: Dimensions.get("window").width - 32,
+        maxWidth: Dimensions.get("window").width - 32,
         marginBottom: 8,
     },
     buttonContainer: {

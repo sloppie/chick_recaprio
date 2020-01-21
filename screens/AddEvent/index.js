@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 import {
-    View,
+    SafeAreaView,
     Picker,
     ToastAndroid,
     Dimensions,
     StyleSheet,
     NativeModules,
 } from 'react-native';
-
 import { TextInput, Button, Caption } from 'react-native-paper';
 
 import InventoryManager from '../../utilities/InventoryManager';
@@ -15,6 +14,8 @@ import EventManager from '../../utilities/EventManager';
 import SecurityManager from '../../utilities/SecurityManager';
 import DATE from '../../utilities/Date';
 import { NotificationPreferences } from '../../utilities/NotificationManager';
+
+import Theme from '../../theme';
 
 
 export default class AddEvent extends PureComponent {
@@ -140,14 +141,16 @@ export default class AddEvent extends PureComponent {
     render() {
 
         return (
-            <View>
+            <SafeAreaView style={styles.screen}>
                 <TextInput
+                    theme={Theme.TEXT_INPUT_THEME}
                     style={styles.textInput}
                     mode="outlined"
                     label="Title"
                     onChangeText={this.getTitle}
                     value={this.state.title} />
                 <TextInput
+                    theme={Theme.TEXT_INPUT_THEME}
                     style={styles.textInput}
                     mode="outlined"
                     label="Description"
@@ -156,6 +159,7 @@ export default class AddEvent extends PureComponent {
                     value={this.state.description} />
                 <Caption>From:</Caption>
                 <TextInput
+                    theme={Theme.TEXT_INPUT_THEME}
                     style={styles.textInput}
                     mode="outlined"
                     label="DD/MM/YYYY"
@@ -163,12 +167,14 @@ export default class AddEvent extends PureComponent {
                     value={this.state.from} />
                 <Caption>To:</Caption>
                 <TextInput
+                    theme={Theme.TEXT_INPUT_THEME}
                     style={styles.textInput}
                     mode="outlined"
                     label="DD/MM/YYYY"
                     onChangeText={this.getToDate}
                     value={this.state.to} />
                 <TextInput
+                    theme={Theme.TEXT_INPUT_THEME}
                     style={styles.textInput}
                     mode="outlined"
                     label="Time"
@@ -181,15 +187,18 @@ export default class AddEvent extends PureComponent {
                     onValueChange={this.getBatchName}
                     mode="dropdown">
                         {this.renderPickerItems()}
+                    <Picker.Item value="Pick batch" label="Pick batch" />
                 </Picker>
                 <Button
                     mode="text"
                     style={styles.button}
-                    onPress={this.callBottomSheet}>
+                    onPress={this.callBottomSheet}
+                    color={Theme.SECONDARY_COLOR_DARK}
+                >
                     Add Event
                 </Button>
                 { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate) }
-            </View>
+            </SafeAreaView>
         );
     }
 

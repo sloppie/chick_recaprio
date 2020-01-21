@@ -331,9 +331,9 @@ export default class FileManager {
                 date: new Date().toDateString(),
                 population: (population - number),
             };
-            console.log(JSON.stringify(previousData, null, 2))
+            // console.log(JSON.stringify(previousData, null, 2))
             brief.population.unshift(newPopulation);
-            JSON.stringify(brief, null, 2);
+            // JSON.stringify(brief, null, 2);
 
             NativeModules.FileManager.addData(batch.context, "casualties", JSON.stringify(previousData));
             NativeModules.FileManager.writeBrief(batch.context, JSON.stringify(brief));

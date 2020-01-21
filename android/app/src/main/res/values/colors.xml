@@ -1,4 +1,7 @@
 <resources>
-    <color name="colorAccent">#f3ffff</color>
+    <!-- <color name="colorAccent">#f3ffff</color> -->
     <color name="white">#FFF</color>
+    <color name="colorPrimary">#006064</color>
+    <color name="colorPrimaryDark">#e0f2f1</color>
+    <color name="colorAccent">#ad462a</color>
 </resources>

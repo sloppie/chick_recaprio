@@ -13,6 +13,7 @@ import Events from '../screens/Events';
 import ArchiveEvent from '../screens/ArchiveEvent';
 
 import * as HomeDrawer from './HomeDrawer';
+import Theme from '../theme';
 
 
 const EventStack = createStackNavigator(
@@ -21,7 +22,7 @@ const EventStack = createStackNavigator(
             screen: Event,
             navigationOptions: {
                 headerTitle: "Events",
-                headerLeft: <TouchableHighlight style={{ marginStart: 16 }} onPress={() => HomeDrawer.drawerActions.dispatch(DrawerActions.openDrawer())}><Icon name="menu" /></TouchableHighlight>
+                headerLeft: <TouchableHighlight style={{ marginStart: 16 }} onPress={() => HomeDrawer.drawerActions.dispatch(DrawerActions.openDrawer())}><Icon color={Theme.SECONDARY_COLOR_DARK} name="menu" /></TouchableHighlight>
             },
         },
         AddEvent: {
@@ -48,9 +49,13 @@ const EventStack = createStackNavigator(
         defaultNavigationOptions: {
             headerStyle: {
                 elevation: 0,
-                color: "#444"
+                color: "#444",
+                backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
             },
-            headerTintColor: "#444"
+            headerTintColor: Theme.SECONDARY_COLOR_DARK,
+            headerTitleStyle: {
+                color: Theme.APP_BAR_HEADER_COLOR,
+            },
         },
     }
 );

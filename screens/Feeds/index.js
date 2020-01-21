@@ -7,7 +7,7 @@ import {
     Dimensions,
     NativeModules,
 } from 'react-native';
-import { List } from 'react-native-paper';
+import { List, Title } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Theme from '../../theme';
@@ -35,7 +35,6 @@ export default class FeedsTab extends Component {
             data: parsedData,
           });
         } catch(err) {
-        console.log(err);
         this.setState({
           data: [],
         });
@@ -49,9 +48,12 @@ export default class FeedsTab extends Component {
         return (
           <View style={{justifyContent: "center", height: "100%"}}>
             <Icon 
+              style={styles.noData}
               size={40}
               name="weather-windy"
+              color={Theme.SECONDARY_COLOR_DARK}
             />
+            <Title style={styles.noDataTitle}>Such emptiness :(</Title>
           </View>
         );
       }
@@ -68,7 +70,7 @@ export default class FeedsTab extends Component {
           <View style={{justifyContent: "center", height: "100%"}}>
             <ActivityIndicator 
               animating={true}
-              color={Theme.PRIMARY_COLOR}
+              color={Theme.PRIMARY_COLOR_LIGHT}
             />
           </View>
       );
@@ -95,6 +97,14 @@ const styles = StyleSheet.create({
     bottom: 100, 
     right: 16, 
     zIndex: 2 
+  },
+  noData: {
+    textAlign: "center",
+  },
+  noDataTitle: {
+    textAlign: "center",
+    color: Theme.APP_BAR_HEADER_COLOR,
+    fontSize: 24,
   },
 });
 
@@ -138,8 +148,8 @@ export class FeedCard extends Component {
         <List.Item
           title={`Week ${this.props.weekNumber}`}
           description={`Total feeds consumed: ${this.state.sum}`}
-          left={props => <List.Icon  {...props} icon="clipboard-outline"/>}
-          right={props => <List.Icon {...props} icon="arrow-right" />}
+          left={props => <List.Icon  {...props} icon="clipboard-outline" color={Theme.PRIMARY_COLOR}/>}
+          right={props => <List.Icon {...props} icon="arrow-right" color={Theme.PRIMARY_COLOR_LIGHT} />}
           onPress={this.viewFullWeek}
         ></List.Item>
       </View>

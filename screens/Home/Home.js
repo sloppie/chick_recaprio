@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   View,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Dimensions,
@@ -9,12 +10,14 @@ import {
 } from 'react-native';
 import { List, Title, Divider, Colors, FAB } from 'react-native-paper'
 
-/* Fragments */
+import Theme from '../../theme';
+
 import BatchCard from './Fragments/Card';
 
-// utilities
 import BalanceSheet from '../../utilities/BalanceSheet';
-import Theme from '../../theme';
+
+import { APP_STORE } from '../../';
+import { EGGS_ADDED, FEEDS_ADDED, CASUALTIES_ADDED, BATCH_CREATED } from '../../store';
 
 
 export default class Home extends React.PureComponent {
@@ -34,9 +37,48 @@ export default class Home extends React.PureComponent {
     };
     this.sum = 0;
 
-    this.subscription = DeviceEventEmitter.addListener("update", this.listen);
+    this.batchAddedListener = APP_STORE.subscribe(BATCH_CREATED, this.listen.bind(this));
+    this.feedsListener =  APP_STORE.subscribe(FEEDS_ADDED, this.getFeedsBalance.bind(this));
+    
     this.ref = React.createRef();
-    console.log("Constructor got passt")
+  }
+
+  componentDidMount() {
+    this.forceUpdate();
+    this.setState({
+      returns: BalanceSheet.balanceEggs(),
+    });
+  }
+
+  componentWillUnmount() {
+    // this.subscription.remove();
+    APP_STORE.unsubscribe(BATCH_CREATED, this.batchAddedListener);
+    APP_STORE.unsubscribe(FEEDS_ADDED, this.feedsListener);
+    this._isMounted = false;
+  }
+
+  listen = () => {
+    this.forceUpdate();
+  }
+
+  forceUpdate = () => {
+    this._isMounted = true;
+
+    let batches = NativeModules.FileManager.fetchBatchNames();
+    if (batches !== "" || batches !== ",") {
+      batches = batches.split(",");
+      batches.pop();
+      console.log(batches)
+      let batchBalanceSheets = [];
+      batches.forEach((batch) => {
+        batchBalanceSheets.push(new BalanceSheet(batch));
+      });
+
+      this.setState({
+        batches,
+        batchBalanceSheets
+      });
+    }
   }
 
   getProfit = () => {
@@ -60,44 +102,6 @@ export default class Home extends React.PureComponent {
     this.getReturns();
   }
 
-  componentDidMount() {
-    this.forceUpdate();
-    this.setState({
-      returns: BalanceSheet.balanceEggs(),
-    });
-  }
-
-  componentWillUnmount() {
-    this.subscription.remove();
-    this._isMounted = false;
-  }
-
-  listen = (event) => {
-    if (event.done) {
-      this.forceUpdate();
-    }
-
-  }
-
-  forceUpdate = () => {
-    this._isMounted = true;
-
-    let batches = NativeModules.FileManager.fetchBatchNames();
-    if (batches !== "" || batches !== ",") {
-      batches = batches.split(",");
-      batches.pop();
-      console.log(batches)
-      let batchBalanceSheets = [];
-      batches.forEach((batch) => {
-        batchBalanceSheets.push(new BalanceSheet(batch));
-      });
-
-      this.setState({
-        batches,
-        batchBalanceSheets
-      });
-    }
-  }
 
   setBatches(name, data) {
     this.batches[name] = data;
@@ -150,8 +154,8 @@ export default class Home extends React.PureComponent {
     // let renderedCards = this.renderCards();
 
     return (
-      <View style={styles.screen}>
-          <ScrollView style={styles.home} >
+      <SafeAreaView style={styles.screen}>
+          <ScrollView style={styles.home} stickyHeaderIndices={[0]} >
         <View style={styles.container}>
             <List.Accordion
               theme={Theme.TEXT_INPUT_THEME}
@@ -191,7 +195,7 @@ export default class Home extends React.PureComponent {
           icon="plus"
           onPress={this.newBatch}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 

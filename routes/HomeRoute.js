@@ -70,8 +70,9 @@ function popToTop() {
 let stackNavigator = createStackNavigator(
   {
     Home: {
-      screen: Home,
+      screen: (props) => <Home {...props} />,
       navigationOptions: {
+        headerTitle: "ChickLedger",
         headerLeft: (
           <TouchableHighlight 
             style={{marginStart: 16}} 

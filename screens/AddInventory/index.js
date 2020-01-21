@@ -10,8 +10,9 @@ import {
     TouchableHighlight,
     Dimensions,
 } from 'react-native';
+import { Card, List } from 'react-native-paper';
 
-import Icon from 'react-native-ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import FileManager from '../../utilities/FileManager';
 import Theme from '../../theme';
@@ -66,13 +67,22 @@ export default class AddInventory extends Component{
     renderPage = (context, batchInformation, navigation) => {
         if (this.state.exists || (this.state.counterCheck && this.state.exists)) {
             return (
-                <View style={styles.lockedPage}>
-                    <TouchableHighlight
-                        onPress={this.displayForm}
-                    >
-                        <Icon style={{textAlign: "center"}} name="lock" size={45}/>
-                    </TouchableHighlight>
-                    <Text style={styles.info}>{`This icon appears because you already input data for today\nIf you would like to reenter the data, please press the lock icon`}</Text>
+                <View style={styles.container}>
+                    <Card style={styles.header}>
+                        <Card.Title
+                            style={styles.titleContainer}
+                            title="Data already input"
+                            titleStyle={styles.headerTitle}
+                            right={props => <List.Icon icon="clipboard-check" color={Theme.PRIMARY_COLOR} />} />
+                    </Card>
+                    <View style={styles.lockedPage}>
+                        <TouchableHighlight
+                            onPress={this.displayForm}
+                        >
+                            <Icon style={{ textAlign: "center" }} name="lock" size={50} color={Theme.SECONDARY_COLOR_DARK} />
+                        </TouchableHighlight>
+                        {/* <Text style={styles.info}>{`This icon appears because you already input data for today\nIf you would like to reenter the data, please press the lock icon`}</Text> */}
+                    </View>
                 </View>
             )
         } else {
@@ -108,10 +118,35 @@ export default class AddInventory extends Component{
 }
 
 const styles = StyleSheet.create({
+    container: {
+        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+    },
+    header: {
+        top: 0,
+        position: "absolute",
+        elevation: 1,
+        width: Dimensions.get("window").width,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        paddingBottom: 0,
+        marginBottom: 0,
+    },
+    titleContainer: {
+        padding: 0,
+        marginBottom: 0,
+    },
+    headerTitle: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#777"
+    },
     lockedPage: {
         minHeight: Dimensions.get("window").height,
         alignContent: "center",
         justifyContent: "center",
+        backgroundColor: Theme.WHITE,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
     },
     info: {
         textAlign: "center",

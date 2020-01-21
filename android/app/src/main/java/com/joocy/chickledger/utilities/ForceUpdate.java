@@ -14,25 +14,37 @@ import java.io.IOException;
 
 public class ForceUpdate implements Runnable {
 
-	ReactContext reactContext;
+	public static String EVENT_ADDED = "EVENT_ADDED";
+	public static String EVENT_ARCHIVED = "EVENTS_ARCHIVED";
+	public static String EGGS_ADDED = "EGGS_ADDED";
+	public static String FEEDS_ADDED = "FEEDS_ADDED";
+	public static String CASUALTIES_ADDED = "CASUALTIES_ADDED";
+	public static String INVENTORY_FEEDS_ADDED = "INV_FEEDS_ADDED";
+	public static String INVENTORY_EGGS_ADDED = "INV_EGGS_ADDED";
+	public static String BATCH_CREATED = "BATCH_CREATED";
+	public static String PICK_UP_ADDED = "PICK_UP_ADDED";
+	public static String PICK_UP_PRICE_ADDED = "PICK_UP_PRICE_ADDED";
 
-	public ForceUpdate(ReactContext reactContext) {
+	private ReactContext reactContext;
+	public String type;
+
+	public ForceUpdate(ReactContext reactContext, String type) {
 		this.reactContext = reactContext;
+		this.type = type;
 	}
 
 	public void run() {
 		// creating the map to be passed onto the EventEmitter
 		WritableMap ready = Arguments.createMap();
-		// fileDetails.putString(file.getName(), readFile(file));
 		ready.putBoolean("done", true);
 
 		// event send with data
-		forceUpdate(reactContext, "update", ready);
+		forceUpdate(reactContext, this.type, ready);
 	}
 
 	// Helper function to send events
 	private void forceUpdate(ReactContext reactContext, String eventName, WritableMap params) {
 		reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
 	}
-	
+
 }

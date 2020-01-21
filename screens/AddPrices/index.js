@@ -16,6 +16,8 @@ import {
 import InventoryManager from '../../utilities/InventoryManager';
 import SecurityManager from '../../utilities/SecurityManager';
 
+import Theme from '../../theme';
+
 
 export default class AddPrices extends PureComponent {
 
@@ -122,6 +124,7 @@ export default class AddPrices extends PureComponent {
             <View style={styles.screen}>
                 <View style={styles.inputContainer}>
                     <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
                         mode="outlined"
 						value={String(this.state.normalEggs)}
                         style={styles.input}
@@ -131,6 +134,7 @@ export default class AddPrices extends PureComponent {
                         keyboardType="numeric"
                     />
                     <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
                         mode="outlined"
 						value={String(this.state.smallerEggs)}
                         style={styles.input}
@@ -140,6 +144,7 @@ export default class AddPrices extends PureComponent {
                         keyboardType="numeric"
                     />
                     <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
                         mode="outlined"
                         value={String(this.state.largerEggs)}
                         style={styles.input}
@@ -149,6 +154,7 @@ export default class AddPrices extends PureComponent {
                         keyboardType="numeric"
                     />
                     <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
                         mode="outlined"
                         value={String(this.state.brokenEggs)}
                         style={styles.input}
@@ -161,7 +167,9 @@ export default class AddPrices extends PureComponent {
                 <Button 
                     mode="outlined"
                     style={styles.button}
-                    onPress={this.callBottomSheet}>
+                    onPress={this.callBottomSheet}
+                    color={Theme.SECONDARY_COLOR_DARK}
+                >
                         <Text>ADD PRICES</Text>
                 </Button>
                 { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate) }

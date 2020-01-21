@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import {
-    View,
     Text,
+    Picker,
+    View,
+    SafeAreaView,
     Alert,
     ToastAndroid,
     StyleSheet,
@@ -11,8 +13,10 @@ import {
 
 import {
     TextInput, 
+    Card,
     List,
     Button,
+    Caption,
 } from 'react-native-paper';
 
 import Theme from '../../../theme';
@@ -29,7 +33,7 @@ export default class Feeds extends Component{
         this.state = {
             number: 0,
             date: new Date().toDateString(),
-            type: "",
+            type: "Pick feed type",
         };
 
     }
@@ -40,7 +44,7 @@ export default class Feeds extends Component{
         });
     }
 
-    feedsType = (value) => {
+    feedsType = (value, index) => {
         this.setState({
             type: value
         });
@@ -50,6 +54,20 @@ export default class Feeds extends Component{
         this.setState({
             price: Number(value)
         });
+    }
+
+    renderFeeds = () => {
+        let pickerItems = [];
+        let feeds = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory())[1];
+
+        for(let i in feeds) {
+            let name = InventoryManager.redoFeedsName(i);
+            pickerItems.push(
+                <Picker.Item label={name} value={name} key={i}/>
+            );
+        }
+
+        return pickerItems;
     }
 
     formatData = () => {
@@ -139,47 +157,48 @@ export default class Feeds extends Component{
             }
     }
 
-    render(){
+    render() {
         return (
-            <View style={styles.screen}>
-                <View style={styles.dateHeader}>
-                    <List.Item 
-                        title={this.state.date}
-                        description="Today's date"
-                        left={props => <List.Icon {...props} icon="calendar"/>}
+            <SafeAreaView style={styles.screen}>
+                <View style={styles.container}>
+                    <Card style={styles.header}>
+                        <Card.Title
+                            style={styles.titleContainer}
+                            title={`${this.state.date}`}
+                            titleStyle={styles.headerTitle}
+                            right={props => <List.Icon icon="clipboard-outline" color={Theme.PRIMARY_COLOR} />} />
+                    </Card>
+                    <Caption style={styles.pickerCaption}>Pick feed's type</Caption>
+                    <Picker
+                        selectedValue={this.state.type}
+                        onValueChange={this.feedsType}
+                        style={styles.picker}
+                        mode="dropdown"
+                    >
+                        { this.renderFeeds() }
+                        <Picker.Item label="Pick feed type" value="Pick feed type"/>
+                    </Picker>
+                    <TextInput
+                        theme={Theme.TEXT_INPUT_THEME}
+                        label="Number Used"
+                        style={styles.textInput}
+                        onChangeText={this.onInput}
+                        mode="outlined"
+                        value={(this.state.number == 0) ? "" : String(this.state.number)}
+                        keyboardType="numeric" 
                     />
+                    <Button
+                        style={styles.button}
+                        onPress={this.alert}
+                        mode="text"
+                        icon="send"
+                        color={Theme.SECONDARY_COLOR_DARK}
+                    >
+                        Submit
+                    </Button>
                 </View>
-                <TextInput
-                    label="Number Used"
-                    style={styles.textInput}
-                    onChangeText={this.onInput}
-                    mode="outlined"
-                    value={(this.state.number == 0)? "": String(this.state.number)}
-                    keyboardType="numeric"/>
-                <TextInput
-                    label="Feeds Type"
-                    style={styles.textInput}
-                    onChangeText={this.feedsType}
-                    keyboardType="default"
-                    mode="outlined"
-                    value={this.state.type}
-                    />
-                {/* <Text>Price:</Text>
-                <TextInput
-                    style={styles.textInput}
-                    onChangeText={this.feedsPrice}
-                    keyboardType="numeric"
-                    /> */}
-                <Button 
-                    style={styles.button}
-                    onPress={this.alert}
-                    mode="outlined"
-                    icon="send"
-                >
-                    Submit
-                </Button>
                 { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.sendData) }
-            </View>
+            </SafeAreaView>
         );
     }
 }
@@ -192,6 +211,30 @@ const styles = StyleSheet.create({
     },
     screen: {
         minHeight: "100%",
+        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+    },
+    container: {
+        height: "100%",
+        backgroundColor: Theme.WHITE,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+    },
+    header: {
+        elevation: 1,
+        width: Dimensions.get("window").width,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        paddingBottom: 0,
+        marginBottom: 0,
+    },
+    titleContainer: {
+        padding: 0,
+        marginBottom: 0,
+    },
+    headerTitle: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#777"
     },
     dateHeader: {
         padding: 16,
@@ -212,9 +255,21 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
     },
     textInput: {
-        margin: 8,
-    },   
+        width: (Dimensions.get("window").width - 32),
+        alignSelf: "center",
+    },
+    pickerCaption: {
+        marginTop: 16,
+        marginStart: 16,
+        width: (Dimensions.get("window").width - 32),
+    },
+    picker: {
+        width: (Dimensions.get("window").width - 32),
+        alignSelf: "center",
+        marginBottom: 8,
+    },
     button: {
+        marginTop: 8,
         padding: 8,
         width: "45%",
         alignSelf: "center",

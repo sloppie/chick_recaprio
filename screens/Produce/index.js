@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import { orderFinder } from './utilities';
-import { Colors, List } from 'react-native-paper';
+import { Colors, List, Title } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Theme from '../../theme';
@@ -57,11 +57,12 @@ export default class ProduceTab extends Component {
         return (
           <View style={{justifyContent: "center", height: "100%"}}>
             <Icon 
-              style={{textAlign: "center"}}
+              style={styles.noDataIcon}
               size={50}
               name="null"
               color={Theme.SECONDARY_COLOR_DARK}
             />
+            <Title style={styles.noDataTitle}>I'll wait for you ;)</Title>
           </View>
         );
       } else {
@@ -78,7 +79,7 @@ export default class ProduceTab extends Component {
         );
       }
     } else {
-      return(
+      return (
           <View style={{justifyContent: "center", height: "100%"}}>
             <ActivityIndicator 
               animating={true}
@@ -98,6 +99,17 @@ export default class ProduceTab extends Component {
   }
 
 }
+
+const styles = StyleSheet.create({
+  noDataIcon: {
+    textAlign: "center",
+  },
+  noDataTitle: {
+    textAlign: "center",
+    fontSize: 24,
+    color: Theme.APP_BAR_HEADER_COLOR,
+  },
+});
 
 
 export class WeeklyCard extends Component {

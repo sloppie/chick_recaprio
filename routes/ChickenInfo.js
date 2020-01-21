@@ -48,10 +48,8 @@ const TopTab = createMaterialTopTabNavigator(
         backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
         color: "#444"
       },
-      // activeTintColor: Colors.red600,
       activeTintColor: Theme.SECONDARY_COLOR_DARK,
-      inactiveTintColor: Colors.teal200,
-      // showIcon: true,
+      inactiveTintColor: Theme.PRIMARY_COLOR,
       showLabel: true,
     },
     tabBarPosition: 'top',

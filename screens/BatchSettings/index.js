@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import {
     View,
+    ScrollView,
+    SafeAreaView,
     Alert,
     ToastAndroid,
     NativeModules,
@@ -16,9 +18,11 @@ import {
     Colors,
 } from 'react-native-paper';
 import BottomSheet from 'reanimated-bottom-sheet';
+import Theme from '../../theme';
 
 import BatchManager from '../../utilities/BatchManager';
 import SecurityManager from '../../utilities/SecurityManager';
+import BalanceSheet from '../../utilities/BalanceSheet';
 
 let context = "";
 let activeCallback = () => {}
@@ -182,27 +186,35 @@ export default class BatchSettings extends PureComponent {
             let deleteBatchCallback = this.deleteBatch.bind(this, activeBatch);
             batches.push(
                 <List.Accordion 
-                    title={activeBatches[i]} 
                     key={activeBatches[i]}
+                    theme={Theme.TEXT_INPUT_THEME}
+                    title={activeBatches[i]} 
+                    description={`Since: ${new BalanceSheet(activeBatches[i]).getInitialDate()}`}
+                    left={props => <List.Icon {...props} icon="clipboard-outline" color={Theme.PRIMARY_COLOR}/>}
                 >
                     <List.Item 
                         title="Rename batch"
                         description="Change the name of the batch"
+                        left={props => <List.Icon {...props} icon="file-replace" color={Theme.PRIMARY_COLOR} />}
+                        style={styles.itemIcons}
                         onPress={this.callBottomSheet.bind(this, renameBatchCallback)}
-                        left={props => <List.Icon {...props} icon="file-replace" />}
                     />
                     <List.Item 
                         title="Archive batch"
                         description="This means that the chicken have been sold by you wish to stil have the data sored in an archive"
+                        descriptionNumberOfLines={3}
+                        left={props => <List.Icon {...props} icon="archive" color={Theme.PRIMARY_COLOR} />}
+                        style={styles.itemIcons}
                         onPress={this.callBottomSheet.bind(this, archiveBatchCallback)}
-                        left={props => <List.Icon {...props} icon="archive" />}
                     />
                     {/**Delete icon == "cancel" */}
                     <List.Item 
                         title="Delete batch"
                         description="This will completely remove all data pertaining to this batch from the database"
-                        onPress={this.callBottomSheet.bind(this, deleteBatchCallback)}
+                        descriptionNumberOfLines={3}
                         left={props => <List.Icon {...props} icon="file-remove" color={Colors.red400} />}
+                        style={styles.itemIcons}
+                        onPress={this.callBottomSheet.bind(this, deleteBatchCallback)}
                     />
                 </List.Accordion>
             );
@@ -213,10 +225,21 @@ export default class BatchSettings extends PureComponent {
 
     render() {
         return (
-            <View style={styles.screen}>
-                <List.Section title="Active Batches">
-                    {this.state.fetched? this.renderBatches(): <View />}
-                </List.Section>
+            <SafeAreaView style={styles.screen}>
+                <ScrollView style={styles.scrollView} stickyHeaderIndices={[0]}>
+                    <View style={styles.headerContainer}>
+                        <Card style={styles.header}>
+                            <Card.Title
+                                style={styles.titleContainer}
+                                title="Rename, archive and delete batches"
+                                titleStyle={styles.headerTitle}
+                                right={props => <List.Icon icon="cogs" color={Theme.PRIMARY_COLOR} />} />
+                        </Card>
+                    </View>
+                    <List.Section title="Active Batches">
+                        {this.state.fetched ? this.renderBatches() : <View />}
+                    </List.Section>
+                </ScrollView>
                 { SecurityManager.runAuthenticationQuery(this.bottomSheetRef, this.authenticate) }
                 <BottomSheet 
                     renderHeader={this.renderHeader}
@@ -225,7 +248,7 @@ export default class BatchSettings extends PureComponent {
                     initialSnap={0}
                     ref={this.renameBottomSheetRef}
                 />
-            </View>
+            </SafeAreaView>
         );
     }
 
@@ -233,7 +256,32 @@ export default class BatchSettings extends PureComponent {
 
 const styles = StyleSheet.create({
     screen: {
-        minHeight: "100%",
+        height: "100%",
+        backgroundColor: Theme.PRIMARY_COLOR_DARK,
+    },
+    scrollView: {
+        height: "100%",
+        backgroundColor: Theme.WHITE,
+    },
+    headerContainer: {
+        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+    },
+    header: {
+        elevation: 1,
+        width: Dimensions.get("window").width,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        paddingBottom: 0,
+        marginBottom: 0,
+    },
+    titleContainer: {
+        padding: 0,
+        marginBottom: 0,
+    },
+    headerTitle: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#777"
     },
     bottomSheet: {
         height: "100%",
@@ -245,5 +293,8 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         marginTop: 8,
         marginBottom: 8,
+    },
+    itemIcons: {
+        marginStart: 32,
     },
 });

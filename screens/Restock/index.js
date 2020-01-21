@@ -18,7 +18,11 @@ import InventoryManager from '../../utilities/InventoryManager';
 
 // fragments
 import FeedCard from './Fragments/FeedCard';
-import { Title, FAB, Card, Button, Colors } from 'react-native-paper';
+import { Title, FAB, Card, List, Button, Colors } from 'react-native-paper';
+
+import Theme from '../../theme';
+import { APP_STORE } from '../..';
+import { NEW_FEED_TYPE_ADDED } from '../../store';
 
 
 export default class Restock extends Component {
@@ -30,64 +34,65 @@ export default class Restock extends Component {
             number: null,
             price: null,
             counter: 0,
+            current: [],
         };
 
-        this.subscription = DeviceEventEmitter.addListener("update", this.listen);
+    }
+
+    componentDidMount() {
+        this.fetchCurrentInventory();
+
+        this.currentInventory = APP_STORE.subscribe(NEW_FEED_TYPE_ADDED, this.fetchCurrentInventory.bind(this));
     }
 
     componentWillUnmount() {
-        this.subscription.remove();
+        APP_STORE.unsubscribe(NEW_FEED_TYPE_ADDED, this.currentInventory);
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        if (nextState.counter > this.state.counter) {
-            return true;
-        }
-    }
-
-    listen = (event) => {
-        if (event.done) {
-            this.counter();
-        }
-    }
-
-    counter = () => {
+    fetchCurrentInventory = async () => {
+        let current = JSON.parse(await NativeModules.InventoryManager.fetchCurrentInventoryAsync());
         this.setState({
-            counter: (this.state.counter + 1)
+            current,
         });
     }
 
     renderCards() {
-        let current = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
-        let feedsInventory = current[1];
-        let cards = [];
-
-        for (let i in feedsInventory) {
-            let type = feedsInventory[i];
-            type = [type.date, type.number];
-            // new `type` Array = [date, Number, normalisedFeedsName]
-            let redoneFeedsName = InventoryManager.redoFeedsName(i);
-            type.push(redoneFeedsName);
-
-           cards.push(
-               <Card key={i} style={styles.card}>
-                   <Title style={styles.cardTitle}>{type[1]}</Title>
-                   <Card.Title title={type[2]} subtitle={`Last restock on: ${type[0]}`}/>
-                   <Card.Actions>
-                       <Button
-                            onPress={this.restockFeeds.bind(this, type[2], type[1])}
-                            icon="layers-plus"
-                            style={styles.button}
-                       >
-                           Restock
-                        </Button>
-                   </Card.Actions>
-               </Card>
-           );
+        if(this.state.current.length > 0) {
+            // let current = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
+            let { current } = this.state;
+            let feedsInventory = current[1];
+            let cards = [];
+    
+            for (let i in feedsInventory) {
+                let type = feedsInventory[i];
+                type = [type.date, type.number];
+                // new `type` Array = [date, Number, normalisedFeedsName]
+                let redoneFeedsName = InventoryManager.redoFeedsName(i);
+                type.push(redoneFeedsName);
+    
+               cards.push(
+                   <Card key={i} style={styles.card}>
+                       <Title style={styles.cardTitle}>{type[1]}</Title>
+                       <Card.Title title={type[2]} subtitle={`Last restock on: ${type[0]}`}/>
+                       <Card.Actions>
+                           <Button
+                                onPress={this.restockFeeds.bind(this, type[2], type[1])}
+                                icon="layers-plus"
+                                color={Theme.SECONDARY_COLOR_DARK}
+                                style={styles.button}
+                           >
+                               Restock
+                            </Button>
+                       </Card.Actions>
+                   </Card>
+               );
+            }
+    
+    
+            return cards;
+        } else {
+            return <View />
         }
-
-
-        return cards;
     }
 
     getName = (name) => {
@@ -175,17 +180,26 @@ export default class Restock extends Component {
     }
 
     render() {
-        let renderedCards = this.renderCards();
+        // let renderedCards = this.renderCards();
         return (
             <SafeAreaView style={styles.container}>
-                <ScrollView style={styles.scrollView}>
-                    {renderedCards}
+                <ScrollView style={styles.scrollView} stickyHeaderIndices={[0]}>
+                    <View style={styles.headerContainer}>
+                        <Card style={styles.header}>
+                            <Card.Title
+                                style={styles.titleContainer}
+                                title="List of feeds in inventory"
+                                titleStyle={styles.headerTitle}
+                                right={props => <List.Icon icon="clipboard-outline" color={Theme.PRIMARY_COLOR} />} />
+                        </Card>
+                    </View>
+                    {this.renderCards()}
                 </ScrollView>
-            <FAB 
-                onPress={this.newFeeds}
-                icon="plus"
-                style={styles.fab1}
-                label="New Feeds"/>
+                <FAB
+                    onPress={this.newFeeds}
+                    icon="plus"
+                    style={styles.fab1}
+                />
             </SafeAreaView>
         );
     }
@@ -197,6 +211,7 @@ const styles = StyleSheet.create({
         maxWidth: (Dimensions.get("window").width - 32),
         alignSelf: "center",
         marginBottom: 8,
+        elevation: 0,
     },
     cardContent: {
     },
@@ -209,15 +224,38 @@ const styles = StyleSheet.create({
         fontSize: 50,
         fontWeight: "700",
         textAlignVertical: "bottom",
+        color: Theme.PRIMARY_COLOR,
     },
     container: {
-        minHeight: Dimensions.get("window").height,
-        backgroundColor: "#f3f3f3",
+        // minHeight: Dimensions.get("window").height,
+        height: "100%",
+        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+    },
+    header: {
+        elevation: 0,
+        width: Dimensions.get("window").width,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        paddingBottom: 0,
+        marginBottom: 0,
+    },
+    headerContainer: {
+        backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
+    },
+    titleContainer: {
+        padding: 0,
+        marginBottom: 0,
+    },
+    headerTitle: {
+        // textAlign: "center",
+        fontSize: 16,
+        color: "#777"
     },
     scrollView: {
-        paddingTop: 8,
         height: "100%",
-        backgroundColor: "#f3f3f3"
+        backgroundColor: Theme.WHITE,
+        borderTopEndRadius: 30,
+        borderTopStartRadius: 30,
     },
     view: {},
     fab: {
@@ -259,12 +297,14 @@ const styles = StyleSheet.create({
         //width: 100,
     },
     button: {
-        backgroundColor: Colors.orange300,
+        // backgroundColor: Colors.orange300,
         marginStart: 8,
     },
     fab1: {
         position: "absolute",
-        bottom: 150,
-        end: 16,
+        margin: 16,
+        bottom: 0, 
+        end: 0,
+        backgroundColor: Theme.SECONDARY_COLOR_DARK,
     }
 });

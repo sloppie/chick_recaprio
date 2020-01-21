@@ -38,6 +38,10 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
       DATA.mkdirs();
     }
 
+    if(new File(DATA, "My Batch").exists()) {
+      new File(DATA, "My Batch").delete();
+    }
+
   }
 
   @Override
@@ -68,7 +72,7 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
       state.invoke(false, true);
     }
 
-    Thread forceUpdate = new Thread(new ForceUpdate(reactContext));
+    Thread forceUpdate = new Thread(new ForceUpdate(reactContext, ForceUpdate.BATCH_CREATED));
     forceUpdate.start();
   } 
 
@@ -93,6 +97,18 @@ public class FileManager extends ReactContextBaseJavaModule implements DataQuery
   public void addData(String context, String key, String data) {
       writeFile(getDir(context, key), data);
       makeToast("data added to " + key + " store");
+
+      ForceUpdate updatedValue;
+
+      if(data == "eggs") {
+        updatedValue = new ForceUpdate(this.reactContext, ForceUpdate.EGGS_ADDED);
+      } else if(data == "feeds") {
+        updatedValue = new ForceUpdate(this.reactContext, ForceUpdate.FEEDS_ADDED);
+      } else {
+        updatedValue = new ForceUpdate(this.reactContext, ForceUpdate.CASUALTIES_ADDED);
+      }
+
+      new Thread(updatedValue).start();
   }
 
   // fetching the data 

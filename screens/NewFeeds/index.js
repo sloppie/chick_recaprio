@@ -5,6 +5,7 @@ import {
     ToastAndroid,
     StyleSheet,
     Dimensions,
+    DeviceEventEmitter,
 } from 'react-native';
 
 import { TextInput, Button, List, Divider } from 'react-native-paper';
@@ -12,6 +13,7 @@ import { TextInput, Button, List, Divider } from 'react-native-paper';
 // utilities
 import InventoryManager from '../../utilities/InventoryManager';
 import SecurityManager from '../../utilities/SecurityManager';
+import { NEW_FEED_TYPE_ADDED } from '../../store';
 
 export default class NewFeeds extends PureComponent {
 
@@ -56,6 +58,7 @@ export default class NewFeeds extends PureComponent {
 
         InventoryManager.addFeeds(feedsObject);
         ToastAndroid.show(`${this.state.type} was added successfully`, ToastAndroid.SHORT);
+        DeviceEventEmitter.emit(NEW_FEED_TYPE_ADDED, () => {done: true})
         this.props.navigation.pop();
     }
 

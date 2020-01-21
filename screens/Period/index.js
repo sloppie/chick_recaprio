@@ -35,9 +35,9 @@ const chartConfig = {
 };
 
 let bCD = {
-  labels: [],
+  labels: ["W01"],
   legend: ["Illness", "Crowding", "Canibalism", "Unknown"],
-  data: [],
+  data: [[2, 0, 0, 0]],
   barColors: [Colors.amber500, Colors.green500, Colors.blue500, Colors.red500],
 };
 
@@ -52,6 +52,7 @@ export default class CasualtiesTab extends Component {
       batchName: "",
       px: "0",
       barChartData: bCD,
+      rendred: false,
     };
   }
 
@@ -59,18 +60,20 @@ export default class CasualtiesTab extends Component {
     this.forceUpdate();
   }
 
-  forceUpdate = async () => {
+  forceUpdate = () => {
     let beginning = DATE.stringify(7);
     let batchName = NativeModules.Sessions.getCurrentSession();
     let mortalityRate = new MortalityRate(batchName);
     let px = `${mortalityRate.calculate(beginning)}`;
-    let barChartData = await mortalityRate.casualtyManager();
+    let barChartData = mortalityRate.casualtyManager();
+    // console.log(`this is the dataaaaa: ${JSON.stringify(barChartData)}`)
 
     this.setState({
       beginning,
       batchName,
       px,
-      barChartData
+      barChartData,
+      rendered: true,
     });
   }
 
@@ -84,7 +87,7 @@ export default class CasualtiesTab extends Component {
         if(index == 0) {
           answer = num;
         } else if(index > 7) {
-        } else if(index == 1){
+        } else if(index == 1) {
           answer += ".";
         } else {
           answer += num;
@@ -98,6 +101,41 @@ export default class CasualtiesTab extends Component {
     return `${answer}%`;
   }
 
+  renderBarChart = () => {
+    let  barChart;
+    let screenWidth = Dimensions.get("window").width;
+
+    try {
+      console.log(this.state.barChartData.data + "BCD")
+      let nonZero = false;
+      this.state.barChartData.data.forEach(each => {
+        if(!nonZero)
+          nonZero = each.some(value => value !== 0);
+      });
+      if(nonZero) {
+        console.log("This is a non-zero clause" + this.state.barChartData.data)
+
+        barChart = <StackedBarChart
+          style={styles.graph}
+          chartConfig={chartConfig}
+          data={this.state.barChartData}
+          width={(screenWidth - 32)}
+          height={220}
+          withInnerLines={false}
+          hideLegend={true}
+        />
+      } else {
+        barChartData = (<View><Text>No Data To Show</Text></View>);
+      }
+    } catch (err) {
+      console.log(err)
+      console.log(this.state.barChartData + "EEROR_BCD")
+      barChart = <View />
+    }
+
+    return barChart;
+  }
+
   render() {
     let screenWidth = Dimensions.get("window").width;
     return (
@@ -105,15 +143,7 @@ export default class CasualtiesTab extends Component {
         <Card>
           <Card.Title title="Casualties graph" subtitle="A stacked graph for death, with respect to their causes" />
           <Card.Content>
-            <StackedBarChart
-              style={styles.graph}
-              chartConfig={chartConfig}
-              data={this.state.barChartData}
-              width={(screenWidth - 32)}
-              height={220}
-              withInnerLines={false}
-              hideLegend={true}
-            />
+            {this.state.rendered? this.renderBarChart(): <View />}
           </Card.Content>
         </Card>
         <Card>
@@ -121,10 +151,10 @@ export default class CasualtiesTab extends Component {
           <Card.Content>
             <ProgressCircle
               style={styles.progressCircle}
-              progress={this.state.px}
+              progress={Number(this.state.px)}
               progressColor={`rgba(${String(Number(0xa5))},${String(Number(0xd6))}, ${String(Number(0xa7))}, 1)`}
               animate={true}
-              animateDuration={2}
+              animateDuration={200}
             />
             <Title style={styles.px}>{this.reformat_px(this.state.px)}</Title>
           </Card.Content>

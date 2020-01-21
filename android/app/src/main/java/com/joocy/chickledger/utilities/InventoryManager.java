@@ -58,10 +58,10 @@ public class InventoryManager extends ReactContextBaseJavaModule {
      * @param data data of the feeds
      */
 	@ReactMethod
-	public void addFeeds(String type, String data) {
+	public void addFeeds(String type, String data) { 
 		File feeds = new File(feedsDirectory, type + ".json");
         writeFile(feeds, data);
-        Thread forceUpdate = new Thread(new ForceUpdate(reactContext));
+        Thread forceUpdate = new Thread(new ForceUpdate(reactContext, ForceUpdate.INVENTORY_FEEDS_ADDED));
         forceUpdate.start();
     }
     
@@ -102,7 +102,7 @@ public class InventoryManager extends ReactContextBaseJavaModule {
 	@ReactMethod
 	public void addCurrentInventory(String data) {
 		writeFile(currentInventory, data);
-        Thread forceUpdate = new Thread(new ForceUpdate(reactContext));
+        Thread forceUpdate = new Thread(new ForceUpdate(reactContext, ForceUpdate.INVENTORY_FEEDS_ADDED));
         forceUpdate.start();
 	}
 
@@ -121,7 +121,9 @@ public class InventoryManager extends ReactContextBaseJavaModule {
 
 	@ReactMethod
 	public void addPickUp(String data) {
-		writeFile(pickUp, data);
+        writeFile(pickUp, data);
+        ForceUpdate pickUpUpdated = new ForceUpdate(reactContext, ForceUpdate.PICK_UP_ADDED);
+        new Thread(pickUpUpdated).start();
 	}
 
 	@ReactMethod(isBlockingSynchronousMethod = true)

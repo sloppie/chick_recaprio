@@ -3,6 +3,7 @@ import {
     View,
     Text,
     StyleSheet,
+    ToastAndroid,
     Dimensions
 } from 'react-native';
 
@@ -65,8 +66,7 @@ export default class RestockExisting extends PureComponent {
             number,
         };
 
-        // InventoryManager.addFeeds(feedsObject);
-        console.log("Was able to authenticate");
+        InventoryManager.addFeeds(feedsObject);
         this.props.navigation.pop();
     }
 

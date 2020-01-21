@@ -60,6 +60,7 @@ export default class BalanceSheet {
      */
     getInitialDate() {
         if (this.batchInformation) {
+            console.log("This is BATCH: " + JSON.stringify(this.batchInformation, null, 2))
             let { population } = this.batchInformation;
             let { length } = population;
             let initialDate = population[(length - 1)].date;
@@ -87,6 +88,7 @@ export default class BalanceSheet {
     balanceFeeds():Number {
         let { price } = this.batchInformation;
         let totalSum = 0;
+        // console.log(this.feeds)
         if (this.state.feeds && this.feeds !== []) {
             this.feeds.forEach((weeks) => {
                 weeks.forEach(day => {

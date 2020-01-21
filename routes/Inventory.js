@@ -1,17 +1,18 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs'
 
 // screens
-import Inventory from '../screens/Inventory';
+import Inventory from './InventoryContainer';
 import PickUp from './PickUp';
 import 'react-native-gesture-handler';
 import Restock from './Restock';
 import { Colors } from 'react-native-paper';
+import Theme from '../theme';
 
 const styles = StyleSheet.create({
     icon: {
@@ -29,8 +30,9 @@ const bottomTabNavigator = createMaterialBottomTabNavigator(
                 headerStyle: {
                     elevation: 0
                 },
-                tabBarIcon: <Icon name="tray-full" size={24} style={styles.icon}/>,
-                tabBarColor: Colors.orange300,
+                tabBarIcon: <Icon name="clipboard-check-outline" size={24} style={styles.icon}/>,
+                // tabBarColor: Colors.orange300,
+                // activeColor: Colors.blue400,
             },
         },
         Restock: {
@@ -38,7 +40,7 @@ const bottomTabNavigator = createMaterialBottomTabNavigator(
             navigationOptions: {
                 headerTitle: "Restock",
                 tabBarIcon: <Icon name="layers-plus" size={24} style={styles.icon}/>,
-                tabBarColor: Colors.blue300,
+                // tabBarColor: Colors.blue300,
             }
         },
         PickUp: {
@@ -46,15 +48,19 @@ const bottomTabNavigator = createMaterialBottomTabNavigator(
             navigationOptions: {
                 headerTitle: "Pick Up",
                 tabBarIcon: <Icon name="truck" size={24} style={styles.icon}/>,
-                tabBarColor: Colors.red500,
+                // tabBarColor: Colors.red500,
+                // activeColor: Colors.green100
             },
         }
         
     },
     {
         shifting: true,
-		activeColor: "gold",
+		activeColor: Theme.SECONDARY_COLOR,
         inactiveColor: "white",
+        defaultNavigationOptions: {
+            tabBarColor: Theme.PRIMARY_COLOR,
+        },
     },
 );
 

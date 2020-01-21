@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 public class EventManager extends ReactContextBaseJavaModule {
 
+    private ReactContext reactContext;
     private File filesDir = getReactApplicationContext().getFilesDir();
     private File events = new File(filesDir, "events");
     private File incompleteEvents = new File(events, "incomplete_events");
@@ -26,6 +27,7 @@ public class EventManager extends ReactContextBaseJavaModule {
 
     public EventManager(ReactApplicationContext reactContext) {
         super(reactContext);
+        this.reactContext = (ReactContext) reactContext;
         
         if(!incompleteEvents.exists()) {
             incompleteEvents.mkdirs();
@@ -46,11 +48,15 @@ public class EventManager extends ReactContextBaseJavaModule {
     @ReactMethod
     public void addEvent(String event) {
         FileOps.writeFile(incompleteEventData, event);
+        ForceUpdate eventAdded = new ForceUpdate(reactContext, ForceUpdate.EVENT_ADDED);
+        new Thread(eventAdded).start();
     }
 
     @ReactMethod
     public void archiveEvent(String event) {
         FileOps.writeFile(completeEventData, event);
+        ForceUpdate eventAdded = new ForceUpdate(reactContext, ForceUpdate.EVENT_ARCHIVED);
+        new Thread(eventAdded).start();
     }
 
     @ReactMethod

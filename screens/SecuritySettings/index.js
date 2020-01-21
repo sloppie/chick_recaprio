@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
-import { View, ToastAndroid, StyleSheet, Dimensions } from 'react-native';
-import { List, Title, TextInput } from 'react-native-paper';
+import { View, SafeAreaView, ToastAndroid, StyleSheet, Dimensions } from 'react-native';
+import { Card, List, Title, TextInput } from 'react-native-paper';
 import BottomSheet from 'reanimated-bottom-sheet';
 
 import SecurityManager from '../../utilities/SecurityManager';
+import Theme from '../../theme';
 let context = "";
 
 
@@ -189,18 +190,25 @@ export default class SecuritySettings extends PureComponent {
 
     render() {
         return (
-            <View style={styles.screen}>
-                <List.Section title="Password configurations">
+            <SafeAreaView style={styles.screen}>
+                <Card style={styles.header}>
+                    <Card.Title
+                        style={styles.titleContainer}
+                        title="Configure your app security"
+                        titleStyle={styles.headerTitle}
+                        right={props => <List.Icon icon="bell" color={Theme.PRIMARY_COLOR} />} />
+                </Card>
+                <List.Section style={styles.container}>
                     <List.Item 
                         title="Change Password"
                         description="Change password to another number"
-                        left={props => <List.Icon {...props} icon="lock-smart"/>}
+                        left={props => <List.Icon {...props} color={Theme.PRIMARY_COLOR} icon="lock-smart"/>}
                         onPress={this.callBottomSheetRef.bind(this, CONTEXT.CHANGE_PASSWORD)}
                     />
                     <List.Item 
                         title="Reset Password"
                         description="Forgot Password? Press here to reset."
-                        left={props => <List.Icon {...props} icon="lock-reset" />}
+                        left={props => <List.Icon {...props} icon="lock-reset" color={Theme.SECONDARY_COLOR_DARK} />}
                         onPress={this.callBottomSheetRef.bind(this, CONTEXT.RESET_PASSWORD)}
                     />
                 </List.Section>
@@ -211,7 +219,7 @@ export default class SecuritySettings extends PureComponent {
                     renderHeader={this.renderHeader}
                     ref={this.bottomSheetRef}
                 />
-            </View>
+            </SafeAreaView>
         );
     }
 
@@ -234,6 +242,29 @@ class CONTEXT {
 const styles = StyleSheet.create({
     screen: {
         minHeight: "100%",
+        backgroundColor: Theme.PRIMARY_COLOR_DARK,
+    },
+    container: {
+        backgroundColor: Theme.WHITE,
+        height: "100%",
+        marginTop: 0,
+    },
+    header: {
+        elevation: 1,
+        width: Dimensions.get("window").width,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        paddingBottom: 0,
+        marginBottom: 0,
+    },
+    titleContainer: {
+        padding: 0,
+        marginBottom: 0,
+    },
+    headerTitle: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#777"
     },
     bottomSheet: {
         height: "100%",

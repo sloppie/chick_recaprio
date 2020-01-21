@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Dimensions } from 'react-native';
-import { Title, DataTable, Surface, Portal, List } from 'react-native-paper';
+import { View, SafeAreaView, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { Card, Title, DataTable, Surface, Portal, List } from 'react-native-paper';
 
 import DATE from '../../utilities/Date';
 import InventoryManager from '../../utilities/InventoryManager';
@@ -97,19 +97,45 @@ export default class EggWeek extends Component {
 
     render() {
         return (
-            <ScrollView>
-                <List.Item
-                    title={`Week ${this.state.weekNumber}`}
-                    description="Eggs collected during the whole week"
-                />
-                {this.renderDays()}
-            </ScrollView>
+            <SafeAreaView style={styles.screen}>
+                <Card style={styles.header}>
+                    <Card.Title
+                        style={styles.titleContainer}
+                        title={`Week ${this.state.weekNumber}`}
+                        titleStyle={styles.headerTitle}
+                        right={props => <List.Icon icon="clipboard-outline" color={Theme.PRIMARY_COLOR} />} />
+                </Card>
+                <ScrollView style={styles.container}>
+                    <List.Item
+                        title={`Week ${this.state.weekNumber}`}
+                        description="Eggs collected during the whole week"
+                    />
+                    {this.renderDays()}
+                </ScrollView>
+            </SafeAreaView>
         );
     }
 
 }
 
 const styles = StyleSheet.create({
+    header: {
+        elevation: 1,
+        width: Dimensions.get("window").width,
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        paddingBottom: 0,
+        marginBottom: 0,
+    },
+    titleContainer: {
+        padding: 0,
+        marginBottom: 0,
+    },
+    headerTitle: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#777"
+    },
     title: {
         textAlign: "center",
     },

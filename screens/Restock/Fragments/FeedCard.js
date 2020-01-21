@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 
 import InventoryManager from '../../../utilities/InventoryManager';
+import { APP_STORE } from '../../..';
+import { INVENTORY_FEEDS_ADDED } from '../../../store';
 
 
 export default class FeedCard extends Component {
@@ -28,9 +30,22 @@ export default class FeedCard extends Component {
     }
 
     componentDidMount() {
+        this.feedsListener = APP_STORE.subscribe(INVENTORY_FEEDS_ADDED, this.listen.bind(this));
     }
 
     componentWillUnmount() {
+        APP_STORE.unsubscribe(INVENTORY_FEEDS_ADDED, this.feedsListener);
+    }
+
+    listen = () => {
+        let norm = InventoryManager.normaliseFeedsName(this.state.feedsName);
+        let ci = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
+        let quantity = ci[1][norm].number;
+        let date = ci[1][norm].date;
+        this.setState({
+            quantity,
+            date
+        });
     }
 
     renderCard = () => {
@@ -44,9 +59,6 @@ export default class FeedCard extends Component {
         });
     }
 
-    /**
-     * Use stackNavigation since Modals are unstable
-     **/
     restock = () => {
         let { feedsName } = this.state;
         this.props.navigation.navigate("Restock", {

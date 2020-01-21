@@ -24,8 +24,8 @@ let AnimatedSwitch = createAnimatedSwitchNavigator(
         },
     },
     {
-        // initialRouteName: (isSetup? "HomeDrawer": "InitialSetup"),
-        initialRouteName: "HomeDrawer",
+        initialRouteName: (isSetup? "HomeDrawer": "InitialSetup"),
+        // initialRouteName: "HomeDrawer",
         defaultNavigationOptions: {
             headerStyle: {
                 color: "#444",
