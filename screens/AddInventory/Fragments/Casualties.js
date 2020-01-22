@@ -31,7 +31,7 @@ export default class Casualties extends Component {
         this.state = {
             date: new Date().toDateString(),
             number: 0,
-            description: "",
+            description: "Pick illness",
         };
     }
 
@@ -50,7 +50,7 @@ export default class Casualties extends Component {
     formatData = () => {
         let {date, number, description} = this.state;
 
-        if(number <= 0 || description == "") {
+        if(number <= 0 || description == "" || description == "Pick illness") {
             Alert.alert(
                 `Enter all the data fully`,
                 `Please make sure all the data entered is correct.\n\t(i)Make sure you have selected from the DESCRIPTION.\t(ii)Make sure the number entered in the casualties is GREATER than 0`,
@@ -142,6 +142,7 @@ export default class Casualties extends Component {
                         style={styles.picker}
                         mode="dropdown"
                     >
+                        <Picker.Item label="Pick illness" value="Pick illness" />
                         <Picker.Item label="Illness" value="Illness"/>
                         <Picker.Item label="Canibalism" value="Canibalism"/>
                         <Picker.Item label="Crowding" value="Crowding"/>

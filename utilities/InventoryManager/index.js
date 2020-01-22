@@ -39,6 +39,7 @@ export default class InventoryManager {
                     let suppossedDate = DATE.getDate();
                     // searches for the date in history before proceeding
                     let historyIndex = -1;
+
                     for(let i=0; i<history.length; i++) {// !WARNING: BRUTEFORCE
                         if(history[i][2] == suppossedDate) {
                             historyIndex = i;

@@ -211,10 +211,10 @@ export default class FileManager {
      * ```
      * the resultant stored matrix is in the form:
      * ```js 
-     * [ date:Date, number:Number, price:Number, type:String]
+     * [ date:Date, number:number, price:number, type:string]
      * ```
      */
-    static addFeeds(batchInformation, data) {
+    static addFeeds(batchInformation, data) { 
         const key = FileManager.choices.feeds;
         let batch = new FileManager(batchInformation);
         let days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
@@ -246,8 +246,27 @@ export default class FileManager {
                     if(previousData[pi] instanceof Array) {
                         if(FileManager.checkForRecords(batchInformation, "feeds")) {
                             // let len = previousData[pi].length - 1;
-                            // data is replaced at first position
+
+                            // data from the previous entry is fetched to redo the inventory section
+                            // fetch feeds used from batchInformation on feeds
+                            let feedsInQuestion = previousData[pi][0];
+                            // feed type fotm the feeds used
+                            let feedsInType = feedsInQuestion[3];
+                            // data is replaced at first position for the batch
                             previousData[pi][0] = newData;
+                            
+// ****************************** restocking feeds: *********************************************************************
+                            // previous feedsInInventory
+                            let previouslyStocked = JSON.parse(NativeModules.InventoryManager.fetchFeeds(feedsInType));
+                            previouslyStocked.number[0].number += feedsInQuestion[1];
+                            let newNumber = previouslyStocked.number[0].number;
+                            // previousCurrentInventory
+                            let previousCurrInv = JSON.parse(NativeModules.InventoryManager.fetchCurrentInventory());
+                            previousCurrInv[1][feedsInType].number = newNumber;
+
+                            // rewrite the CurrentInventory and FeedStock
+                            NativeModules.InventoryManager.addCurrentInventory(JSON.stringify(previousCurrInv));
+                            NativeModules.InventoryManager.addFeeds(feedsInType, JSON.stringify(previouslyStocked));
                         } else {
                             previousData[pi].unshift(newData);
                         }

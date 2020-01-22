@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
     },
     screen: {
         minHeight: "100%",
+        maxHeight: "100%",
         backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
     },
     container: {
