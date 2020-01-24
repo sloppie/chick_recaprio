@@ -7,11 +7,11 @@ import {
     Dimensions, 
     NativeModules,
 } from 'react-native';
-
 import { Card, Title, TextInput, List, Switch, TouchableRipple, FAB, Colors } from 'react-native-paper';
 
-import * as NotificationManager from '../../../utilities/NotificationManager';
 import Theme from '../../../theme';
+
+import NotificationManager, { EggPreferences } from '../../../utilities/NotificationManager';
 
 let context = "";
 
@@ -23,7 +23,7 @@ export default class PageOne extends PureComponent {
         this.state = {
             eggVibrationEnabled: true,
             eggRingtoneEnabled: true,
-            defaultTime: "",
+            defaultTime: EggPreferences.TIME,
             visible: false,
         };
 
@@ -46,7 +46,7 @@ export default class PageOne extends PureComponent {
             eggRingtoneEnabled
         });
 
-        NotificationManager.EggPreferences.PLAY_SOUND = eggRingtoneEnabled;
+        EggPreferences.PLAY_SOUND = eggRingtoneEnabled;
     }
 
     setEggVibration = () => {
@@ -57,7 +57,8 @@ export default class PageOne extends PureComponent {
             eggVibrationEnabled,
         });
 
-        NotificationManager.EggPreferences.VIBRATION = eggVibrationEnabled;
+        EggPreferences.VIBRATION = eggVibrationEnabled; 
+        
     }
 
     setDefaultTime = (defaultTime) => {
@@ -87,7 +88,9 @@ export default class PageOne extends PureComponent {
 
         if( format > 0) {
             console.log(context + " is the context. Time is for DEFAULT_TIME, which is: " + defaultTime);
-            NotificationManager.EggPreferences.TIME = defaultTime;
+            EggPreferences.TIME = defaultTime;
+            NotificationManager.eggCollectionReminder();
+            ToastAndroid.show(`Daily Egg Reminder set for: ${this.state.defaultTime}`, ToastAndroid.SHORT);
             let width = Dimensions.get("window").width;
             let nextPage = width * 4;
             this.scrollTo(nextPage);
@@ -105,7 +108,7 @@ export default class PageOne extends PureComponent {
                 mode="outlined"
                 value={this.state.defaultTime}
                 style={styles.textInput2}
-                placeholder="Enter new notification time"
+                placeholder="Enter new egg reminder time"
                 keyboardType="numeric"
                 onBlur={this.verify}
             />
@@ -119,6 +122,8 @@ export default class PageOne extends PureComponent {
     }
 
     nextPage = () => {
+        NotificationManager.eggCollectionReminder();
+        ToastAndroid.show(`Daily Egg Reminder set for: ${this.state.defaultTime}`, ToastAndroid.SHORT);
         let width = Dimensions.get("window").width;
         let nextPage = width * 4;
         NativeModules.InitialSetup.userIsSet();
@@ -177,7 +182,7 @@ export default class PageOne extends PureComponent {
                     right={props => (
                         <TouchableRipple onPress={this.nextPage}>
                             <View style={styles.bottomNav}>
-                                <Title style={styles.navBarCaption}>Skip</Title>
+                                <Title style={styles.navBarCaption}>Next</Title>
                                 <List.Icon {...props} icon="chevron-right" color={Theme.SECONDARY_COLOR_DARK} />
                             </View>
                         </TouchableRipple>
