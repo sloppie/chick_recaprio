@@ -111,7 +111,7 @@ let stackNavigator = createStackNavigator(
       },
     },
     Restock: {
-      screen: Restock,
+      screen: Restock, 
       navigationOptions: {
         title: "Restock",
       },

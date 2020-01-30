@@ -44,11 +44,13 @@ export default class Eggs extends Component {
             let { batchInformation } = this.props;
             // console.log(batchInformation.name, "from Eggs  Component");
             let exists = FileManager.checkForRecords(batchInformation, "eggs");
+            console.log(batchInformation.name, "from Eggs  Component");
             if (exists) {
                 let context = NativeModules.Sessions.getCurrentSession();
                 let todaysCollect;
                 NativeModules.FileManager.fetchData(context, "eggs", (data) => {
                     todaysCollect = JSON.parse(data);
+                    console.log(data);
                     let len = todaysCollect.length - 1;
                     todaysCollect = todaysCollect[len][0];
 

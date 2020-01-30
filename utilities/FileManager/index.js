@@ -366,11 +366,11 @@ export default class FileManager {
 
         try {
             if (weeks[1]) {
-                let data = NativeModules.FileManager.fetchForCheck(batch.context, type);
-                console.log(`This is the data according to FFC: ${JSON.stringify(data, null, 2)}`)
+                let data = NativeModules.FileManager.fetchDataSync(batch.context, type);
+                // console.log(`This is the data according to FFC: ${JSON.stringify(data, null, 2)}`)
                 let oldData = JSON.parse(data);
                 let week = weeks[0];
-                let day = weeks[1] - 1;
+                let day = weeks[1] - 1; 
                 if (type == "eggs") {
                     exists = oldData[week].length == weeks[1];
                 } else if(type == "feeds"){
@@ -382,7 +382,6 @@ export default class FileManager {
                 } else {
                     let today = new Date().toDateString();
                     exists = (oldData[today] !== undefined);
-                    console.log(`This is the state of existence: ${exists}`)
                 }
                 return exists;
             } else {
@@ -407,6 +406,8 @@ export default class FileManager {
         } catch (err) {
             // pass
         }
+
+        console.log(exists);
 
         return exists;
     }

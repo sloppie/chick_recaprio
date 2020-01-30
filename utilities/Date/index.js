@@ -114,7 +114,12 @@ export default class DATE {
             }
 
             if(weeks[1]) {
-                let previousWeek = batchData[weeks[0] - 1].length;
+                let previousWeek;
+                try{
+                    previousWeek = batchData[weeks[0] - 1].length;
+                } catch(err) {
+                    previousWeek = 7;
+                }
                 if(previousWeek == 7) {
                     suppossedSize = weeks[1];
                 } else {

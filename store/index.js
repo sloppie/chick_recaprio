@@ -11,6 +11,9 @@ const BATCH_CREATED = "BATCH_CREATED";
 const PICK_UP_ADDED = "PICK_UP_ADDED";
 const PICK_UP_PRICE_ADDED = "PICK_UP_PRICE_ADDED";
 const NEW_FEED_TYPE_ADDED = "NEW_FEED_TYPE_ADDED";
+const BATCH_DELETED = "BATCH_DELETED";
+const BATCH_ARCHIVED = "BATCH_ARCHIVED";
+const BATCH_RENAMED = "BATCH_RENAMED";
 
 
 export default class Store {
@@ -102,7 +105,7 @@ export class Event {
             for(let i=0; i<followers.length; i++) {
                 let sub = followers[i];
                 let action = this.subscribedComponents[sub];
-                action();
+                action(); 
             }
     }    
 
@@ -120,4 +123,7 @@ export {
     PICK_UP_ADDED,
     PICK_UP_PRICE_ADDED,
     NEW_FEED_TYPE_ADDED,
+    BATCH_DELETED,
+    BATCH_ARCHIVED,
+    BATCH_RENAMED,
 };

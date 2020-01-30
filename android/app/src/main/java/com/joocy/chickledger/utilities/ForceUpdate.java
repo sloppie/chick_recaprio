@@ -24,6 +24,9 @@ public class ForceUpdate implements Runnable {
 	public static String BATCH_CREATED = "BATCH_CREATED";
 	public static String PICK_UP_ADDED = "PICK_UP_ADDED";
 	public static String PICK_UP_PRICE_ADDED = "PICK_UP_PRICE_ADDED";
+	public static String BATCH_ARCHIVED = "BATCH_ARCHIVED";
+	public static String BATCH_DELETED = "BATCH_DELETED";
+	public static String BATCH_RENAMED = "BATCH_RENAMED";
 
 	private ReactContext reactContext;
 	public String type;

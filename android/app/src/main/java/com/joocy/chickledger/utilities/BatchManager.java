@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 public class BatchManager extends ReactContextBaseJavaModule {
 
+    private ReactContext reactContext;
     private final File cacheDir = getReactApplicationContext().getCacheDir();
     private final File filesDir = getReactApplicationContext().getFilesDir();
     private final File ARCHIVE = new File(filesDir, "ARCHIVE");
@@ -27,6 +28,7 @@ public class BatchManager extends ReactContextBaseJavaModule {
 
     public BatchManager(ReactApplicationContext reactContext) {
         super(reactContext);
+        this.reactContext = (ReactContext) reactContext;
         if(!ARCHIVE.exists()) {
             ARCHIVE.mkdirs();
         }
@@ -51,6 +53,9 @@ public class BatchManager extends ReactContextBaseJavaModule {
             message = "Unable to archive the batch: " + batchName;
         }
 
+        ForceUpdate BATCH_ARCHIVED = new ForceUpdate(reactContext, ForceUpdate.BATCH_ARCHIVED);
+        new Thread(BATCH_ARCHIVED).start();
+
         makeToast(message);
     }
 
@@ -65,6 +70,9 @@ public class BatchManager extends ReactContextBaseJavaModule {
             message = "Unable to rename batch: " + previous;
         }
 
+        ForceUpdate BATCH_RENAMED = new ForceUpdate(reactContext, ForceUpdate.BATCH_RENAMED);
+        new Thread(BATCH_RENAMED).start();
+
         makeToast(message);
     }
 
@@ -74,6 +82,9 @@ public class BatchManager extends ReactContextBaseJavaModule {
         boolean listViewDeleted = deleteListView(batchName);
         boolean folderDeleted = deleteFolder(folder);
         boolean batchDeleted = folderDeleted && listViewDeleted;
+
+        ForceUpdate BATCH_DELETED = new ForceUpdate(reactContext, ForceUpdate.BATCH_DELETED);
+        new Thread(BATCH_DELETED).start();
 
         return batchDeleted;
     }

@@ -35,7 +35,7 @@ export default class AddInventory extends Component{
 
         true && NativeModules.FileManager.fetchBrief(this.SESSION, (data) => {
             this.batchInformation = JSON.parse(data);
-            let context = this.props.navigation.getParam('context', undefined);
+            let context = this.props.navigation.getParam("context", undefined);
             if(context != "casualties") {
                 let confirmation = FileManager.checkForRecords(this.batchInformation, context.toLowerCase());
                 this.setState({

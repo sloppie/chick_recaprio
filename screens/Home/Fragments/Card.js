@@ -69,7 +69,7 @@ export default class BatchCard extends PureComponent {
       let name = this.props.batchName;
       NativeModules.Sessions.createSession(name, (state) => {
         if (state) {
-          this.props.navigation.push("AddInventory", {
+          this.props.navigation.navigate("AddInventory", {
             context: "eggs"
           });
         }
