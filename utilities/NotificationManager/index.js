@@ -85,17 +85,24 @@ export default class NotificationManager {
 
         PushNotification.scheduleLocalNotification({
             id,
-            color: "colorPrimary",
+            color: "red",
             subText: "Event notification",
             autoCancel: true,
             largeIcon: "chicken",
             smallIcon: "chicken",
             vibrate: NotificationPreferences.VIBRATION,
+            vibration: 300,
+            priority: "high",
+            visibility: "private",
+            group: "group",
+            importance: "high",
+
             title,
             message: description,
             fireDate: timestamp
         });
 
+        console.log("event set: " + timestamp)
         NotificationManager.writeNotificationId(id);
         NotificationId.addNotificationId(id, event);
     } 
@@ -134,7 +141,7 @@ export default class NotificationManager {
             smallIcon: "chicken",
             bigText: "This is a set reminder to ensure you input the number of eggs collected today",
             subText: "Input Reminder",
-            color: "colorPrimary",
+            color: "red",
             vibrate: EggPreferences.VIBRATION,
             vibration: 300,
             tag: 'some_tag',
