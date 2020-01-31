@@ -8,7 +8,7 @@ import {
   NativeModules,
   DeviceEventEmitter,
 } from 'react-native';
-import { List, Title, Divider, Colors, FAB } from 'react-native-paper'
+import { Surface, List, Title, Divider, Colors, FAB } from 'react-native-paper'
 
 import Theme from '../../theme';
 
@@ -151,45 +151,46 @@ export default class Home extends React.PureComponent {
   }
 
   render() {
-    // let renderedCards = this.renderCards();
 
     return (
       <SafeAreaView style={styles.screen}>
-          <ScrollView style={styles.home} stickyHeaderIndices={[0]} >
-        <View style={styles.container}>
-            <List.Accordion
-              theme={Theme.TEXT_INPUT_THEME}
-              title="Batches Summary"
-              description="Statistical summary on batches"
-              style={styles.summaryCard}
-            >
-              <List.Item
-                title={`KSH${this.getFeedsBalance()}`}
-                titleStyle={styles.titleStyle}
-                description="Amount spent on: feeds, events and etc."
-                left={props => <List.Icon {...props} color={Colors.red500} icon="arrow-top-right" />}
-                style={styles.summaryItems}
-              />
-              <List.Item
-                title={`KSH${this.state.returns}`}
-                titleStyle={styles.titleStyle}
-                description="Amount received from eggs sold"
-                left={props => <List.Icon  {...props} color={Colors.green600} icon="arrow-bottom-left" />}
-                style={styles.summaryItems}
-              />
-              <List.Item
-                title={`KSH${this.getProfit()}`}
-                titleStyle={styles.titleStyle}
-                description="Net profit"
-                style={styles.summaryItems}
-                left={props => <List.Icon {...props} color={Colors.green400} icon="cash" />}
-              />
-            </List.Accordion>
-            <Divider style={{ marginBottom: 8 }} />
+        <ScrollView style={styles.home} stickyHeaderIndices={[0]} >
+          <Surface style={styles.container}>
+            <Surface style={styles.summaryContainer}>
+              <List.Accordion
+                theme={Theme.TEXT_INPUT_THEME}
+                title="Batches Summary"
+                description="Statistical summary on batches"
+                style={styles.summaryCard}
+              >
+                <List.Item
+                  title={`KSH${this.getFeedsBalance()}`}
+                  titleStyle={styles.titleStyle}
+                  description="Amount spent on: feeds, events and etc."
+                  left={props => <List.Icon {...props} color={Colors.red500} icon="arrow-top-right" />}
+                  style={styles.summaryItems}
+                />
+                <List.Item
+                  title={`KSH${this.state.returns}`}
+                  titleStyle={styles.titleStyle}
+                  description="Amount received from eggs sold"
+                  left={props => <List.Icon  {...props} color={Colors.green600} icon="arrow-bottom-left" />}
+                  style={styles.summaryItems}
+                />
+                <List.Item
+                  title={`KSH${this.getProfit()}`}
+                  titleStyle={styles.titleStyle}
+                  description="Net profit"
+                  style={styles.summaryItems}
+                  left={props => <List.Icon {...props} color={Colors.green400} icon="cash" />}
+                />
+              </List.Accordion>
+            </Surface>
             {/* <Title style={styles.bil}>Batch Information</Title> */}
-            {this.renderCards()}
-        </View>
-          </ScrollView>
+          </Surface>
+          <Divider style={{ paddingBottom: 8, backgroundColor: Theme.GRAY }} />
+          {this.renderCards()}
+        </ScrollView>
         <FAB
           style={styles.FAB}
           icon="plus"
@@ -206,19 +207,23 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.PRIMARY_COLOR_DARK,
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
+    maxHeight: Dimensions.get("window").height
   },
   home: {
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
     minHeight: "100%",
     maxHeight: "100%",
-    backgroundColor: Theme.PRIMARY_COLOR_DARK,
+    backgroundColor: Theme.GRAY,
   },
   container: {
-    minHeight: Dimensions.get("window").height,
-    backgroundColor: Theme.GRAY,
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
+    elevation: 2,
+    backgroundColor: Theme.GRAY,
+  },
+  summaryContainer: {
+    backgroundColor: Theme.PRIMARY_BACKGROUND_COLOR,
   },
   summaryCard: {
     backgroundColor: Theme.WHITE,
@@ -227,6 +232,7 @@ const styles = StyleSheet.create({
   },
   summaryItems: {
     backgroundColor: Colors.white,
+    elevation: 1,
   },
   titleStyle: {
     fontFamily: "monospace"

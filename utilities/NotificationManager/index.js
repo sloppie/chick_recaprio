@@ -150,7 +150,7 @@ export default class NotificationManager {
             playSound: EggPreferences.PLAY_SOUND,
             soundName: 'default',
             repeatType: 'time',
-            repeatTime: 8640000,
+            repeatTime: 86400000,
             number: '10', // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
             actions: '["Yes", "No"]',  // (Android only) See the doc for notification actions to know more
             fireDate: timestamp,

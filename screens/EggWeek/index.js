@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { View, SafeAreaView, ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { Card, Title, DataTable, Surface, Portal, List } from 'react-native-paper';
 
+import Theme from '../../theme';
+
 import DATE from '../../utilities/Date';
 import InventoryManager from '../../utilities/InventoryManager';
 
