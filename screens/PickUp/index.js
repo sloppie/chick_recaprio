@@ -67,10 +67,12 @@ export default class PickUp extends Component {
 
     setPickUp = async () => {
         let pickUp = JSON.parse(await NativeModules.InventoryManager.fetchPickUpAsync());
+        let currentInventory = JSON.parse(await NativeModules.InventoryManager.fetchCurrentInventoryAsync());
 
         this.setState({
             pickUp,
             rendered: true,
+            currentInventory
         });
 
         this.forceUpdate();
@@ -82,7 +84,7 @@ export default class PickUp extends Component {
             preview[i] = preview[i].split(".");
         }
         try {
-            this.setState({
+            this.setState({ 
                 preview,
             });
             if (this.state.pickUp.length > 0) {
@@ -91,9 +93,8 @@ export default class PickUp extends Component {
                 let lpud = this.state.pickUp[0].date
                 if (today == lpud) {
                     this.lock();
-                } else {
-
                 }
+            } else if (this.state.pickUp.length == 0 && this.state.currentInventory[0][0]) {
             } else {
                 this.lock();
             }
